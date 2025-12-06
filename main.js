@@ -49,7 +49,10 @@ const app = (() => {
         sortMenuOpen: false,
         speedMenuOpen: false,
         hasPlayedCurrentTrack: false,
-        durationCache: new Map() // Cache durations để tránh tạo nhiều Audio object
+        durationCache: new Map(),
+        lastSaveTime: 0,
+        MIN_SAVE_INTERVAL: 500, // Chỉ cách 500ms giữa các lần lưu
+        lastSaveAttempt: 0
     };
 
     // Touch gesture variables
@@ -75,27 +78,55 @@ const app = (() => {
         // Load last playback position
         loadLastPosition();
 
-        els.audio.addEventListener('timeupdate', onTimeUpdate);
+        // === REAL-TIME SAVE EVENTS ===
+        els.audio.addEventListener('timeupdate', () => {
+            onTimeUpdate();
+            // Lưu ngay khi thời gian thay đổi (với rate limit)
+            requestSavePosition(false, 'timeupdate');
+        });
+        
         els.audio.addEventListener('ended', onTrackEnd);
         els.audio.addEventListener('loadedmetadata', onMetadataLoaded);
-        els.audio.addEventListener('play', () => updatePlayState(true));
-        els.audio.addEventListener('pause', () => updatePlayState(false));
+        
+        els.audio.addEventListener('play', () => {
+            updatePlayState(true);
+            // Lưu NGAY LẬP TỨC khi bắt đầu phát
+            immediateSavePosition('play');
+        });
+        
+        els.audio.addEventListener('pause', () => {
+            updatePlayState(false);
+            // Lưu NGAY LẬP TỨC khi pause
+            immediateSavePosition('pause');
+        });
+        
         els.audio.addEventListener('ratechange', () => {
             if (els.audio.playbackRate !== state.speed) els.audio.playbackRate = state.speed;
         });
+        
+        // Sự kiện seek - lưu ngay
+        els.audio.addEventListener('seeked', () => {
+            immediateSavePosition('seeked');
+        });
 
+        // Progress bar events
         els.player.slider.addEventListener('input', onSeekInput);
         els.player.slider.addEventListener('change', onSeekChange);
+        els.player.slider.addEventListener('mouseup', () => {
+            immediateSavePosition('slider-mouseup');
+        });
+        
+        els.player.slider.addEventListener('touchend', () => {
+            immediateSavePosition('slider-touchend');
+        });
 
         // Close dropdowns when clicking outside
         document.addEventListener('click', (e) => {
-            // Close speed menu
             if (!e.target.closest('.speed-menu-container') && !e.target.closest('#speed-popup')) {
                 els.player.speedPopup.classList.remove('active');
                 state.speedMenuOpen = false;
             }
             
-            // Close sort menu
             if (!e.target.closest('.sort-menu-container') && !e.target.closest('#sort-popup')) {
                 els.sortPopup.classList.remove('active');
                 state.sortMenuOpen = false;
@@ -112,11 +143,17 @@ const app = (() => {
                     break;
                 case 'ArrowLeft':
                     if (e.ctrlKey || e.metaKey) prevTrack();
-                    else skip(-5);
+                    else {
+                        skip(-5);
+                        immediateSavePosition('skip-back');
+                    }
                     break;
                 case 'ArrowRight':
                     if (e.ctrlKey || e.metaKey) nextTrack();
-                    else skip(5);
+                    else {
+                        skip(5);
+                        immediateSavePosition('skip-forward');
+                    }
                     break;
                 case 'KeyB':
                     if (e.ctrlKey || e.metaKey) {
@@ -125,7 +162,6 @@ const app = (() => {
                     }
                     break;
                 case 'Escape':
-                    // Close open dropdowns
                     els.player.speedPopup.classList.remove('active');
                     els.sortPopup.classList.remove('active');
                     state.sortMenuOpen = false;
@@ -137,12 +173,16 @@ const app = (() => {
         // Swipe Gesture for mobile
         setupSwipeGestures();
 
-        // Auto-save position every 3 seconds
-        setInterval(() => {
-            if (state.isPlaying && state.hasPlayedCurrentTrack) {
-                saveCurrentPosition();
+        // Lưu khi đóng/refresh trang
+        window.addEventListener('beforeunload', () => immediateSavePosition('beforeunload'));
+        window.addEventListener('pagehide', () => immediateSavePosition('pagehide'));
+        
+        // Lưu khi chuyển tab/ẩn trang
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                immediateSavePosition('visibilitychange-hidden');
             }
-        }, 3000);
+        });
 
         // Show swipe indicator on mobile
         if ('ontouchstart' in window) {
@@ -154,146 +194,96 @@ const app = (() => {
             }, 1000);
         }
         
-        // Preload first book image for better UX
+        // Preload first book image
         if (LIBRARY.length > 0) {
             const img = new Image();
             img.src = LIBRARY[0].cover;
         }
-    }
-
-    function setupSwipeGestures() {
-        const detailView = document.getElementById('detail-view');
-        const playerBar = document.getElementById('player-bar');
-
-        // 1. Swipe on detail view for back navigation
-        if (detailView) {
-            detailView.addEventListener('touchstart', e => {
-                touchStartX = e.changedTouches[0].screenX;
-                touchStartY = e.changedTouches[0].screenY;
-                state.isSwiping = true;
-            }, { passive: true });
-
-            detailView.addEventListener('touchmove', e => {
-                if (!state.isSwiping) return;
-                
-                touchEndX = e.changedTouches[0].screenX;
-                touchEndY = e.changedTouches[0].screenY;
-                
-                const deltaX = touchEndX - touchStartX;
-                const deltaY = touchEndY - touchStartY;
-                
-                // Only horizontal swipe with minimal vertical movement
-                if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 20) {
-                    e.preventDefault();
-                    // Only show feedback for right swipe (back)
-                    if (deltaX > 0) {
-                        showSwipeFeedback('right');
-                    }
-                }
-            }, { passive: false });
-
-            detailView.addEventListener('touchend', e => {
-                if (!state.isSwiping) return;
-                
-                touchEndX = e.changedTouches[0].screenX;
-                touchEndY = e.changedTouches[0].screenY;
-                
-                const deltaX = touchEndX - touchStartX;
-                const deltaY = touchEndY - touchStartY;
-                
-                // Only process horizontal swipe
-                if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > SWIPE_THRESHOLD) {
-                    // Swipe right: back to library
-                    if (deltaX > 0) {
-                        goHome();
-                    }
-                }
-                
-                state.isSwiping = false;
-                hideSwipeFeedback();
-            }, { passive: true });
-        }
-
-        // 2. Swipe on player bar for track navigation
-        if (playerBar) {
-            playerBar.addEventListener('touchstart', e => {
-                const touchX = e.changedTouches[0].screenX;
-                const touchY = e.changedTouches[0].screenY;
-                
-                // Only handle swipe if there's a track playing
-                if (state.playlist.length > 0 && els.audio.src) {
-                    touchStartX = touchX;
-                    touchStartY = touchY;
-                    state.isSwiping = true;
-                }
-            }, { passive: true });
-
-            playerBar.addEventListener('touchend', e => {
-                if (!state.isSwiping || !state.playlist.length || !els.audio.src) return;
-                
-                touchEndX = e.changedTouches[0].screenX;
-                touchEndY = e.changedTouches[0].screenY;
-                
-                const deltaX = touchEndX - touchStartX;
-                
-                // Swipe on player bar: left/right for track navigation
-                if (Math.abs(deltaX) > SWIPE_THRESHOLD) {
-                    if (deltaX > 0) {
-                        // Swipe right: previous track
-                        prevTrack();
-                    } else {
-                        // Swipe left: next track
-                        nextTrack();
-                    }
-                }
-                
-                state.isSwiping = false;
-            }, { passive: true });
-        }
-    }
-
-    function showSwipeFeedback(direction) {
-        els.swipeIndicator.classList.add('opacity-100');
-        const icon = els.swipeIndicator.querySelector('i.ph-arrow-left');
-        const text = els.swipeIndicator.querySelector('div');
-        if (icon && text) {
-            if (direction === 'right') {
-                icon.className = 'ph-bold ph-arrow-left mr-2';
-                text.innerHTML = '<i class="ph-bold ph-arrow-left mr-2"></i> Vuốt để quay lại';
-            }
-        }
-    }
-
-    function hideSwipeFeedback() {
-        setTimeout(() => {
-            els.swipeIndicator.classList.remove('opacity-100');
-        }, 300);
-    }
-
-    function saveCurrentPosition() {
-        // Only save if there's a track playing and it has actually played for at least 3 seconds
-        if (!state.currentFolder || !els.audio.src || !state.hasPlayedCurrentTrack) return;
         
-        // Only save if played for at least 3 seconds to avoid saving when just starting
-        if (els.audio.currentTime < 3) return;
+        console.log('AudioBook Player initialized with real-time save');
+    }
 
+    // ============ REAL-TIME POSITION SAVING ============
+    
+    function requestSavePosition(force = false, source = 'unknown') {
+        const now = Date.now();
+        const timeSinceLastSave = now - state.lastSaveAttempt;
+        
+        // Rate limiting: không lưu quá nhiều lần trong thời gian ngắn
+        if (!force && timeSinceLastSave < state.MIN_SAVE_INTERVAL) {
+            return false; // Bỏ qua, chưa đủ thời gian
+        }
+        
+        state.lastSaveAttempt = now;
+        return saveCurrentPosition(source);
+    }
+    
+    function immediateSavePosition(source = 'immediate') {
+        // Lưu ngay không rate limit (cho các sự kiện quan trọng)
+        saveCurrentPosition(source);
+    }
+    
+    function saveCurrentPosition(source = 'manual') {
+        // Kiểm tra điều kiện cơ bản
+        if (!state.currentFolder || !els.audio.src || !state.hasPlayedCurrentTrack) {
+            console.log('Skip save: no valid track playing');
+            return false;
+        }
+        
+        const currentTime = els.audio.currentTime;
+        const duration = els.audio.duration;
+        
+        // Validate dữ liệu
+        if (isNaN(currentTime) || !isFinite(currentTime) || currentTime < 0) {
+            console.log('Skip save: invalid currentTime');
+            return false;
+        }
+        
+        if (isNaN(duration) || duration <= 0) {
+            console.log('Skip save: invalid duration');
+            return false;
+        }
+        
+        // Không lưu nếu mới chỉ phát dưới 0.5 giây (trừ khi là pause/stop)
+        if (source !== 'pause' && source !== 'beforeunload' && source !== 'pagehide' && 
+            source !== 'visibilitychange-hidden' && currentTime < 0.5) {
+            console.log('Skip save: playback time too short');
+            return false;
+        }
+        
         const position = {
             folderId: state.currentFolder.id,
             trackIndex: state.currentIndex,
-            currentTime: els.audio.currentTime,
-            duration: els.audio.duration,
+            currentTime: currentTime,
+            duration: duration,
             timestamp: Date.now(),
             title: state.playlist[state.currentIndex]?.title || '',
             folderTitle: state.currentFolder.title,
             folderName: state.currentFolder.folderName,
-            author: state.currentFolder.author
+            author: state.currentFolder.author,
+            isPlaying: state.isPlaying,
+            source: source
         };
-
-        localStorage.setItem('lastPlaybackPosition', JSON.stringify(position));
-        state.lastPosition = position;
         
-        // Update UI if in detail view
-        updateLastPlayedInfo();
+        console.log(`💾 Saving position (${source}):`, {
+            track: position.title,
+            time: currentTime.toFixed(1) + 's',
+            percent: ((currentTime / duration) * 100).toFixed(1) + '%'
+        });
+        
+        try {
+            localStorage.setItem('lastPlaybackPosition', JSON.stringify(position));
+            state.lastPosition = position;
+            state.lastSaveTime = Date.now();
+            
+            // Update UI ngay lập tức
+            updateLastPlayedInfo();
+            
+            return true;
+        } catch (e) {
+            console.error('❌ Lỗi khi lưu vị trí:', e);
+            return false;
+        }
     }
 
     function loadLastPosition() {
@@ -301,31 +291,36 @@ const app = (() => {
             const saved = localStorage.getItem('lastPlaybackPosition');
             if (saved) {
                 state.lastPosition = JSON.parse(saved);
+                console.log('📂 Loaded last position:', {
+                    track: state.lastPosition.title,
+                    time: state.lastPosition.currentTime,
+                    folder: state.lastPosition.folderTitle
+                });
                 updateLastPlayedInfo();
-                
-                // Check if last position belongs to any existing folder
-                const matchingFolder = LIBRARY.find(f => f.id === state.lastPosition.folderId);
-                if (matchingFolder) {
-                    console.log('Last played:', state.lastPosition.folderTitle, '-', state.lastPosition.title);
-                }
             }
         } catch (e) {
-            console.error('Failed to load last position:', e);
+            console.error('❌ Lỗi khi load vị trí:', e);
+            localStorage.removeItem('lastPlaybackPosition');
         }
     }
 
     function updateLastPlayedInfo() {
         if (!state.lastPosition || !els.lastPlayedInfo) return;
         
-        const { folderTitle, title, timestamp } = state.lastPosition;
+        const { title, timestamp, currentTime, duration } = state.lastPosition;
         const timeAgo = getTimeAgo(timestamp);
+        const progressPercent = duration > 0 ? Math.round((currentTime / duration) * 100) : 0;
         
-        els.lastPlayedInfo.textContent = `Đã nghe: ${title} (${timeAgo})`;
+        // Format thông tin mới nhất
+        els.lastPlayedInfo.textContent = `Đang nghe: ${title} (${progressPercent}%) • ${timeAgo}`;
         
-        // Only show resume button if we're in the correct folder
+        // Update tooltip
+        els.lastPlayedInfo.title = `Tiếp tục từ ${formatTime(currentTime)} / ${formatTime(duration)}`;
+        
+        // Hiển thị nút resume nếu đúng folder
         if (state.currentFolder && state.lastPosition.folderId === state.currentFolder.id) {
             els.resumeBtn.classList.remove('hidden');
-            els.resumeBtn.setAttribute('title', `Tiếp tục từ ${formatTime(state.lastPosition.currentTime)}`);
+            els.resumeBtn.setAttribute('title', `Tiếp tục từ ${formatTime(state.lastPosition.currentTime)} (${progressPercent}%)`);
         } else {
             els.resumeBtn.classList.add('hidden');
         }
@@ -335,8 +330,10 @@ const app = (() => {
         const now = Date.now();
         const diff = now - timestamp;
         
-        const minutes = Math.floor(diff / (1000 * 60));
-        if (minutes < 1) return 'vừa xong';
+        const seconds = Math.floor(diff / 1000);
+        if (seconds < 60) return 'vừa xong';
+        
+        const minutes = Math.floor(seconds / 60);
         if (minutes < 60) return `${minutes} phút trước`;
         
         const hours = Math.floor(minutes / 60);
@@ -351,27 +348,34 @@ const app = (() => {
         const months = Math.floor(days / 30);
         if (months < 12) return `${months} tháng trước`;
         
-        return 'lâu rồi';
+        return `${Math.floor(days / 365)} năm trước`;
     }
 
     function resumeLastPosition() {
-        if (!state.lastPosition) return;
+        if (!state.lastPosition) {
+            alert('Không có vị trí đã lưu!');
+            return;
+        }
         
-        // If in a different folder, open that folder first
+        console.log('▶️ Resuming from saved position:', state.lastPosition);
+        
+        // Nếu đang ở folder khác, mở folder đó
         if (!state.currentFolder || state.currentFolder.id !== state.lastPosition.folderId) {
             const folder = LIBRARY.find(f => f.id === state.lastPosition.folderId);
             if (folder) {
                 openFolder(folder.id);
-                // Wait for folder to open then resume
                 setTimeout(() => {
                     resumeTrackFromPosition();
-                }, 500);
+                }, 300);
+                return;
+            } else {
+                alert('Không tìm thấy truyện này trong thư viện!');
                 return;
             }
-        } else {
-            // Already in correct folder, resume immediately
-            resumeTrackFromPosition();
         }
+        
+        // Resume ngay
+        resumeTrackFromPosition();
     }
 
     function resumeTrackFromPosition() {
@@ -380,21 +384,33 @@ const app = (() => {
         const { trackIndex, currentTime } = state.lastPosition;
         
         if (trackIndex >= 0 && trackIndex < state.playlist.length) {
+            // Phát track
             playTrack(trackIndex);
             
-            // Set time after audio has loaded
-            const checkAudioLoaded = () => {
-                if (els.audio.readyState > 0 && !isNaN(currentTime)) {
-                    els.audio.currentTime = currentTime;
+            // Set time sau khi audio đã load
+            const checkAndSetTime = () => {
+                if (els.audio.readyState >= 2) { // HAVE_CURRENT_DATA
+                    const targetTime = Math.max(0, Math.min(currentTime, els.audio.duration || currentTime));
+                    console.log(`⏱️ Setting time to ${targetTime}s`);
+                    els.audio.currentTime = targetTime;
                     state.hasPlayedCurrentTrack = true;
+                    
+                    // Lưu lại vị trí resume
+                    setTimeout(() => immediateSavePosition('resume'), 200);
                 } else {
-                    setTimeout(checkAudioLoaded, 100);
+                    setTimeout(checkAndSetTime, 50);
                 }
             };
-            setTimeout(checkAudioLoaded, 300);
+            
+            setTimeout(checkAndSetTime, 100);
+        } else {
+            console.warn('Invalid track index, starting from beginning');
+            playTrack(0);
         }
     }
 
+    // ============ CÁC HÀM CÒN LẠI ============
+    
     function renderLibrary(data) {
         const countEl = document.getElementById('book-count');
         const emptyEl = document.getElementById('empty-state');
@@ -441,7 +457,6 @@ const app = (() => {
     function setSort(value) {
         state.currentSort = value;
         
-        // Update UI text
         let sortText = '';
         switch(value) {
             case 'az': sortText = 'Tên A-Z'; break;
@@ -451,7 +466,6 @@ const app = (() => {
         }
         els.currentSortText.textContent = sortText;
         
-        // Update selected item in dropdown
         document.querySelectorAll('.sort-item').forEach(item => {
             item.classList.remove('selected');
             const itemValue = item.getAttribute('onclick').match(/setSort\('(.+?)'\)/)[1];
@@ -460,11 +474,9 @@ const app = (() => {
             }
         });
         
-        // Close dropdown
         els.sortPopup.classList.remove('active');
         state.sortMenuOpen = false;
         
-        // Apply sort
         handleSort(value);
     }
 
@@ -508,10 +520,8 @@ const app = (() => {
         els.views.library.classList.add('hidden');
         els.views.detail.classList.remove('hidden');
         
-        // Reset flag when opening new folder
         state.hasPlayedCurrentTrack = false;
         
-        // Update resume button - only show if this folder has last position
         if (state.lastPosition && state.lastPosition.folderId === id) {
             els.resumeBtn.classList.remove('hidden');
         } else {
@@ -520,14 +530,10 @@ const app = (() => {
         
         updateLastPlayedInfo();
         
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-        });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     async function getTrackDuration(src) {
-        // Check cache first
         if (state.durationCache.has(src)) {
             return state.durationCache.get(src);
         }
@@ -543,10 +549,9 @@ const app = (() => {
             });
             
             audio.addEventListener('error', () => {
-                resolve(0); // Default to 0 on error
+                resolve(0);
             });
             
-            // Timeout after 3 seconds
             setTimeout(() => {
                 resolve(0);
             }, 3000);
@@ -597,7 +602,6 @@ const app = (() => {
             </div>
         `}).join('');
 
-        // Load durations asynchronously
         state.playlist.forEach(async (track, idx) => {
             const duration = await getTrackDuration(track.src);
             const el = document.getElementById(`duration-text-${idx}`);
@@ -627,6 +631,11 @@ const app = (() => {
     }
 
     function playTrack(index) {
+        // Lưu track hiện tại trước khi chuyển
+        if (state.hasPlayedCurrentTrack && state.playlist[state.currentIndex]) {
+            immediateSavePosition('track-change-before');
+        }
+        
         state.currentIndex = index;
         const track = state.playlist[index];
         els.audio.src = track.src;
@@ -640,6 +649,7 @@ const app = (() => {
         els.player.bar.classList.remove('translate-y-[150%]');
         els.player.bar.classList.add('show');
 
+        // Media Session API
         if ('mediaSession' in navigator) {
             navigator.mediaSession.metadata = new MediaMetadata({
                 title: track.title,
@@ -652,8 +662,14 @@ const app = (() => {
             });
             navigator.mediaSession.setActionHandler('play', play);
             navigator.mediaSession.setActionHandler('pause', pause);
-            navigator.mediaSession.setActionHandler('seekbackward', () => skip(-5));
-            navigator.mediaSession.setActionHandler('seekforward', () => skip(5));
+            navigator.mediaSession.setActionHandler('seekbackward', () => {
+                skip(-5);
+                immediateSavePosition('media-session-skip-back');
+            });
+            navigator.mediaSession.setActionHandler('seekforward', () => {
+                skip(5);
+                immediateSavePosition('media-session-skip-forward');
+            });
             navigator.mediaSession.setActionHandler('previoustrack', () => {
                 if (index > 0) playTrack(index - 1);
             });
@@ -662,16 +678,13 @@ const app = (() => {
             });
         }
 
-        // Mark that this track has been played
         state.hasPlayedCurrentTrack = true;
         
         play();
         highlightCurrentTrack(index);
         
-        // Save position after 1 second (when playback has started)
-        setTimeout(() => {
-            saveCurrentPosition();
-        }, 1000);
+        // Lưu vị trí mới sau khi bắt đầu phát
+        setTimeout(() => immediateSavePosition('play-track'), 300);
     }
 
     function togglePlay() {
@@ -680,7 +693,6 @@ const app = (() => {
                 playTrack(0);
             } else {
                 play();
-                // Mark as played if this is the first time
                 if (!state.hasPlayedCurrentTrack && els.audio.currentTime > 0) {
                     state.hasPlayedCurrentTrack = true;
                 }
@@ -688,10 +700,9 @@ const app = (() => {
         } else {
             pause();
         }
-        // Save position when changing play state
-        setTimeout(() => {
-            saveCurrentPosition();
-        }, 500);
+        
+        // Lưu ngay khi toggle
+        immediateSavePosition('toggle-play');
     }
 
     function playAll() {
@@ -733,10 +744,7 @@ const app = (() => {
 
     function skip(seconds) {
         els.audio.currentTime += seconds;
-        // Save position after skipping
-        setTimeout(() => {
-            saveCurrentPosition();
-        }, 300);
+        immediateSavePosition('skip');
     }
 
     function setSpeed(val) {
@@ -747,6 +755,8 @@ const app = (() => {
         updateSpeedUI(newSpeed);
         els.player.speedPopup.classList.remove('active');
         state.speedMenuOpen = false;
+        
+        immediateSavePosition('speed-change');
     }
 
     function updateSpeedUI(val) {
@@ -791,11 +801,8 @@ const app = (() => {
         const newTime = (els.player.slider.value / 100) * els.audio.duration;
         els.audio.currentTime = newTime;
         
-        // Save position after seeking
         if (state.hasPlayedCurrentTrack) {
-            setTimeout(() => {
-                saveCurrentPosition();
-            }, 300);
+            immediateSavePosition('seek-change');
         }
     }
 
@@ -810,10 +817,7 @@ const app = (() => {
         } else {
             state.isPlaying = false;
             updatePlayState(false);
-            // Save position when ending last track
-            setTimeout(() => {
-                saveCurrentPosition();
-            }, 500);
+            immediateSavePosition('track-end');
         }
     }
 
@@ -850,8 +854,106 @@ const app = (() => {
         touchStartX = 0;
         touchEndX = 0;
         
-        // Hide resume button
         els.resumeBtn.classList.add('hidden');
+    }
+
+    function setupSwipeGestures() {
+        const detailView = document.getElementById('detail-view');
+        const playerBar = document.getElementById('player-bar');
+
+        if (detailView) {
+            detailView.addEventListener('touchstart', e => {
+                touchStartX = e.changedTouches[0].screenX;
+                touchStartY = e.changedTouches[0].screenY;
+                state.isSwiping = true;
+            }, { passive: true });
+
+            detailView.addEventListener('touchmove', e => {
+                if (!state.isSwiping) return;
+                
+                touchEndX = e.changedTouches[0].screenX;
+                touchEndY = e.changedTouches[0].screenY;
+                
+                const deltaX = touchEndX - touchStartX;
+                const deltaY = touchEndY - touchStartY;
+                
+                if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 20) {
+                    e.preventDefault();
+                    if (deltaX > 0) {
+                        showSwipeFeedback('right');
+                    }
+                }
+            }, { passive: false });
+
+            detailView.addEventListener('touchend', e => {
+                if (!state.isSwiping) return;
+                
+                touchEndX = e.changedTouches[0].screenX;
+                touchEndY = e.changedTouches[0].screenY;
+                
+                const deltaX = touchEndX - touchStartX;
+                const deltaY = touchEndY - touchStartY;
+                
+                if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > SWIPE_THRESHOLD) {
+                    if (deltaX > 0) {
+                        goHome();
+                    }
+                }
+                
+                state.isSwiping = false;
+                hideSwipeFeedback();
+            }, { passive: true });
+        }
+
+        if (playerBar) {
+            playerBar.addEventListener('touchstart', e => {
+                const touchX = e.changedTouches[0].screenX;
+                const touchY = e.changedTouches[0].screenY;
+                
+                if (state.playlist.length > 0 && els.audio.src) {
+                    touchStartX = touchX;
+                    touchStartY = touchY;
+                    state.isSwiping = true;
+                }
+            }, { passive: true });
+
+            playerBar.addEventListener('touchend', e => {
+                if (!state.isSwiping || !state.playlist.length || !els.audio.src) return;
+                
+                touchEndX = e.changedTouches[0].screenX;
+                touchEndY = e.changedTouches[0].screenY;
+                
+                const deltaX = touchEndX - touchStartX;
+                
+                if (Math.abs(deltaX) > SWIPE_THRESHOLD) {
+                    if (deltaX > 0) {
+                        prevTrack();
+                    } else {
+                        nextTrack();
+                    }
+                }
+                
+                state.isSwiping = false;
+            }, { passive: true });
+        }
+    }
+
+    function showSwipeFeedback(direction) {
+        els.swipeIndicator.classList.add('opacity-100');
+        const icon = els.swipeIndicator.querySelector('i.ph-arrow-left');
+        const text = els.swipeIndicator.querySelector('div');
+        if (icon && text) {
+            if (direction === 'right') {
+                icon.className = 'ph-bold ph-arrow-left mr-2';
+                text.innerHTML = '<i class="ph-bold ph-arrow-left mr-2"></i> Vuốt để quay lại';
+            }
+        }
+    }
+
+    function hideSwipeFeedback() {
+        setTimeout(() => {
+            els.swipeIndicator.classList.remove('opacity-100');
+        }, 300);
     }
 
     return {
