@@ -274,7 +274,30 @@ const LIBRARY = [
             { title: "Chương 81 - 85", fileName: "c81-85.mp3" },
             { title: "Chương 86 - 90", fileName: "c86-90.mp3" },
             { title: "Chương 91 - 96", fileName: "c91-96.mp3" },
-            { title: "Ngoại truyện 1 - 6", fileName: "nt1-6.mp3" }
+            { title: "Ngoại truyện 1 - 6 (Hết)", fileName: "nt1-6.mp3" }
+        ]
+    },
+    {
+        id: 11,
+        folderName: "NuPhuTraXanhTroThanhDoChoiCuaNamChinh",
+        title: "Nữ Phụ Trà Xanh Trở Thành Đồ Chơi Của Nam Chính",
+        author: "Miên Nhuyễn Nhuyễn",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/NuPhuTraXanhTroThanhDoChoiCuaNamChinh/cover.jpg",
+        desc: "Một câu chuyện khác của nguyên tác “Sau khi bị vả mặt, nữ phụ trèo lên người nam chính (H)”, không còn những tình tiết xuyên sách, đi theo con đường hiện thực tối tăm, tuyến đường cưỡng chế yêu, nhiều H, ngọt ngào.\n\nNữ phụ trà xanh từng bước gặp khó khăn X nam chính không hề che giấu sự ác liệt của mình mà dạo chơi nhân gian.\n\nCô gái đáng thương sinh ra trong gia đình bình thường bị thiếu gia nhà giàu đùa bỡn, thời gian đầu chỉ thích làm tình không thích yêu đương.\n\n“Trà xanh bạch liên”, “tiểu tam”, “tâm cơ”, “quyến rũ Nghiêm Kỷ” đây là những nhãn dán của Mộc Trạch Tê, luôn khiến người ta khinh thường.\n“Học sinh ba tốt”, “nghiêm túc đứng đắn”, “ thân thiện với mọi người “, “dịu dàng” đây là những nhãn dán của Nghiêm Kỷ, được người người khen ngợi.\n\nTừ nhỏ, Mộc Trạch Tê đã có người mẹ luôn mang vọng tưởng bám víu vào những gia đình quyền quý, đương nhiên cô cũng bị dính vào kế hoạch ấy.\nĐể tiếp cận Nghiêm Kỷ, cô dùng đủ mọi cách, thậm chí còn làm khó Lâm Thi Vũ, người tự nhiên thân thiết với Nghiêm Kỷ.\nTất cả những gì cô nhận được cũng chỉ là sự hờ hững và xa cách của Nghiêm Kỷ.\nMộc Trạch Tê từ bỏ...\nDưới lớp ngụy trang của mình, Nghiêm Kỷ là một kẻ vô cùng độc ác. Thái độ của anh với mọi thứ như thần linh dạo chơi nhân gian, sau đó lại nhận ra bản thân mình là kẻ xấu xa, thích làm việc ác nhưng không muốn mình bị mọi người chế nhạo.\nAnh thích kiểm soát và theo đuổi những thứ kích thích.\nKhi phát hiện ra người vẫn luôn theo đuổi mình từ khi còn nhỏ - Mộc Trạch Tê, muốn chạy sang vòng tay của kẻ khác, anh phát điên lên. Sau khi ăn sạch người ta vào miệng, anh ăn tủy biết vị [1] phát hiện niềm vui sướng mỗi khi đùa bỡn Mộc Trạch Tê.\nMộc Trạch Tê vẫn luôn dựa vào dáng người của mình để quyến rũ được Nghiêm Kỷ, giúp mẹ cô có thể từng bước tiến vào nhà họ Nghiêm giàu sang, quyền thế.\nNhưng chỉ có mình Mộc Trạch Tê biết được, đằng sau nét cười ôn hòa là sự u tối chỉ biết làm tình của anh.\nĐây là câu chuyện nguyên bản của “Sau khi bị vả mặt nữ phụ trèo cao có được nam chính (H)”.\nLà một câu chuyện thể hiện ý chí của một người phụ nữ chỉ có nhan sắc nhưng lại muốn leo lên một gia đình giàu có, lấy nhan sắc để phục vụ dục vọng của người khác. (Hai người có tình cảm, nhưng không cản trở nam chính ham mê nữ sắc, vẫn chóa lắm).\nNếu không thích, thì nhanh chạy!.\nBởi vì là một câu chuyện khác nên sẽ có cảnh mới, cũng sẽ có một số cảnh và văn bản là trong “Nữ phụ vả mặt”. Chuyện nguyên bản, cùng một cảnh tượng nhưng câu chuyện khác nhau.\nTính cách của nhân vật cơ bản không thay đổi, nhưng nội dung cốt truyện sẽ đi theo hướng khác.",
+        tracks: [
+            { title: "Chương 1 - 5", fileName: "c1-5.m4a" },
+            { title: "Chương 6 - 10", fileName: "c6-10.m4a" },
+            { title: "Chương 11 - 15", fileName: "c11-15.m4a" },
+            { title: "Chương 16 - 20", fileName: "c16-20.m4a" },
+            { title: "Chương 21 - 25", fileName: "c21-25.m4a" },
+            { title: "Chương 26 - 30", fileName: "c26-30.m4a" },
+            { title: "Chương 31 - 35", fileName: "c31-35.m4a" },
+            { title: "Chương 36 - 40", fileName: "c36-40.m4a" },
+            { title: "Chương 41 - 45", fileName: "c41-45.m4a" },
+            { title: "Chương 46 - 50", fileName: "c46-50.m4a" },
+            { title: "Chương 51 - 55", fileName: "c51-55.m4a" },
+            { title: "Chương 56 - 60", fileName: "c56-60.m4a" },
+            { title: "Chương 61 - 64 (Hết)", fileName: "c61-64.m4a" }
         ]
     },
 ];
