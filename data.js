@@ -300,4 +300,25 @@ const LIBRARY = [
             { title: "Chương 61 - 64 (Hết)", fileName: "c61-64.m4a" }
         ]
     },
+    {
+        id: 12,
+        folderName: "BoiDem",
+        title: "Bơi Đêm",
+        author: "Dã Bồ Tát",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/BoiDem/cover.jpg",
+        desc: "Hồ Già luôn cảm thấy Điền Tư có một cuộc sống tốt đẹp hơn cô, anh không cần phải treo cổ trên cái cây mục nát là cô đây.\nCho đến một ngày, cô mở ngăn kéo của anh và phát hiện ra rằng ngoài những đồ chơi tình dục mà họ thường dùng, còn có cả Snoth và Sertraline, cái trước là thuốc ngủ, cái sau là thuốc chống trầm cảm được giấu kín.\nSau đó, câu chuyện của họ đã thay đổi.\n🪷 Bông hoa trên cao bị kéo xuống khỏi bệ thờ\nSau đó anh trở thành một chú chó nhỏ dính người 🐶\n🍑 Nữ chính điên cuồng, xinh đẹp Vs 🐴 Nam chính dịu dàng, ẩn nhẫn, dính người\n🌊 Trước khi trưởng thành, những tháng ngày ấy với họ là một cuộc bơi đêm, họ phải nín thở, nỗ lực bơi về phía trước.\n✨ Hai bên cứu rỗi lấy nhau.\n⚡️Nam chính là trai tân, nữ chính không phải, kết cục HE\n💦 Có yếu tố câu dẫn và dirty talk, nữ chính rất thích trêu chọc nam chính\n🌚 Nam chính sau khi thích nữ chính có chút ẩn nhẫn mà cuồng tình",
+        tracks: [
+            { title: "Chương 1 - 5", fileName: "c1-5.m4a" },
+            { title: "Chương 6 - 10", fileName: "c6-10.m4a" },
+            { title: "Chương 11 - 15", fileName: "c11-15.m4a" },
+            { title: "Chương 16 - 20", fileName: "c16-20.m4a" },
+            { title: "Chương 21 - 25", fileName: "c21-25.m4a" },
+            { title: "Chương 26 - 30", fileName: "c26-30.m4a" },
+            { title: "Chương 31 - 35", fileName: "c31-35.m4a" },
+            { title: "Chương 36 - 40", fileName: "c36-40.m4a" },
+            { title: "Chương 41 - 45", fileName: "c41-45.m4a" },
+            { title: "Chương 46 - 50", fileName: "c46-50.m4a" },
+        ]
+    },
 ];
+
