@@ -21,29 +21,42 @@
     <div class="fixed top-0 left-0 right-0 z-40 px-4 py-4">
         <nav class="glass-panel max-w-7xl mx-auto rounded-full px-2 pl-6 py-2 flex justify-between items-center">
             <div class="flex items-center gap-3 cursor-pointer group" onclick="app.goHome()" role="button" aria-label="Trở về trang chủ" tabindex="0">
-                <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white shadow-lg shadow-blue-500/20 group-hover:rotate-12 transition shrink-0">
+                <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white shadow-lg shadow-blue-500/20 group-hover:rotate-12 transition shrink-0 brand-icon">
                     <i class="ph-bold ph-books text-xl"></i>
                 </div>
-                <div class="block"> 
+                <div class="block brand-text"> 
                     <h1 id="site-name" class="font-bold text-base sm:text-lg tracking-tight leading-none text-white truncate max-w-[120px] sm:max-w-none">Tư Ngữ Audio</h1>
                     <span class="text-[9px] sm:text-[10px] font-medium uppercase tracking-widest text-gray-400 block">@tunguaudio0604</span>
                 </div>
             </div>
 
             <div class="flex items-center gap-2">
+                <!-- Nút tiếp tục audio đã nghe -->
+                <button onclick="app.resumeLastAudio()" id="resume-last-audio-btn" 
+                    class="glass-panel bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 hover:text-white px-4 py-2 rounded-full text-xs font-medium flex items-center gap-2 transition-all hidden group relative resume-btn"
+                    title="Tiếp tục audio đã nghe cuối cùng">
+                    <i class="ph-fill ph-play-circle"></i>
+                    <span class="truncate max-w-[100px] sm:max-w-none resume-text">Tiếp tục nghe</span>
+                    <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900/90 backdrop-blur-sm text-xs text-white rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 shadow-xl border border-white/10">
+                        <div class="font-bold mb-1">Tiếp tục từ:</div>
+                        <div id="resume-tooltip-content" class="text-blue-300"></div>
+                    </div>
+                </button>
+                
                 <div class="relative group">
                     <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                         <i class="ph ph-magnifying-glass text-lg text-gray-400"></i>
                     </div>
+                    <!-- ĐÃ SỬA: Thêm class md:w-64 để thanh tìm kiếm luôn mở rộng trên màn hình đủ lớn -->
                     <input type="text" id="search-input"
-                        class="glass-panel bg-transparent w-8 focus:w-40 sm:w-10 sm:focus:w-64 h-10 rounded-full pl-10 pr-4 text-sm text-white placeholder-gray-500 transition-all duration-300 focus:ring-2 focus:ring-blue-500/50 focus:outline-none focus:bg-white/5"
+                        class="glass-panel bg-transparent w-8 focus:w-40 sm:w-10 sm:focus:w-64 md:w-64 h-10 rounded-full pl-10 pr-4 text-sm text-white placeholder-gray-500 transition-all duration-300 focus:ring-2 focus:ring-blue-500/50 focus:outline-none focus:bg-white/5 search-input"
                         placeholder="Tìm sách, tác giả..."
                         oninput="app.handleSearch(this.value)"
                         aria-label="Tìm kiếm audiobook">
                 </div>
                 
                 <a href="https://www.youtube.com/@tunguaudio0604" target="_blank" rel="noopener noreferrer"
-                    class="w-10 h-10 rounded-full p-[2px] border border-white/20 ml-1 cursor-pointer hover:scale-105 transition block overflow-hidden shrink-0"
+                    class="w-10 h-10 rounded-full p-[2px] border border-white/20 ml-1 cursor-pointer hover:scale-105 transition block overflow-hidden shrink-0 user-avatar"
                     aria-label="Kênh YouTube của Tư Ngữ Audio">
                     <img id="user-avatar" src="./avt.jpg" onerror="this.src='https://via.placeholder.com/150'" class="w-full h-full rounded-full object-cover" alt="Avatar Tư Ngữ Audio">
                 </a>
@@ -64,26 +77,29 @@
 
         <!-- LIBRARY VIEW -->
         <section id="library-view" class="animate-enter">
-            <div class="flex items-center justify-between mb-8 px-2">
-                <div class="flex items-center gap-2">
-                    <h2 class="text-2xl font-bold flex items-center gap-2 text-white">
-                        <i class="ph-duotone ph-sparkle text-blue-500"></i> Thư Viện
-                    </h2>
-                    <span class="text-sm text-gray-400 bg-white/5 px-2 py-0.5 rounded-md" id="book-count">0</span>
-                </div>
+            <!-- ĐÃ SỬA: Toàn bộ header của library view -->
+            <div class="library-header mb-8">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="flex items-center gap-2">
+                        <h2 class="text-xl sm:text-2xl font-bold flex items-center gap-2 text-white library-title">
+                            <i class="ph-duotone ph-sparkle text-blue-500 hidden sm:block"></i> Thư Viện
+                        </h2>
+                        <span class="text-xs sm:text-sm text-gray-400 bg-white/5 px-2 py-0.5 rounded-md book-count" id="book-count">0</span>
+                    </div>
 
-                <!-- Sắp xếp dropdown -->
-                <div class="sort-menu-container relative z-20">
-                    <button onclick="app.toggleSortMenu()" class="sort-menu-trigger glass-panel rounded-full px-4 py-2 flex items-center gap-2 hover:bg-white/10 transition-all duration-200 group" aria-label="Sắp xếp" aria-expanded="false">
-                        <i class="ph-bold ph-sort-ascending text-blue-400 group-hover:rotate-180 transition-transform duration-300"></i>
-                        <span id="current-sort-text">Mới nhất</span>
-                        <i class="ph-bold ph-caret-down text-xs text-gray-400 group-hover:text-blue-400 transition-colors duration-200"></i>
-                    </button>
-                    <div id="sort-popup" class="sort-popup">
-                        <div class="sort-item" onclick="app.setSort('az')">Tên A-Z</div>
-                        <div class="sort-item" onclick="app.setSort('za')">Tên Z-A</div>
-                        <div class="sort-item selected" onclick="app.setSort('newest')">Mới nhất</div>
-                        <div class="sort-item" onclick="app.setSort('oldest')">Cũ nhất</div>
+                    <!-- Sắp xếp dropdown - ĐÃ SỬA RESPONSIVE -->
+                    <div class="sort-menu-container relative z-20 self-end sm:self-auto">
+                        <button onclick="app.toggleSortMenu()" class="sort-menu-trigger glass-panel rounded-full px-3 py-1.5 sm:px-4 sm:py-2 flex items-center gap-1 sm:gap-2 hover:bg-white/10 transition-all duration-200 group" aria-label="Sắp xếp" aria-expanded="false">
+                            <i class="ph-bold ph-sort-ascending text-blue-400 text-sm sm:text-base group-hover:rotate-180 transition-transform duration-300"></i>
+                            <span id="current-sort-text" class="text-xs sm:text-sm">Mới nhất</span>
+                            <i class="ph-bold ph-caret-down text-xs text-gray-400 group-hover:text-blue-400 transition-colors duration-200"></i>
+                        </button>
+                        <div id="sort-popup" class="sort-popup">
+                            <div class="sort-item" onclick="app.setSort('az')">Tên A-Z</div>
+                            <div class="sort-item" onclick="app.setSort('za')">Tên Z-A</div>
+                            <div class="sort-item selected" onclick="app.setSort('newest')">Mới nhất</div>
+                            <div class="sort-item" onclick="app.setSort('oldest')">Cũ nhất</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -129,10 +145,15 @@
                                 <i class="ph-fill ph-play-circle text-xl group-hover:scale-110 transition-transform"></i> Phát tất cả
                             </button>
                             <button onclick="app.resumeLastPosition()" id="resume-btn"
-                                class="btn-md3 btn-ghost py-3 px-4 rounded-xl hidden" 
+                                class="btn-md3 btn-ghost py-3 px-4 rounded-xl hidden group relative" 
                                 aria-label="Tiếp tục từ vị trí đã lưu"
                                 title="Tiếp tục từ vị trí đã lưu">
                                 <i class="ph-fill ph-arrow-clockwise"></i>
+                                <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900/90 backdrop-blur-sm text-xs text-white rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 shadow-xl border border-white/10">
+                                    <div class="font-bold mb-1">Tiếp tục từ:</div>
+                                    <div class="text-blue-300">Chương: <span id="resume-chapter"></span></div>
+                                    <div class="text-blue-300">Thời gian: <span id="resume-time"></span></div>
+                                </div>
                             </button>
                         </div>
                     </div>
@@ -239,5 +260,67 @@
             <div>ESC: Đóng menu</div>
         </div>
     </div>
+    
+    <script>
+        // Cập nhật tooltip cho nút tiếp tục
+        function updateResumeTooltip() {
+            try {
+                const lastPlayed = localStorage.getItem('lastPlayedAudio');
+                if (lastPlayed) {
+                    const data = JSON.parse(lastPlayed);
+                    const tooltip = document.getElementById('resume-tooltip-content');
+                    if (tooltip) {
+                        const timeAgo = getTimeAgo(data.timestamp);
+                        tooltip.innerHTML = `
+                            <div>${data.folderTitle}</div>
+                            <div>${data.trackTitle}</div>
+                            <div class="text-green-300">${formatTime(data.currentTime)} • ${timeAgo}</div>
+                        `;
+                    }
+                    
+                    // Cập nhật tooltip cho nút resume trong detail view
+                    const resumeChapter = document.getElementById('resume-chapter');
+                    const resumeTime = document.getElementById('resume-time');
+                    if (resumeChapter) resumeChapter.textContent = data.trackTitle;
+                    if (resumeTime) resumeTime.textContent = formatTime(data.currentTime);
+                    
+                    // Hiển thị nút tiếp tục
+                    const btn = document.getElementById('resume-last-audio-btn');
+                    if (btn) btn.classList.remove('hidden');
+                }
+            } catch (e) {
+                console.error('Lỗi khi cập nhật tooltip:', e);
+            }
+        }
+        
+        function getTimeAgo(timestamp) {
+            const now = Date.now();
+            const diff = now - timestamp;
+            
+            const minutes = Math.floor(diff / (1000 * 60));
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            
+            if (minutes < 60) return `${minutes} phút trước`;
+            if (hours < 24) return `${hours} giờ trước`;
+            return `${days} ngày trước`;
+        }
+        
+        function formatTime(seconds) {
+            if (!seconds || isNaN(seconds) || seconds < 0) return "0:00";
+            const h = Math.floor(seconds / 3600);
+            const m = Math.floor((seconds % 3600) / 60);
+            const s = Math.floor(seconds % 60);
+            return h > 0 ? `${h}:${m < 10 ? '0' + m : m}:${s < 10 ? '0' + s : s}` : `${m}:${s < 10 ? '0' + s : s}`;
+        }
+        
+        // Cập nhật tooltip khi trang được tải
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(updateResumeTooltip, 500);
+            
+            // Cập nhật tooltip mỗi phút để hiển thị thời gian chính xác
+            setInterval(updateResumeTooltip, 60000);
+        });
+    </script>
 </body>
 </html>
