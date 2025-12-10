@@ -332,5 +332,35 @@ const LIBRARY = [
             { title: "Chương 46 - 50", fileName: "c46-50.m4a" },
         ]
     },
+    {
+        id: 13,
+        folderName: "PhongHoaHoaCot",
+        title: "Phong Hoa Hoạ Cốt",
+        author: "Khúc Tiểu Khúc",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/PhongHoaHoaCot/cover.png",
+        desc: "[1]\nTạ Thanh Yến là đệ nhất nho tướng của triều Đại Dận, là người mang phong thái thanh khiết như gió xuân trăng sáng, nhã nhặn đoan chính, lập vô số chiến công hiển hách. Vì thế mà được người đời tôn xưng là “Xuân Sơn công tử”, thiên hạ ca tụng rằng: “Một lần gặp ngày xuân về, khắp kinh thành đỏ rực tay áo vẫy chào.”\nTrong triều, ai ai cũng ngưỡng mộ và tôn kính chàng, các tiểu thư quyền quý nơi kinh thành lại coi chàng như đấng lang quân trong mộng cao cao tại thượng, đến cả biểu muội của chàng là Trưng Dương công chúa cũng thầm thương trộm nhớ, dây dưa chẳng dứt.\nĐáng tiếc là chàng đã đính ước hôn nhân với Khánh Quốc Công phủ, chỉ chờ đích nữ trong phủ là Thích Uyển Nhi đến ngày xuất giá là sẽ kết duyên, tạo nên một câu chuyện đẹp.\nTin đồn kết thân vừa lan ra, trái tim của hàng ngàn thiếu trong nữ kinh thành tan vỡ chỉ sau một đêm, nhưng chỉ có một người thở phào nhẹ nhõm —\nĐó chính là Thích Bạch Thương, con gái thứ và là chị cùng cha khác mẹ của Thích Uyển Nhi – vị hôn thê tương lai của Tạ Thanh Yến.\n\n[2]\nThích Bạch Thương vẫn luôn biết rằng, trong mắt Tạ Thanh Yến, nàng chỉ là vật thay thế cho đích muội Thích Uyển Nhi mà thôi.\nĐích muội tôn quý, dịu dàng và nhã nhặn, cầm kỳ thi họa nổi danh kinh thành, được ca tụng là Đệ nhất tài nữ kinh đô.\nCòn nàng thì xuất thân thấp kém và thô thiển, thậm chí còn mang tai tiếng hồi nhỏ từng lưu lạc ở thanh lâu suốt một năm.\nThế nên Tạ Thanh Yến khinh rẻ và trêu đùa nàng. Ban ngày, chàng đối diện với đích muội ôn hòa và giữ lễ như một quân tử đoan chính, nhưng đêm đến lại xé toạc lớp vỏ bọc, đối xử với nàng bằng sự tàn bạo và ác ý tột cùng trong màn trướng uyên ương.\nChàng nâng đỡ đích muội nàng lên tận mây xanh, nhưng lại nhấn chìm nàng xuống bùn nhơ.\nNhưng trớ trêu thay, đối với Thích Bạch Thương, Uyển Nhi lại là cô gái tốt nhất trong triều Đại Dận. Trong Quốc Công phủ rộng lớn, vô số ánh mắt lạnh lùng, nàng từ nhỏ động một tí là mắc lỗi, chỉ có Uyển Nhi là tương trợ và đỡ đần nàng. Nàng lại càng không thể đến trước mặt Uyển Nhi mà vạch trần bộ mặt thật của người kia.\n“Hôm nay, Uyển Nhi lại cùng công tử nhà họ Tần nhìn nhau thêm hai lần.”\nĐêm đã khuya, người đàn ông ban ngày thanh chính nho nhã lúc này lại như một quái thú lười biếng hung dữ, dựa vào bức tường trong căn phòng thứ nữ chật hẹp và cũ nát của nàng. Chàng tiện tay vò chiếc áo choàng lụa gấm quý giá ở dưới thân nàng, chàng cố ý và ác ý gợi ra những tiếng khóc nức nở khó nén của nàng:\n“Tối nay, ngươi hãy thay nàng chịu phạt đi —”\n“Thêm hai nén hương nữa là được.”\n\n[3]\nCuối cùng, mối thù của mẹ ruột đã được báo, Thích Bạch Thương không cần phải giả vờ làm thân với bất kỳ ai nữa, nàng quyết định rời khỏi kinh đi.\nVào lúc này, Tạ Thanh Yến đã đạt được ước nguyện bấy lâu và sắp kết hôn cùng Thích Uyển Nhi. Thích Bạch Thương cũng đã tìm được cho mình một người chồng như ý. Đối phương tuy xuất thân có phần thấp kém hơn, nhưng lại không chê bai tiếng tăm của nàng, đối xử chân thành với nàng, và sẵn lòng kết hôn, cưới nàng về làm vợ.\nThích Bạch Thương cứ nghĩ rằng mình đã có thể thoát khỏi nanh vuốt của ma quỷ rồi.\nTuy nhiên nàng không ngờ rằng, đêm đó khi khăn che mặt màu đỏ được vén lên, người xuất hiện trước mặt nàng lại chính là Tạ Thanh Yến – người đáng lẽ ra phải đang cử hành hôn lễ với Uyển Nhi ở trong kinh thành hoa lệ nhất.\nKẻ điên này vẫn đang mặc y phục tân lang, đai lụa vàng ngọc, trong khi đó tân lang của nàng lại bị trói dưới đất, phía sau, cửa phòng tân hôn mở toang, trong sân đèn đuốc sáng trưng. Huyền Khải Quân áo giáp đen lạnh lẽo, áo giáp uy nghiêm, lưỡi đao sáng như tuyết.\nTạ Thanh Yến đứng một mình trước hàng quân, dùng ánh mắt hung ác và đầy sát khí như muốn xé xác nuốt trọn nàng mà quét qua, rồi lại bật cười.\n“Dám chạy trốn? Tốt lắm.”\nChàng nắm lấy dải lụa thắt ở giá y của nàng, rồi từ từ kéo ra: “Vậy đêm nay, cứ để cho thiên hạ tận mắt thấy, ta sẽ làm tân lang của ngươi trong đêm này như thế nào.”\n\n—\n\n[Lưu ý trước khi đọc]\n(1) Văn án có chứa yếu tố tự sự lừa dối từ góc nhìn đơn nhất, bao gồm các yếu tố cẩu huyết như: án cũ nhiều năm, thù lớn gia tộc, cưỡng ép chiếm đoạt, tình yêu và thù hận, yêu mà không thể nói. Không khuyến khích những người không thích thể loại này mà còn hay vặn vẹo và bắt bẻ đọc.\n(2) Nam chính không yêu bất kỳ ai ngoài nữ chính, bao gồm cả chính bản thân hắn, nhưng hắn lại cực kỳ tồi tệ, vừa tồi tệ lại vừa điên cuồng.\n(3) Bối cảnh giả tưởng, chế độ bối cảnh được pha trộn.\n\n—\n\nTóm tắt một câu: Vợ chồng có mối thù truyền kiếp, vừa hận vừa yêu.\nÝ tưởng chính: Minh oan cho nỗi oan khuất, dẹp loạn chỉnh lại trật tự.\nTags: Cung đấu – Chỉ yêu một người – Trời sinh một cặp – Yêu hận đan xen – Báo thù và hành hạ kẻ cặn bã – Chính kịch.\n【Song phục thù, Minh oan và lật lại bản án; Cưỡng ép chiếm đoạt, Tình yêu rộng lớn như trời, hận thù sâu như biển】",
+	    chapters: 95,
+        tracks: [
+            { title: "Chương 1 - 5", fileName: "c1-5.m4a" },
+            { title: "Chương 6 - 10", fileName: "c6-10.m4a" },
+            { title: "Chương 11 - 15", fileName: "c11-15.m4a" },
+            { title: "Chương 16 - 20", fileName: "c16-20.m4a" },
+            { title: "Chương 21 - 25", fileName: "c21-25.m4a" },
+            { title: "Chương 26 - 30", fileName: "c26-30.m4a" },
+            { title: "Chương 31 - 35", fileName: "c31-35.m4a" },
+            { title: "Chương 36 - 40", fileName: "c36-40.m4a" },
+            { title: "Chương 41 - 45", fileName: "c41-45.m4a" },
+            { title: "Chương 46 - 50", fileName: "c46-50.m4a" },
+            { title: "Chương 51 - 55", fileName: "c51-55.m4a" },
+            { title: "Chương 56 - 60", fileName: "c56-60.m4a" },
+            { title: "Chương 61 - 65", fileName: "c61-65.m4a" },
+            { title: "Chương 66 - 70", fileName: "c66-70.m4a" },
+            { title: "Chương 71 - 75", fileName: "c71-75.m4a" },
+            { title: "Chương 76 - 80", fileName: "c76-80.m4a" },
+            { title: "Chương 81 - 85", fileName: "c81-85.m4a" },
+            { title: "Chương 86 - 88 (Hoàn chính văn)", fileName: "c86-88.m4a" },
+            { title: "Ngoại truyện 1 - 5", fileName: "nt1-5.m4a" },
+            { title: "Ngoại truyện 6 - 7 (Hết)", fileName: "nt6-7.m4a" }
+        ]
+    },
 ];
-
