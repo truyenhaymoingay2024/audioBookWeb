@@ -229,4 +229,17 @@ const LIBRARY = [
             manual("Ngoại truyện 6 - 7 (Hết)", "nt6-7.m4a")
         ]
     },
+    {
+        id: 14,
+        folderName: "ChomThu",
+        title: "Chớm Thu",
+        author: "Bạch Mao Phù Lục",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/ChomThu/cover.jpg",
+        desc: "Người ta nói rằng cụm từ “Lửa chảy tháng bảy” có nghĩa là vào tháng bảy âm lịch, tiết trời dần trở nên mát mẻ, lúc sập tối có thể nhìn thấy sao Hoả rơi xuống từ phía Tây.\nĐến tận khi mùa hạ qua đi, cái lạnh ùa đến.\nCảm giác kích thích khi rơi xuống với tốc độ cực nhanh này, hoàn toàn trùng khớp với nhịp đập rộn rã nơi tim cô vào giây phút đầu tiên chạm mắt với Trần Đạc.\n\n* Cuộc sống bình đạm hằng ngày, chậm nhiệt, không logic\n* Nội dung nhiều hơn thịt\n* Nam chính vẻ ngoài lãnh đạm nội tâm u ám, trên giường dần dần trở nên gợi tình.\n* Vừa gặp đã yêu, yêu cả một đời.\n“Cố thắp sáng những vì sao để chúng ta có thể gặp lại nhau vào mỗi tối.”",
+	    chapters: 54,
+        tracks: [
+            ...batch(1, 50, 5, 'm4a'),
+            manual("Chương 51 - 54 (Hết)", "c51-54.m4a")
+        ]
+    },
 ];
