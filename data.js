@@ -318,7 +318,7 @@ const LIBRARY = [
         author: "Dã Bồ Tát",
         cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/BoiDem/cover.jpg",
         desc: "Hồ Già luôn cảm thấy Điền Tư có một cuộc sống tốt đẹp hơn cô, anh không cần phải treo cổ trên cái cây mục nát là cô đây.\nCho đến một ngày, cô mở ngăn kéo của anh và phát hiện ra rằng ngoài những đồ chơi tình dục mà họ thường dùng, còn có cả Snoth và Sertraline, cái trước là thuốc ngủ, cái sau là thuốc chống trầm cảm được giấu kín.\nSau đó, câu chuyện của họ đã thay đổi.\n🪷 Bông hoa trên cao bị kéo xuống khỏi bệ thờ\nSau đó anh trở thành một chú chó nhỏ dính người 🐶\n🍑 Nữ chính điên cuồng, xinh đẹp Vs 🐴 Nam chính dịu dàng, ẩn nhẫn, dính người\n🌊 Trước khi trưởng thành, những tháng ngày ấy với họ là một cuộc bơi đêm, họ phải nín thở, nỗ lực bơi về phía trước.\n✨ Hai bên cứu rỗi lấy nhau.\n⚡️Nam chính là trai tân, nữ chính không phải, kết cục HE\n💦 Có yếu tố câu dẫn và dirty talk, nữ chính rất thích trêu chọc nam chính\n🌚 Nam chính sau khi thích nữ chính có chút ẩn nhẫn mà cuồng tình",
-	    chapters: 100,
+	    chapters: 178,
         tracks: [
             { "title": "Chương 1 - 5", "fileName": "c1-5.m4a" },
             { "title": "Chương 6 - 10", "fileName": "c6-10.m4a" },
@@ -339,7 +339,24 @@ const LIBRARY = [
             { "title": "Chương 81 - 85", "fileName": "c81-85.m4a" },
             { "title": "Chương 86 - 90", "fileName": "c86-90.m4a" },
             { "title": "Chương 91 - 95", "fileName": "c91-95.m4a" },
-            { "title": "Chương 96 - 100", "fileName": "c96-100.m4a" }
+            { "title": "Chương 96 - 100", "fileName": "c96-100.m4a" },
+			{ "title": "Chương 101 - 105", "fileName": "c101-105.m4a" },
+		    { "title": "Chương 106 - 110", "fileName": "c106-110.m4a" },
+		    { "title": "Chương 111 - 115", "fileName": "c111-115.m4a" },
+		    { "title": "Chương 116 - 120", "fileName": "c116-120.m4a" },
+		    { "title": "Chương 121 - 125", "fileName": "c121-125.m4a" },
+		    { "title": "Chương 126 - 130", "fileName": "c126-130.m4a" },
+		    { "title": "Chương 131 - 135", "fileName": "c131-135.m4a" },
+		    { "title": "Chương 136 - 140", "fileName": "c136-140.m4a" },
+		    { "title": "Chương 141 - 145", "fileName": "c141-145.m4a" },
+		    { "title": "Chương 146 - 150", "fileName": "c146-150.m4a" },
+		    { "title": "Chương 151 - 155", "fileName": "c151-155.m4a" },
+		    { "title": "Chương 156 - 160", "fileName": "c156-160.m4a" },
+		    { "title": "Chương 161 - 165", "fileName": "c161-165.m4a" },
+		    { "title": "Chương 166 - 170", "fileName": "c166-170.m4a" },
+		    { "title": "Chương 171 - 175", "fileName": "c171-175.m4a" },
+		    { "title": "Chương 176 - 177 (Hoàn chính văn)", "fileName": "c176-177.m4a" },
+		    { "title": "Ngoại truyện", "fileName": "nt.m4a" }
         ]
     },
     {
@@ -374,3 +391,4 @@ const LIBRARY = [
         ]
     },
 ];
+
