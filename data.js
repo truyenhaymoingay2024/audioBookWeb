@@ -225,10 +225,8 @@ const LIBRARY = [
         tracks: [
             ...batch(1, 85, 5, 'm4a'),
             manual("Chương 86 - 88 (Hoàn chính văn)", "c86-88.m4a"),
-            tr(1, 5, null, 'm4a', 'Ngoại truyện'),
+            manual("Ngoại truyện 1 - 5", "nt6-7.m4a"),
             manual("Ngoại truyện 6 - 7 (Hết)", "nt6-7.m4a")
         ]
     },
 ];
-
-
