@@ -42,6 +42,30 @@ const batch = (start, end, step, ext = 'mp3') => {
 // Hàm custom cho trường hợp đặc biệt (Manual)
 const manual = (title, fileName) => ({ title, fileName });
 
+// Hàm tạo chương đơn (Ví dụ: Chương 1 -> c1.mp3)
+const single = (c, ext = 'mp3', prefix = 'Chương') => {
+    // Xử lý prefix file: nếu là Ngoại truyện -> nt1.mp3, còn lại là c1.mp3
+    let filePrefix = 'c';
+    if (prefix.toLowerCase().includes('ngoại') || prefix.toLowerCase().includes('phiên')) {
+        filePrefix = 'nt';
+    }
+
+    return {
+        title: `${prefix} ${c}`,
+        fileName: `${filePrefix}${c}.${ext}`
+    };
+};
+
+// Hàm tạo dải chương đơn tự động (Ví dụ: c1.mp3, c2.mp3, ... c10.mp3)
+// Dùng khi bạn có folder chứa 100 file mp3 riêng biệt
+const batchSingle = (start, end, ext = 'mp3') => {
+    const tracks = [];
+    for (let i = start; i <= end; i++) {
+        tracks.push(single(i, ext));
+    }
+    return tracks;
+};
+
 // Mock Data
 const LIBRARY = [
     {
@@ -112,8 +136,8 @@ const LIBRARY = [
 	    chapters: 158,
         tracks: [
             ...batch(1, 140, 10), 
-            tr(141, 153),
-            manual("Ngoại truyện 1 - 5 (Hết)", "nt1-5.mp3")
+            tr(141, 153, null, "Hoàn chính văn"),
+            manual("Ngoại truyện (Hết)", "nt1-5.mp3")
         ]
     },
     {
@@ -184,7 +208,7 @@ const LIBRARY = [
         tracks: [
             ...batch(1, 90, 5),
             manual("Chương 91 - 96 (Hoàn chính văn)", "c91-96.mp3"),
-            manual("Ngoại truyện 1 - 6 (Hết)", "nt1-6.mp3")
+            manual("Ngoại truyện (Hết)", "nt1-6.mp3")
         ]
     },
     {
@@ -211,7 +235,7 @@ const LIBRARY = [
         tracks: [
             ...batch(1, 175, 5, 'm4a'),
             manual("Chương 176 - 177 (Hoàn chính văn)", "c176-177.m4a"),
-            manual("Ngoại truyện", "nt.m4a")
+            manual("Ngoại truyện (Hết)", "nt.m4a")
         ]
     },
     {
@@ -252,7 +276,33 @@ const LIBRARY = [
 	    chapters: 35,
         tracks: [
             ...batch(1, 30, 5, 'm4a'),
-            manual("Chương 31 - 35 (Hoàn chính văn)", "c31-35.m4a")
+            manual("Chương 31 - 35 (Hết)", "c31-35.m4a")
+        ]
+    },
+    {
+        id: 16,
+        folderName: "CoGaiBenToi10NamKetHonRoi",
+        title: "Cô Gái Bên Tôi 10 Năm Kết Hôn Rồi",
+        author: "Lý Hải Ba",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/CoGaiBenToi10NamKetHonRoi/cover.jpg",
+        desc: "Chiều hôm qua, Lăng Nhất Nghiêu gửi cho tôi một tấm hình, là hình mặc váy cưới, cô ấy hỏi tôi đẹp hay không, tôi nói cũng tạm.\nCô ấy nói: 'Ngày 5 sẽ tổ chức hôn lễ, giống y như trước đây chúng ta từng tưởng tượng, có cổng hoa, có thảm đỏ, có sare trắng vest đen, chỉ là không có cậu.'\nTôi nói: 'Có cần mình đến dự không?'\nRất lâu sau đó cô ấy mới nói: 'Không cần đâu.'\nChiếc vòng kim cô này, cả đời tôi cũng không thể tháo xuống được.\n\n_________\n\nGIỚI THIỆU:\nTên nguyên bản là 与我长跑10年的女朋友就要嫁人了 được một người kể trên Douban từ tháng 1 năm 2013.\nCâu chuyện tình yêu cảm động khắc cốt ghi tâm và thực tế đến đau lòng này nhận được rất nhiều sự quan tâm của độc giả và thính giả Trung Quốc.\nTheo một số nguồn tin, trừ tên hai nhân vật chính, tất cả nhân vật và địa điểm trong truyện đều có thật. Về việc câu chuyện này có thật hay không, phóng viên và người hâm mộ đã nhiều lần liên hệ tác giả để hỏi về tính chân thực và cái kết thực sự của câu chuyện, nhưng không nhận được câu trả lời.",
+	    chapters: 13,
+        tracks: [
+            ...batch(1, 10, 5, 'm4a'),
+            manual("Chương 11 - 13 (Hết)", "c11-13.m4a")
+        ]
+    },
+    {
+        id: 17,
+        folderName: "MuoiLamNamChoDoiChimDiTru",
+        title: "Mười Lăm Năm Chờ Đợi Chim Di Trú",
+        author: "Doanh Phong",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/MuoiLamNamChoDoiChimDiTru/cover.jpg",
+        desc: "15 năm chờ đợi chim di trú - Yêu đơn phương có vị gì?\n“Bùi Thượng Hiên lặng lẽ hỏi Lê Ly: ‘Dù chúng ta rất thân thiết, nhưng tớ lại chẳng thể nào nhìn ra tâm tư của cậu.’\nLê Ly nở nụ cười đã quen thuộc với anh suốt 15 năm qua, nhẹ nhàng trả lời: ‘Bởi vì, cậu không yêu tớ.’”\nNăm 13 tuổi, vào ngày đầu tiên bước chân vào trường trung học, Lê Ly đã chú ý ngay đến cậu thiếu niên phóng khoáng - Bùi Thượng Hiên. Tựa như ánh dương rực rỡ, Bùi Thượng Hiên đã đến sưởi ấm cho cuộc sống tẻ nhạt của cô mà chẳng một lời báo trước.\nVào ngày sinh nhật tròn 14 tuổi, Lê Ly nhận được món quà ấm áp nhất trong cuộc đời mình – lại cũng chính là từ Bùi Thượng Hiên. Kể từ ngày hôm ấy, cô và cậu thiếu niên đó đã kết nên mối nhân duyên khắc cốt ghi tâm kéo suốt 15 năm dài đằng đẵng.\n15 năm… mỗi một năm mới đến, ước nguyện của Lê Ly luôn là: Năm nay sẽ không còn thích Bùi Thượng Hiên nữa. Nhưng ước nguyện đó chưa khi nào trở thành hiện thực.\nThì ra một ánh mắt cũng có thể khiến cô vui vẻ đến thế.\nThì ra một cái chạm tay có thể khiến trái tim xao xuyến đến vậy.\nThì ra chỉ cần cậu ấy mỉm cười thôi, cô đã chẳng cầu gì hơn.\nTình yêu thê lương mà đẹp đẽ ấy, cô dành trọn 15 năm để viết nên, đợi chờ anh tựa như cánh chim di trú trở về...\n15 năm chờ đợi, cuộc đời con người liệu có được mấy lần 15 năm?\nNhưng Lê Ly lại vốn không bận tâm đến việc chờ đợi, chỉ cần người cuối cùng cô đợi được chính là Bùi Thượng Hiên.",
+	    chapters: 13,
+        tracks: [
+            ...batchSingle(1, 15, 'm4a'),
+            manual("Chương 16 (Hết)", "c16.m4a")
         ]
     },
 ];
