@@ -305,6 +305,17 @@ const LIBRARY = [
             manual("Chương 16 (Hết)", "c16.m4a")
         ]
     },
+    {
+        id: 18,
+        folderName: "QuanQuytKhongRoi",
+        title: "Quấn Quýt Không Rời",
+        author: "Tô Mã Lệ",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/QuanQuytKhongRoi/cover.jpg",
+        desc: 'Một nữ sinh cấp ba nhất thời lơ là cảnh giác bị bắt cóc lên một chiếc xe màu đen, từ đó bị kéo vào vực sâu vô tận.\nBên dưới vực sâu, có một bàn tay vươn ra hướng về phía cô.\nNgười nọ hỏi cô: "Nếu ngoan ngoãn nghe lời thì tôi sẽ cứu em ra, chịu không?"\nCô gật đầu.\nVà cô thật sự đã thoát khỏi vực sâu đó.\nNhưng người nọ lại như ác ma ở trong sinh mạng của cô, gắn bó như hình với bóng.\nToàn văn 1V1. Cao H.\n-"Thịnh Hạ, tôi chưa theo đuổi con gái bao giờ."\n-"Tôi cũng không biết dỗ dành con gái vui vẻ."\n-"Tôi biết, là tôi nuốt lời."\n-"Xin lỗi, dường như tôi...một khi chạm vào em... sẽ lập tức mất kiểm soát."',
+	    chapters: 99,
+        tracks: [
+            ...batch(1, 95, 5, 'm4a'),
+            manual("Chương 96 - 99 (Hết)", "c96-99.m4a")
+        ]
+    },
 ];
-
-
