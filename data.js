@@ -248,7 +248,7 @@ const LIBRARY = [
         title: "Dư Sinh",
         author: "Gia Bất Hối",
         cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/DuSinh/cover.jpg",
-        desc: "",
+        desc: "Cố Dư và Cố Thần Sinh gặp nhau trong một đêm Paris tuyết bay đầy trời. Tại nơi đất khách quê người ấy, hai con người là lần đầu tiên gặp nhau nhưng đã lấy đi của nhau biết bao thứ, trong đó có lẽ nhiều hơn là tình cảm. Một chàng trai trưởng thành, thành đạt trong cuộc sống và một cô gái tuổi thanh xuân 18 ngọt ngào. Khi ấy, hai người họ có lẽ đã có thể tiến xa hơn nhưng bất ngờ lại dừng lại ở đó.\n\nCố Dư là một cô gái xinh đẹp và thông minh. Cô biết mình nên đối diện với thực tại ra sao. Bởi vậy mà khi ấy, cô đã từ chối anh. Cữ ngỡ như chuyện tình của họ chỉ là câu chuyện tình một đêm nhưng duyên phận đã kéo họ lại với nhaumột lần nữa mặc dù đó là nghiệt duyên. Rào cản thân phậncó ngăn cách họ thì  tình cảm của họ thì vẫn luôn đong đầy. Mặc dù là anh em họ nhưng đó chỉ là thân phận trên danh nghĩa. Họ vẫn lấy lý do không cùng huyết thống để bao lấy tình yêu của cả hai. Thế nhưng, liệu đến cuối cùng, Dư – Sinh có thể hạnh phúc bên nhau?",
 	    chapters: 35,
         tracks: [
             ...batch(1, 30, 5, 'm4a'),
@@ -256,3 +256,4 @@ const LIBRARY = [
         ]
     },
 ];
+
