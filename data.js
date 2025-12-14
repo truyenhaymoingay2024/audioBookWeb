@@ -242,4 +242,17 @@ const LIBRARY = [
             manual("Chương 51 - 54 (Hết)", "c51-54.m4a")
         ]
     },
+    {
+        id: 15,
+        folderName: "DuSinh",
+        title: "Dư Sinh",
+        author: "Gia Bất Hối",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/DuSinh/cover.jpg",
+        desc: "",
+	    chapters: 35,
+        tracks: [
+            ...batch(1, 30, 5, 'm4a'),
+            manual("Chương 31 - 35 (Hoàn chính văn)", "c31-35.m4a")
+        ]
+    },
 ];
