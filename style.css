@@ -741,3 +741,184 @@ header nav > div:last-child {
     font-size: 1.875rem !important; /* text-3xl có thể nếu muốn */
   }
 }
+
+/* ==================== THANH TÌM KIẾM RESPONSIVE FIXES ==================== */
+/* Header navigation - tối ưu cho mobile */
+.header-nav {
+  position: relative;
+  overflow: visible !important; /* Quan trọng: để dropdown không bị cắt */
+}
+
+/* Phần bên phải của header */
+.header-right-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+}
+
+/* Container thanh tìm kiếm */
+.search-container {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+/* Thanh tìm kiếm - tối ưu cho mobile */
+#search-input {
+  max-width: 100%;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Trên mobile nhỏ (< 640px) */
+@media (max-width: 640px) {
+  .header-right-section {
+    gap: 6px;
+  }
+  
+  /* Thanh tìm kiếm khi focus trên mobile */
+  #search-input:focus {
+    width: 180px !important; /* Tăng từ 140px */
+    min-width: 140px !important;
+    max-width: calc(100vw - 160px) !important; /* Giới hạn tối đa */
+    position: relative;
+    z-index: 10;
+  }
+  
+  /* Ẩn nút "Tiếp tục nghe" khi thanh tìm kiếm đang focus */
+  #search-input:focus ~ .resume-btn.mobile-hidden,
+  #search-input:focus + .search-container + .resume-btn.mobile-hidden {
+    display: none !important;
+  }
+  
+  /* Đảm bảo header không bị tràn khi thanh tìm kiếm focus */
+  .header-nav {
+    overflow: visible !important;
+  }
+  
+  /* Tăng khoảng cách giữa các phần tử để tránh chồng lấn */
+  .header-right-section {
+    min-width: 0;
+    flex: 1;
+    justify-content: flex-end;
+  }
+  
+  /* Giảm padding của header trên mobile rất nhỏ */
+  @media (max-width: 400px) {
+    .header-nav {
+      padding-left: 0.5rem !important;
+      padding-right: 0.5rem !important;
+    }
+    
+    #search-input:focus {
+      width: 150px !important;
+      max-width: calc(100vw - 140px) !important;
+    }
+  }
+  
+  /* Trên mobile cực nhỏ (< 360px) */
+  @media (max-width: 360px) {
+    #search-input:focus {
+      width: 130px !important;
+      max-width: calc(100vw - 120px) !important;
+    }
+    
+    /* Ẩn avatar khi thanh tìm kiếm focus để tiết kiệm không gian */
+    #search-input:focus ~ .user-avatar,
+    #search-input:focus + .search-container + .user-avatar {
+      opacity: 0;
+      width: 0;
+      margin-left: 0;
+      transition: all 0.3s ease;
+    }
+  }
+}
+
+/* Trên tablet (641px - 768px) */
+@media (min-width: 641px) and (max-width: 768px) {
+  #search-input:focus {
+    width: 200px !important;
+    min-width: 180px !important;
+  }
+}
+
+/* Desktop (> 1024px) - thanh tìm kiếm luôn mở rộng */
+@media (min-width: 1024px) {
+  #search-input {
+    width: 256px !important; /* md:w-64 = 16rem = 256px */
+  }
+  
+  #search-input:focus {
+    width: 256px !important;
+  }
+}
+
+/* Animation cho thanh tìm kiếm khi focus */
+#search-input:focus {
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3), 
+              0 4px 20px rgba(0, 0, 0, 0.25);
+  transform: translateY(-1px);
+}
+
+/* Placeholder style */
+#search-input::placeholder {
+  transition: opacity 0.2s ease;
+}
+
+#search-input:focus::placeholder {
+  opacity: 0.7;
+}
+
+/* Search icon khi focus */
+.search-container:has(#search-input:focus) .ph-magnifying-glass {
+  color: #3b82f6 !important;
+  transform: scale(1.1);
+  transition: all 0.3s ease;
+}
+
+/* Đảm bảo dropdown không bị ảnh hưởng bởi thanh tìm kiếm */
+.sort-popup,
+.speed-popup {
+  z-index: 100 !important;
+}
+
+@media (max-width: 768px) {
+  /* 1. Logic thông minh: Khi thanh tìm kiếm (input) được focus... 
+     ...thì tìm lên thẻ cha (nav) và ẩn các con (brand-text, resume-btn) đi */
+  
+  /* Ẩn tên thương hiệu và nút resume để nhường chỗ */
+  nav:has(#search-input:focus) .brand-text,
+  nav:has(#search-input:focus) .resume-btn,
+  nav:has(#search-input:focus) #resume-last-audio-btn {
+    display: none !important;
+    opacity: 0;
+    pointer-events: none;
+    width: 0;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* 2. Trên màn hình siêu nhỏ (iPhone SE/5), ẩn luôn cả Logo Icon */
+  @media (max-width: 380px) {
+    nav:has(#search-input:focus) .brand-icon {
+      display: none !important;
+    }
+    /* Căn chỉnh lại padding của nav để search bar đẹp hơn */
+    nav:has(#search-input:focus) {
+      padding-left: 12px !important; 
+    }
+  }
+
+  /* 3. Force thanh Search wrapper chiếm hết không gian còn lại (Flex grow) */
+  nav:has(#search-input:focus) > div:last-child,
+  nav:has(#search-input:focus) .relative.group {
+    flex: 1;
+    width: 100%;
+  }
+
+  /* 4. Mở rộng Input tối đa */
+  #search-input:focus {
+    width: 100% !important;
+    min-width: unset !important; /* Bỏ giới hạn min-width cũ */
+    max-width: unset !important;
+  }
+}
