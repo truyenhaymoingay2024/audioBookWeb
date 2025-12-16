@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Tư Ngữ Audio</title>
-    <meta name="description" content="Thư viện audiobook chất lượng cao với giao diện Liquid Glass hiện đại, mượt mà">
+    <meta name="description" content="Thư viện audiobook của Tư Ngữ Audio">
     <meta name="theme-color" content="#000000">
     <link rel="icon" type="image/png" href="./favicon/favicon.ico">
 
@@ -244,6 +244,24 @@
         </div>
     </div>
 
+    <!-- === MINI PLAYER (Spotify-style) === -->
+    <div id="mini-player" class="fixed bottom-6 right-6 z-50 translate-y-[200%] transition-all duration-500 ease-out mini-player">
+        <div class="glass-panel !bg-[var(--player-bg)] !backdrop-blur-xl rounded-full p-2 flex items-center gap-3 border border-white/10 shadow-2xl mini-player-content">
+            <div class="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 border border-white/20 shadow-lg">
+                <img id="mini-cover" src="https://via.placeholder.com/150" 
+                     class="w-full h-full object-cover"
+                     alt="Mini album cover">
+            </div>
+            <div class="min-w-0 flex-1 pr-2">
+                <h4 id="mini-title" class="font-bold text-sm text-white truncate">Chọn chương để bắt đầu</h4>
+                <p class="text-xs text-gray-400 truncate">Tư Ngữ Audio</p>
+            </div>
+            <button onclick="app.toggleMiniPlay()" class="w-10 h-10 rounded-full flex items-center justify-center bg-blue-500 text-white shadow-lg hover:scale-105 transition-all active:scale-95" aria-label="Phát hoặc tạm dừng (mini)">
+                <i id="mini-play-icon" class="ph-fill ph-play text-lg"></i>
+            </button>
+        </div>
+    </div>
+
     <audio id="audio-core" preload="metadata" aria-label="Audio player"></audio>
 
     <script src="data.js"></script>
@@ -278,13 +296,11 @@
                         `;
                     }
                     
-                    // Cập nhật tooltip cho nút resume trong detail view
                     const resumeChapter = document.getElementById('resume-chapter');
                     const resumeTime = document.getElementById('resume-time');
                     if (resumeChapter) resumeChapter.textContent = data.trackTitle;
                     if (resumeTime) resumeTime.textContent = formatTime(data.currentTime);
                     
-                    // Hiển thị nút tiếp tục
                     const btn = document.getElementById('resume-last-audio-btn');
                     if (btn) btn.classList.remove('hidden');
                 }
@@ -314,11 +330,8 @@
             return h > 0 ? `${h}:${m < 10 ? '0' + m : m}:${s < 10 ? '0' + s : s}` : `${m}:${s < 10 ? '0' + s : s}`;
         }
         
-        // Cập nhật tooltip khi trang được tải
         document.addEventListener('DOMContentLoaded', function() {
             setTimeout(updateResumeTooltip, 500);
-            
-            // Cập nhật tooltip mỗi phút để hiển thị thời gian chính xác
             setInterval(updateResumeTooltip, 60000);
         });
     </script>
