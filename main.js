@@ -29,11 +29,7 @@ const app = (() => {
         search: document.getElementById('search-input'),
         badge: document.getElementById('last-played-info'),
         sortPopup: document.getElementById('sort-popup'),
-        currentSortText: document.getElementById('current-sort-text'),
-        miniPlayer: document.getElementById('mini-player'), // Thêm mini player
-        miniPlayIcon: document.getElementById('mini-play-icon'), // Thêm mini play icon
-        miniTitle: document.getElementById('mini-title'), // Thêm mini title
-        miniCover: document.getElementById('mini-cover') // Thêm mini cover
+        currentSortText: document.getElementById('current-sort-text')
     };
 
     let state = {
@@ -46,10 +42,8 @@ const app = (() => {
         speed: 1.0,
         sortMenuOpen: false,
         speedMenuOpen: false,
-        durationCache: {},
-        lastPlayedData: null,
-        isMiniMode: false, // Thêm trạng thái mini mode
-        lastScrollY: 0 // Theo dõi vị trí scroll
+        durationCache: {}, // Cache for durations
+        lastPlayedData: null // Thêm state lưu thông tin audio đã nghe
     };
 
     // === METADATA QUEUE SYSTEM (FIX 0:00 ISSUE) ===
@@ -58,6 +52,7 @@ const app = (() => {
         isProcessing: false,
 
         add(track, elementId) {
+            // Check cache first
             if (state.durationCache[track.src]) {
                 const el = document.getElementById(elementId);
                 if (el) el.innerText = formatTime(state.durationCache[track.src]);
@@ -83,13 +78,14 @@ const app = (() => {
 
             try {
                 const duration = await getTrackDuration(item.track.src);
-                state.durationCache[item.track.src] = duration;
+                state.durationCache[item.track.src] = duration; // Cache it
                 const el = document.getElementById(item.elementId);
                 if (el) el.innerText = formatTime(duration);
             } catch (e) {
                 console.log("Queue skip:", e);
             } finally {
                 this.isProcessing = false;
+                // Delay small amount to be gentle on network
                 setTimeout(() => this.process(), 50);
             }
         }
@@ -99,6 +95,7 @@ const app = (() => {
         return new Promise((resolve) => {
             const audio = new Audio();
             audio.preload = 'metadata';
+            // Timeout safety: if metadata loading hangs, resolve 0
             const timeout = setTimeout(() => {
                 resolve(0);
             }, 5000);
@@ -129,14 +126,17 @@ const app = (() => {
         document.getElementById('user-avatar').src = CONFIG.avatar;
         handleSort('newest');
 
+        // Restore state
         const savedSpeed = sessionStorage.getItem('audioSpeed');
         if (savedSpeed) {
             state.speed = parseFloat(savedSpeed);
             updateSpeedUI(state.speed);
         }
 
+        // Load last played audio từ localStorage
         loadLastPlayedAudio();
 
+        // Events
         els.audio.addEventListener('timeupdate', onTimeUpdate);
         els.audio.addEventListener('ended', onTrackEnd);
         els.audio.addEventListener('loadedmetadata', onMetadataLoaded);
@@ -146,14 +146,13 @@ const app = (() => {
             if (els.audio.playbackRate !== state.speed) els.audio.playbackRate = state.speed;
         });
 
+        // Lưu thời gian phát hiện tại mỗi 5 giây
         els.audio.addEventListener('timeupdate', debounce(saveCurrentAudioProgress, 5000));
 
         els.player.slider.addEventListener('input', onSeekInput);
         els.player.slider.addEventListener('change', onSeekChange);
 
-        // Thêm sự kiện scroll để kích hoạt mini mode
-        window.addEventListener('scroll', handleScroll);
-
+        // Click outside
         document.addEventListener('click', (e) => {
             if (!e.target.closest('.speed-menu-container')) {
                 els.player.speedPopup.classList.remove('active');
@@ -195,47 +194,6 @@ const app = (() => {
         });
     }
 
-    // === XỬ LÝ SCROLL CHO MINI MODE ===
-    function handleScroll() {
-        const scrollY = window.scrollY;
-        
-        // Chỉ kích hoạt mini mode nếu player đang hiển thị và đang phát nhạc
-        if (!els.player.bar.classList.contains('translate-y-[150%]') && state.isPlaying) {
-            if (scrollY > 200 && !state.isMiniMode) {
-                activateMiniMode();
-            } else if (scrollY <= 100 && state.isMiniMode) {
-                deactivateMiniMode();
-            }
-        }
-        
-        // Ẩn mini player khi scroll quá xa
-        if (scrollY > 500 && state.isMiniMode) {
-            els.miniPlayer.classList.add('active');
-        } else if (scrollY <= 300 && state.isMiniMode) {
-            els.miniPlayer.classList.remove('active');
-        }
-        
-        state.lastScrollY = scrollY;
-    }
-
-    function activateMiniMode() {
-        state.isMiniMode = true;
-        els.player.bar.classList.add('mini-mode');
-        els.miniPlayer.classList.add('active');
-        
-        // Cập nhật thông tin cho mini player
-        if (state.currentFolder && state.playlist[state.currentIndex]) {
-            els.miniTitle.textContent = state.playlist[state.currentIndex].title;
-            els.miniCover.src = state.currentFolder.cover;
-        }
-    }
-
-    function deactivateMiniMode() {
-        state.isMiniMode = false;
-        els.player.bar.classList.remove('mini-mode');
-        els.miniPlayer.classList.remove('active');
-    }
-
     // === HÀM LƯU VÀ TẢI AUDIO ĐÃ NGHE ===
     function saveCurrentAudioProgress() {
         if (!state.currentFolder || !els.audio.src || isNaN(els.audio.currentTime)) return;
@@ -248,13 +206,16 @@ const app = (() => {
             folderTitle: state.currentFolder.title,
             trackTitle: state.playlist[state.currentIndex]?.title || '',
             author: state.currentFolder.author,
-            src: els.audio.src
+            src: els.audio.src // Lưu cả đường dẫn file để kiểm tra
         };
         
         localStorage.setItem('lastPlayedAudio', JSON.stringify(audioData));
         state.lastPlayedData = audioData;
         
+        // Cập nhật badge nếu đang ở detail view
         updateLastPlayedBadge();
+        
+        // Cập nhật nút tiếp tục trên header
         updateResumeButton();
     }
 
@@ -308,6 +269,7 @@ const app = (() => {
     function resumeLastAudio() {
         if (!state.lastPlayedData) return;
         
+        // Tìm folder tương ứng
         const folder = LIBRARY.find(f => f.id === state.lastPlayedData.folderId);
         if (!folder) {
             console.log('Không tìm thấy folder đã lưu');
@@ -315,10 +277,13 @@ const app = (() => {
             return;
         }
         
+        // Mở folder
         openFolder(folder.id);
         
+        // Đợi một chút để playlist được tạo, sau đó phát tiếp từ vị trí đã lưu
         setTimeout(() => {
             if (state.lastPlayedData.trackIndex < state.playlist.length) {
+                // Kiểm tra xem có cùng file không (tránh trường hợp file bị thay đổi)
                 const savedSrc = state.lastPlayedData.src;
                 const currentSrc = state.playlist[state.lastPlayedData.trackIndex]?.src;
                 
@@ -326,12 +291,14 @@ const app = (() => {
                     console.log('File đã thay đổi, phát từ đầu');
                     playTrack(state.lastPlayedData.trackIndex);
                 } else {
+                    // Phát từ vị trí đã lưu
                     playTrackFromTime(state.lastPlayedData.trackIndex, state.lastPlayedData.currentTime);
                 }
             }
         }, 300);
     }
 
+    // Hàm mới: phát track từ thời điểm cụ thể
     function playTrackFromTime(index, startTime) {
         state.currentIndex = index;
         const track = state.playlist[index];
@@ -340,16 +307,13 @@ const app = (() => {
         els.audio.playbackRate = state.speed;
         els.audio.load();
 
-        // Cập nhật cả player chính và mini player
         els.player.title.innerText = track.title;
         els.player.author.innerText = state.currentFolder.title;
         els.player.cover.src = state.currentFolder.cover;
-        
-        if (els.miniTitle) els.miniTitle.textContent = track.title;
-        if (els.miniCover) els.miniCover.src = state.currentFolder.cover;
 
         els.player.bar.classList.remove('translate-y-[150%]');
 
+        // Media Session
         if ('mediaSession' in navigator) {
             navigator.mediaSession.metadata = new MediaMetadata({
                 title: track.title,
@@ -372,6 +336,7 @@ const app = (() => {
             });
         }
 
+        // Chờ metadata load xong rồi set currentTime
         const onLoaded = () => {
             if (startTime > 0) {
                 els.audio.currentTime = startTime;
@@ -381,15 +346,18 @@ const app = (() => {
         };
 
         if (els.audio.readyState >= 1) {
+            // Metadata đã được load
             if (startTime > 0) {
                 els.audio.currentTime = startTime;
             }
             play();
         } else {
+            // Chờ metadata load
             els.audio.addEventListener('loadedmetadata', onLoaded);
         }
 
         highlightCurrentTrack(index);
+        // Lưu ngay khi bắt đầu phát
         saveCurrentAudioProgress();
     }
 
@@ -453,12 +421,14 @@ const app = (() => {
         els.detail.desc.innerText = folder.desc;
         els.detail.cover.src = folder.cover;
 
+        // Clear old queue before rendering new
         metadataQueue.clear();
 
         renderTrackList();
         els.views.library.classList.add('hidden');
         els.views.detail.classList.remove('hidden');
 
+        // Hiển thị nút tiếp tục nếu có dữ liệu audio đã nghe cho folder này
         const resumeBtn = document.getElementById('resume-btn');
         if (state.lastPlayedData && state.lastPlayedData.folderId === folder.id) {
             resumeBtn.classList.remove('hidden');
@@ -494,6 +464,7 @@ const app = (() => {
                     </div>
                 `).join('');
 
+        // Add to queue for lazy loading
         state.playlist.forEach((track, idx) => {
             metadataQueue.add(track, `duration-text-${idx}`);
         });
@@ -529,7 +500,7 @@ const app = (() => {
     }
 
     function playTrack(index) {
-        playTrackFromTime(index, 0);
+        playTrackFromTime(index, 0); // Sử dụng hàm mới với startTime = 0
     }
 
     function play() {
@@ -539,6 +510,7 @@ const app = (() => {
 
     function pause() {
         els.audio.pause();
+        // Lưu khi tạm dừng
         saveCurrentAudioProgress();
     }
 
@@ -546,11 +518,6 @@ const app = (() => {
         if (els.audio.paused) {
             (!els.audio.src && state.playlist.length > 0) ? playTrack(0): play();
         } else pause();
-    }
-
-    // Hàm toggle cho mini player
-    function toggleMiniPlay() {
-        togglePlay();
     }
 
     function playAll() {
@@ -569,11 +536,9 @@ const app = (() => {
         state.isPlaying = isPlaying;
         if (isPlaying) {
             els.player.playIcon.classList.replace('ph-play', 'ph-pause');
-            if (els.miniPlayIcon) els.miniPlayIcon.classList.replace('ph-play', 'ph-pause');
             els.player.cover.style.animationPlayState = 'running';
         } else {
             els.player.playIcon.classList.replace('ph-pause', 'ph-play');
-            if (els.miniPlayIcon) els.miniPlayIcon.classList.replace('ph-pause', 'ph-play');
             els.player.cover.style.animationPlayState = 'paused';
         }
         highlightCurrentTrack(state.currentIndex);
@@ -581,6 +546,7 @@ const app = (() => {
 
     function skip(seconds) {
         els.audio.currentTime += seconds;
+        // Lưu sau khi tua
         setTimeout(saveCurrentAudioProgress, 100);
     }
 
@@ -628,6 +594,7 @@ const app = (() => {
     function onSeekChange() {
         state.isDragging = false;
         els.audio.currentTime = (els.player.slider.value / 100) * els.audio.duration;
+        // Lưu sau khi seek
         saveCurrentAudioProgress();
     }
 
@@ -705,6 +672,7 @@ const app = (() => {
     function resumeLastPosition() {
         if (state.lastPlayedData && state.currentFolder && 
             state.lastPlayedData.folderId === state.currentFolder.id) {
+            // Sử dụng hàm playTrackFromTime để tiếp tục từ đúng vị trí
             playTrackFromTime(state.lastPlayedData.trackIndex, state.lastPlayedData.currentTime);
         }
     }
@@ -722,9 +690,8 @@ const app = (() => {
         init,
         openFolder,
         playTrack,
-        playTrackFromTime,
+        playTrackFromTime, // Xuất thêm hàm này để có thể gọi từ nút resume
         togglePlay,
-        toggleMiniPlay, // Thêm hàm cho mini player
         playAll,
         skip,
         nextTrack,

@@ -882,6 +882,10 @@ header nav > div:last-child {
 }
 
 @media (max-width: 768px) {
+  /* 1. Logic thông minh: Khi thanh tìm kiếm (input) được focus... 
+     ...thì tìm lên thẻ cha (nav) và ẩn các con (brand-text, resume-btn) đi */
+  
+  /* Ẩn tên thương hiệu và nút resume để nhường chỗ */
   nav:has(#search-input:focus) .brand-text,
   nav:has(#search-input:focus) .resume-btn,
   nav:has(#search-input:focus) #resume-last-audio-btn {
@@ -893,188 +897,28 @@ header nav > div:last-child {
     padding: 0;
   }
 
+  /* 2. Trên màn hình siêu nhỏ (iPhone SE/5), ẩn luôn cả Logo Icon */
   @media (max-width: 380px) {
     nav:has(#search-input:focus) .brand-icon {
       display: none !important;
     }
+    /* Căn chỉnh lại padding của nav để search bar đẹp hơn */
     nav:has(#search-input:focus) {
       padding-left: 12px !important; 
     }
   }
 
+  /* 3. Force thanh Search wrapper chiếm hết không gian còn lại (Flex grow) */
   nav:has(#search-input:focus) > div:last-child,
   nav:has(#search-input:focus) .relative.group {
     flex: 1;
     width: 100%;
   }
 
+  /* 4. Mở rộng Input tối đa */
   #search-input:focus {
     width: 100% !important;
-    min-width: unset !important;
+    min-width: unset !important; /* Bỏ giới hạn min-width cũ */
     max-width: unset !important;
   }
-}
-
-/* ==================== MINI PLAYER STYLES (Spotify-style) ==================== */
-#mini-player {
-  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-  z-index: 60;
-  opacity: 0;
-  pointer-events: none;
-}
-
-#mini-player.active {
-  transform: translateY(0) !important;
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.mini-player-content {
-  padding: 8px 16px 8px 8px;
-  border-radius: 50px;
-  backdrop-filter: blur(20px);
-  background: rgba(20, 20, 20, 0.95) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  transition: all 0.3s ease;
-  max-width: 300px;
-}
-
-.mini-player-content:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
-  background: rgba(30, 30, 30, 0.95) !important;
-}
-
-#mini-player .w-12 {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  overflow: hidden;
-  border: 2px solid rgba(255, 255, 255, 0.1);
-}
-
-#mini-player #mini-title {
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 1.2;
-}
-
-#mini-player .text-xs {
-  font-size: 11px;
-  opacity: 0.7;
-}
-
-#mini-player button {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  flex-shrink: 0;
-}
-
-#mini-player button:hover {
-  transform: scale(1.1);
-  box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
-}
-
-#mini-player button:active {
-  transform: scale(0.95);
-}
-
-/* Mini mode cho player bar chính */
-#player-bar.mini-mode {
-  transform: translateY(200%) !important;
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* Responsive cho mini player */
-@media (max-width: 640px) {
-  #mini-player {
-    right: 16px;
-    bottom: 16px;
-  }
-  
-  .mini-player-content {
-    padding: 6px 14px 6px 6px;
-    max-width: 280px;
-  }
-  
-  #mini-player .w-12 {
-    width: 40px;
-    height: 40px;
-  }
-  
-  #mini-player #mini-title {
-    font-size: 13px;
-  }
-  
-  #mini-player .text-xs {
-    font-size: 10px;
-  }
-  
-  #mini-player button {
-    width: 40px;
-    height: 40px;
-  }
-}
-
-@media (max-width: 480px) {
-  #mini-player {
-    right: 12px;
-    bottom: 12px;
-  }
-  
-  .mini-player-content {
-    padding: 4px 12px 4px 4px;
-    max-width: 260px;
-  }
-  
-  #mini-player .w-12 {
-    width: 36px;
-    height: 36px;
-  }
-  
-  #mini-player button {
-    width: 36px;
-    height: 36px;
-  }
-}
-
-/* Animation cho mini player khi xuất hiện */
-@keyframes miniPlayerSlideUp {
-  from {
-    transform: translateY(200%);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-#mini-player.active {
-  animation: miniPlayerSlideUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
-
-/* Hiệu ứng pulsing cho mini player khi đang phát */
-@keyframes miniPulse {
-  0%, 100% {
-    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
-  }
-  50% {
-    box-shadow: 0 0 0 8px rgba(59, 130, 246, 0);
-  }
-}
-
-#mini-player.active:has(.ph-pause) button {
-  animation: miniPulse 2s infinite;
 }
