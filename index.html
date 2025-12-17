@@ -36,7 +36,7 @@
                     class="glass-panel bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 hover:text-white px-4 py-2 rounded-full text-xs font-medium flex items-center gap-2 transition-all hidden group relative resume-btn"
                     title="Tiếp tục audio đã nghe cuối cùng">
                     <i class="ph-fill ph-play-circle"></i>
-                    <span class="truncate max-w-[100px] sm:max-w-none resume-text">Tiếp tục nghe</span>
+                    <span class="truncate max-w-[100px] sm:max-w-none resume-text">Tiếp tục</span>
                     <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900/90 backdrop-blur-sm text-xs text-white rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 shadow-xl border border-white/10">
                         <div class="font-bold mb-1">Tiếp tục từ:</div>
                         <div id="resume-tooltip-content" class="text-blue-300"></div>
@@ -239,6 +239,22 @@
                     <div class="speed-item" onclick="app.setSpeed(1.5)">1.5x</div>
                     <div class="speed-item" onclick="app.setSpeed(1.75)">1.75x</div>
                     <div class="speed-item" onclick="app.setSpeed(2.0)">2.0x</div>
+                </div>
+            </div>
+
+            <!-- Thêm tính năng hẹn giờ tắt nhạc -->
+            <div class="timer-menu-container ml-2">
+                <button onclick="app.toggleTimerMenu()" class="timer-menu-trigger group" aria-label="Hẹn giờ tắt nhạc" aria-expanded="false">
+                    <i class="ph-bold ph-timer text-xs text-gray-400 group-hover:text-blue-400 transition-colors"></i>
+                    <span id="current-timer-text">Tắt</span>
+                </button>
+                <div id="timer-popup" class="timer-popup">
+                    <div class="timer-item selected" onclick="app.setTimer(0)">Tắt</div>
+                    <div class="timer-item" onclick="app.setTimer(-1)">Hết chương</div>
+                    <div class="timer-item" onclick="app.setTimer(15)">15 phút</div>
+                    <div class="timer-item" onclick="app.setTimer(30)">30 phút</div>
+                    <div class="timer-item" onclick="app.setTimer(45)">45 phút</div>
+                    <div class="timer-item" onclick="app.setTimer(60)">60 phút</div>
                 </div>
             </div>
         </div>

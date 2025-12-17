@@ -29,7 +29,9 @@ const app = (() => {
         search: document.getElementById('search-input'),
         badge: document.getElementById('last-played-info'),
         sortPopup: document.getElementById('sort-popup'),
-        currentSortText: document.getElementById('current-sort-text')
+        currentSortText: document.getElementById('current-sort-text'),
+        timerText: document.getElementById('current-timer-text'),
+        timerPopup: document.getElementById('timer-popup')
     };
 
     let state = {
@@ -40,8 +42,13 @@ const app = (() => {
         isDragging: false,
         currentSort: 'newest',
         speed: 1.0,
+        timer: 0, // 0 = tắt, -1 = hết chương, >0 = số phút
+        timerId: null,
+        timerRemaining: 0, // thời gian còn lại (giây)
+        timerStartTime: 0,
         sortMenuOpen: false,
         speedMenuOpen: false,
+        timerMenuOpen: false,
         durationCache: {}, // Cache for durations
         lastPlayedData: null // Thêm state lưu thông tin audio đã nghe
     };
@@ -133,6 +140,13 @@ const app = (() => {
             updateSpeedUI(state.speed);
         }
 
+        // Restore timer
+        const savedTimer = sessionStorage.getItem('audioTimer');
+        if (savedTimer) {
+            state.timer = parseInt(savedTimer);
+            updateTimerUI(state.timer);
+        }
+
         // Load last played audio từ localStorage
         loadLastPlayedAudio();
 
@@ -161,6 +175,10 @@ const app = (() => {
             if (!e.target.closest('.sort-menu-container')) {
                 els.sortPopup.classList.remove('active');
                 state.sortMenuOpen = false;
+            }
+            if (!e.target.closest('.timer-menu-container')) {
+                els.timerPopup.classList.remove('active');
+                state.timerMenuOpen = false;
             }
         });
 
@@ -192,21 +210,195 @@ const app = (() => {
         }, {
             passive: true
         });
+
+        // Cập nhật timer UI mỗi giây
+        setInterval(updateTimerDisplay, 1000);
     }
 
-    // === HÀM LƯU VÀ TẢI AUDIO ĐÃ NGHE ===
+    // === HÀM HẸN GIỜ TẮT NHẠC ===
+    function setTimer(minutes) {
+        // Xóa timer cũ nếu có
+        clearTimer();
+        
+        state.timer = minutes;
+        sessionStorage.setItem('audioTimer', minutes);
+        updateTimerUI(minutes);
+        
+        // Nếu đang phát và có timer
+        if (state.isPlaying && minutes !== 0) {
+            startTimer(minutes);
+        }
+        
+        els.timerPopup.classList.remove('active');
+        state.timerMenuOpen = false;
+    }
+    
+    function startTimer(minutes) {
+        if (state.timerId) {
+            clearTimeout(state.timerId);
+            state.timerId = null;
+        }
+        
+        if (minutes === -1) {
+            // Hết chương: tính thời gian còn lại của track hiện tại
+            const remaining = els.audio.duration - els.audio.currentTime;
+            if (remaining > 0) {
+                state.timerId = setTimeout(() => {
+                    pause();
+                    showToast('⏰ Hẹn giờ: Đã hết chương, dừng phát.');
+                    setTimer(0); // Reset timer
+                }, remaining * 1000);
+                state.timerStartTime = Date.now();
+                state.timerRemaining = remaining;
+            }
+        } else if (minutes > 0) {
+            // Tính thời gian theo phút
+            const ms = minutes * 60 * 1000;
+            state.timerId = setTimeout(() => {
+                pause();
+                showToast(`⏰ Hẹn giờ: Đã hết ${minutes} phút, dừng phát.`);
+                setTimer(0); // Reset timer
+            }, ms);
+            state.timerStartTime = Date.now();
+            state.timerRemaining = minutes * 60;
+        }
+        
+        // Cập nhật UI
+        updateTimerButton();
+    }
+    
+    function clearTimer() {
+        if (state.timerId) {
+            clearTimeout(state.timerId);
+            state.timerId = null;
+        }
+        state.timerRemaining = 0;
+        updateTimerButton();
+    }
+    
+    function updateTimerUI(minutes) {
+        const textMap = {
+            0: 'Tắt',
+            '-1': 'Hết chương',
+            15: '15p',
+            30: '30p',
+            45: '45p',
+            60: '60p'
+        };
+        els.timerText.innerText = textMap[minutes] || 'Tắt';
+        
+        // Cập nhật selected cho menu
+        document.querySelectorAll('.timer-item').forEach(item => {
+            item.classList.remove('selected');
+            const itemText = item.innerText;
+            if ((minutes === -1 && itemText === 'Hết chương') ||
+                (minutes === 15 && itemText === '15 phút') ||
+                (minutes === 30 && itemText === '30 phút') ||
+                (minutes === 45 && itemText === '45 phút') ||
+                (minutes === 60 && itemText === '60 phút') ||
+                (minutes === 0 && itemText === 'Tắt')) {
+                item.classList.add('selected');
+            }
+        });
+        
+        updateTimerButton();
+    }
+    
+    function updateTimerDisplay() {
+        if (state.timerId && state.timerRemaining > 0) {
+            const elapsed = (Date.now() - state.timerStartTime) / 1000;
+            const remaining = Math.max(0, state.timerRemaining - elapsed);
+            
+            if (remaining <= 0) {
+                // Timer đã hết, sẽ được xử lý trong timeout
+                return;
+            }
+            
+            // Cập nhật tooltip với thời gian còn lại
+            const timerTrigger = document.querySelector('.timer-menu-trigger');
+            if (timerTrigger) {
+                if (state.timer === -1) {
+                    timerTrigger.title = `Hẹn giờ: Hết chương (còn ${formatTime(remaining)})`;
+                } else {
+                    timerTrigger.title = `Hẹn giờ: Còn ${formatTime(remaining)}`;
+                }
+            }
+        }
+    }
+    
+    function updateTimerButton() {
+        const timerTrigger = document.querySelector('.timer-menu-trigger');
+        if (!timerTrigger) return;
+        
+        if (state.timer === 0 || !state.timerId) {
+            timerTrigger.classList.remove('timer-active');
+            timerTrigger.title = 'Hẹn giờ tắt nhạc';
+        } else {
+            timerTrigger.classList.add('timer-active');
+        }
+    }
+    
+    function toggleTimerMenu() {
+        state.timerMenuOpen = !state.timerMenuOpen;
+        state.speedMenuOpen = false;
+        state.sortMenuOpen = false;
+        els.player.speedPopup.classList.remove('active');
+        els.sortPopup.classList.remove('active');
+        
+        if (state.timerMenuOpen) els.timerPopup.classList.add('active');
+        else els.timerPopup.classList.remove('active');
+    }
+    
+    function showToast(message) {
+        // Tạo toast thông báo
+        const toast = document.createElement('div');
+        toast.className = 'toast-notification';
+        toast.textContent = message;
+        toast.style.cssText = `
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            z-index: 10000;
+            font-size: 14px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            animation: toastSlideUp 0.3s ease;
+        `;
+        
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.animation = 'toastSlideDown 0.3s ease';
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    document.body.removeChild(toast);
+                }
+            }, 300);
+        }, 3000);
+    }
+
+    // === HÀM LƯU VÀ TẢI AUDIO ĐÃ NGHE (ĐÃ CẢI THIỆN) ===
     function saveCurrentAudioProgress() {
         if (!state.currentFolder || !els.audio.src || isNaN(els.audio.currentTime)) return;
         
         const audioData = {
             folderId: state.currentFolder.id,
+            folderName: state.currentFolder.folderName,
             trackIndex: state.currentIndex,
             currentTime: els.audio.currentTime,
             timestamp: Date.now(),
             folderTitle: state.currentFolder.title,
             trackTitle: state.playlist[state.currentIndex]?.title || '',
             author: state.currentFolder.author,
-            src: els.audio.src // Lưu cả đường dẫn file để kiểm tra
+            src: els.audio.src,
+            duration: els.audio.duration,
+            totalTracks: state.playlist.length
         };
         
         localStorage.setItem('lastPlayedAudio', JSON.stringify(audioData));
@@ -240,6 +432,16 @@ const app = (() => {
             resumeBtn.classList.remove('hidden');
             const timeAgo = getTimeAgo(state.lastPlayedData.timestamp);
             resumeBtn.title = `Tiếp tục: ${state.lastPlayedData.trackTitle} (${formatTime(state.lastPlayedData.currentTime)}/${timeAgo})`;
+            
+            // Cập nhật tooltip content
+            const tooltipContent = document.getElementById('resume-tooltip-content');
+            if (tooltipContent) {
+                tooltipContent.innerHTML = `
+                    <div><strong>${state.lastPlayedData.folderTitle}</strong></div>
+                    <div>${state.lastPlayedData.trackTitle}</div>
+                    <div class="text-green-300">${formatTime(state.lastPlayedData.currentTime)} • ${timeAgo}</div>
+                `;
+            }
         } else {
             resumeBtn.classList.add('hidden');
         }
@@ -273,7 +475,7 @@ const app = (() => {
         const folder = LIBRARY.find(f => f.id === state.lastPlayedData.folderId);
         if (!folder) {
             console.log('Không tìm thấy folder đã lưu');
-            alert('Không tìm thấy truyện đã nghe. Có thể nó đã bị xóa hoặc thay đổi.');
+            showToast('Không tìm thấy truyện đã nghe. Có thể nó đã bị xóa hoặc thay đổi.');
             return;
         }
         
@@ -287,19 +489,48 @@ const app = (() => {
                 const savedSrc = state.lastPlayedData.src;
                 const currentSrc = state.playlist[state.lastPlayedData.trackIndex]?.src;
                 
-                if (savedSrc && currentSrc && savedSrc !== currentSrc) {
-                    console.log('File đã thay đổi, phát từ đầu');
-                    playTrack(state.lastPlayedData.trackIndex);
+                // So sánh tên file thay vì toàn bộ URL (vì rootPath có thể thay đổi)
+                const savedFileName = savedSrc ? savedSrc.split('/').pop() : '';
+                const currentFileName = currentSrc ? currentSrc.split('/').pop() : '';
+                
+                if (savedFileName && currentFileName && savedFileName !== currentFileName) {
+                    console.log('File đã thay đổi, tìm track phù hợp...');
+                    // Tìm track có cùng title hoặc gần giống
+                    const matchingTrack = state.playlist.find((track, idx) => 
+                        track.title === state.lastPlayedData.trackTitle || 
+                        idx === state.lastPlayedData.trackIndex
+                    );
+                    
+                    if (matchingTrack) {
+                        const newIndex = state.playlist.indexOf(matchingTrack);
+                        playTrackFromTime(newIndex, 0); // Phát từ đầu nếu file khác
+                        showToast('File đã thay đổi, phát từ đầu chương.');
+                    } else {
+                        playTrack(state.lastPlayedData.trackIndex); // Phát từ đầu
+                        showToast('Không tìm thấy chương chính xác, phát từ đầu.');
+                    }
                 } else {
-                    // Phát từ vị trí đã lưu
-                    playTrackFromTime(state.lastPlayedData.trackIndex, state.lastPlayedData.currentTime);
+                    // Phát từ vị trí đã lưu - đảm bảo không vượt quá duration
+                    const startTime = Math.min(
+                        state.lastPlayedData.currentTime,
+                        els.audio.duration - 5 // Đảm bảo còn ít nhất 5 giây
+                    );
+                    playTrackFromTime(state.lastPlayedData.trackIndex, Math.max(0, startTime));
                 }
+            } else {
+                // Nếu trackIndex không hợp lệ, phát từ đầu
+                playTrack(0);
             }
         }, 300);
     }
 
     // Hàm mới: phát track từ thời điểm cụ thể
     function playTrackFromTime(index, startTime) {
+        // Hủy timer cũ
+        if (state.timer === -1) {
+            clearTimer();
+        }
+        
         state.currentIndex = index;
         const track = state.playlist[index];
 
@@ -338,18 +569,33 @@ const app = (() => {
 
         // Chờ metadata load xong rồi set currentTime
         const onLoaded = () => {
-            if (startTime > 0) {
-                els.audio.currentTime = startTime;
+            // Đảm bảo startTime hợp lệ
+            const safeStartTime = Math.max(0, Math.min(startTime, els.audio.duration - 1));
+            if (safeStartTime > 0) {
+                els.audio.currentTime = safeStartTime;
             }
+            
+            // Khởi động lại timer nếu cần
+            if (state.timer !== 0 && state.isPlaying) {
+                startTimer(state.timer);
+            }
+            
             play();
             els.audio.removeEventListener('loadedmetadata', onLoaded);
         };
 
         if (els.audio.readyState >= 1) {
             // Metadata đã được load
-            if (startTime > 0) {
-                els.audio.currentTime = startTime;
+            const safeStartTime = Math.max(0, Math.min(startTime, els.audio.duration - 1));
+            if (safeStartTime > 0) {
+                els.audio.currentTime = safeStartTime;
             }
+            
+            // Khởi động lại timer nếu cần
+            if (state.timer !== 0 && state.isPlaying) {
+                startTimer(state.timer);
+            }
+            
             play();
         } else {
             // Chờ metadata load
@@ -506,12 +752,23 @@ const app = (() => {
     function play() {
         els.audio.playbackRate = state.speed;
         els.audio.play().catch(e => console.log("Play prevented"));
+        
+        // Khởi động lại timer nếu cần
+        if (state.timer !== 0 && !state.timerId) {
+            startTimer(state.timer);
+        }
     }
 
     function pause() {
         els.audio.pause();
         // Lưu khi tạm dừng
         saveCurrentAudioProgress();
+        
+        // Dừng timer nhưng không xóa cài đặt
+        if (state.timerId) {
+            clearTimeout(state.timerId);
+            state.timerId = null;
+        }
     }
 
     function togglePlay() {
@@ -570,7 +827,9 @@ const app = (() => {
     function toggleSpeedMenu() {
         state.speedMenuOpen = !state.speedMenuOpen;
         state.sortMenuOpen = false;
+        state.timerMenuOpen = false;
         els.sortPopup.classList.remove('active');
+        els.timerPopup.classList.remove('active');
         if (state.speedMenuOpen) els.player.speedPopup.classList.add('active');
         else els.player.speedPopup.classList.remove('active');
     }
@@ -604,6 +863,12 @@ const app = (() => {
     }
 
     function onTrackEnd() {
+        // Xử lý timer "hết chương"
+        if (state.timer === -1 && state.timerId) {
+            clearTimer();
+            setTimer(0);
+        }
+        
         if (state.currentIndex < state.playlist.length - 1) playTrack(state.currentIndex + 1);
         else {
             state.isPlaying = false;
@@ -654,7 +919,9 @@ const app = (() => {
     function toggleSortMenu() {
         state.sortMenuOpen = !state.sortMenuOpen;
         state.speedMenuOpen = false;
+        state.timerMenuOpen = false;
         els.player.speedPopup.classList.remove('active');
+        els.timerPopup.classList.remove('active');
         if (state.sortMenuOpen) els.sortPopup.classList.add('active');
         else els.sortPopup.classList.remove('active');
     }
@@ -704,8 +971,24 @@ const app = (() => {
         toggleSortMenu,
         handleSort,
         resumeLastPosition,
-        resumeLastAudio
+        resumeLastAudio,
+        setTimer,
+        toggleTimerMenu
     };
 })();
 
 document.addEventListener('DOMContentLoaded', app.init);
+
+// Thêm CSS animation cho toast
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes toastSlideUp {
+        from { transform: translateX(-50%) translateY(20px); opacity: 0; }
+        to { transform: translateX(-50%) translateY(0); opacity: 1; }
+    }
+    @keyframes toastSlideDown {
+        from { transform: translateX(-50%) translateY(0); opacity: 1; }
+        to { transform: translateX(-50%) translateY(20px); opacity: 0; }
+    }
+`;
+document.head.appendChild(style);

@@ -175,11 +175,13 @@ input[type="range"]:hover::-webkit-slider-thumb {
 
 /* POPUPS */
 .speed-menu-container,
-.sort-menu-container {
+.sort-menu-container,
+.timer-menu-container {
   position: relative;
 }
 .speed-popup,
-.sort-popup {
+.sort-popup,
+.timer-popup {
   position: absolute;
   bottom: 130%;
   right: 0;
@@ -203,13 +205,15 @@ input[type="range"]:hover::-webkit-slider-thumb {
   bottom: auto;
 } /* Sort xổ xuống */
 .speed-popup.active,
-.sort-popup.active {
+.sort-popup.active,
+.timer-popup.active {
   opacity: 1;
   visibility: visible;
   transform: translateY(0) scale(1);
 }
 .speed-item,
-.sort-item {
+.sort-item,
+.timer-item {
   padding: 9px 13px; /* Tăng từ 8px 12px */
   border-radius: var(--radius-sm);
   font-size: 0.935rem; /* Tăng từ 0.85rem */
@@ -223,12 +227,14 @@ input[type="range"]:hover::-webkit-slider-thumb {
   text-align: left;
 }
 .speed-item:hover,
-.sort-item:hover {
+.sort-item:hover,
+.timer-item:hover {
   background: rgba(255, 255, 255, 0.1);
   color: white;
 }
 .speed-item.selected,
-.sort-item.selected {
+.sort-item.selected,
+.timer-item.selected {
   background: var(--primary-color);
   color: white;
 }
@@ -877,7 +883,8 @@ header nav > div:last-child {
 
 /* Đảm bảo dropdown không bị ảnh hưởng bởi thanh tìm kiếm */
 .sort-popup,
-.speed-popup {
+.speed-popup,
+.timer-popup {
   z-index: 100 !important;
 }
 
@@ -921,4 +928,40 @@ header nav > div:last-child {
     min-width: unset !important; /* Bỏ giới hạn min-width cũ */
     max-width: unset !important;
   }
+}
+
+/* Timer menu adjustments */
+.timer-menu-trigger {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.timer-menu-trigger:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.timer-menu-trigger i {
+  font-size: 14px;
+}
+
+/* Timer active state */
+.timer-active {
+  color: #f59e0b !important;
+  background: rgba(245, 158, 11, 0.1) !important;
+  border-color: rgba(245, 158, 11, 0.3) !important;
+}
+
+.timer-active:hover {
+  color: #fbbf24 !important;
+  background: rgba(245, 158, 11, 0.2) !important;
 }
