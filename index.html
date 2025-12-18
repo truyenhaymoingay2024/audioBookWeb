@@ -110,7 +110,7 @@
             
             <div id="empty-state" class="hidden flex flex-col items-center justify-center py-20 opacity-50 text-center px-4">
                 <i class="ph-duotone ph-ghost text-6xl mb-4 text-blue-300"></i>
-                <p class="text-gray-400">Xin lỗi bạn, truyện bạn đang tìm hiện chưa lên sóng nha.<br>Bạn vào YouTube đề xuất ngay cho mình đi nè!</p>
+                <p class="text-gray-400">Xin lỗi bạn, truyện bạn đang tìm hiện chưa lên sóng.<br>Bạn nhấn vào avt trên thanh header để vào YouTube đề xuất ngay cho mình đi nè!</p>
             </div>
         </section>
 
@@ -180,81 +180,119 @@
     <!-- === PLAYER BAR === -->
     <div id="player-bar" class="fixed bottom-6 left-4 right-4 z-50 transform translate-y-[150%] transition-transform duration-500 cubic-bezier(0.34,1.56,0.64,1)">
         <div class="max-w-4xl mx-auto glass-panel !bg-[var(--player-bg)] !backdrop-blur-xl rounded-[32px] p-3 pr-6 flex flex-col md:flex-row items-center gap-4 md:gap-6 border border-white/10 shadow-2xl">
-            <div class="flex items-center gap-4 w-full md:w-1/3 pl-2">
-                <div class="w-14 h-14 rounded-full overflow-hidden relative flex-shrink-0 border border-white/20 shadow-lg group">
-                    <img id="p-cover" src="https://via.placeholder.com/150" 
-                         class="w-full h-full object-cover animate-[spin_20s_linear_infinite]" 
-                         style="animation-play-state: paused;"
-                         alt="Album cover">
-                    <div class="absolute inset-0 m-auto w-3 h-3 bg-gray-900 rounded-full border border-gray-700"></div>
-                    <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <i class="ph-fill ph-music-note text-white text-lg"></i>
-                    </div>
-                </div>
-                <div class="min-w-0 flex-1">
-                    <h4 id="p-title" class="font-bold text-sm text-white truncate pr-2">Chọn chương để bắt đầu</h4>
-                    <p id="p-author" class="text-xs text-gray-400 truncate">Tư Ngữ Audio</p>
-                </div>
-            </div>
-            
-            <div class="flex flex-col w-full md:w-1/3 items-center gap-2">
-                <div class="flex items-center gap-4">
-                    <button onclick="app.skip(-5)" class="btn-md3 btn-ghost w-10 h-10 rounded-full hover:bg-white/10 transition-transform hover:scale-110" title="Lùi 5 giây" aria-label="Lùi 5 giây">
-                        <i class="ph-fill ph-rewind text-lg"></i>
-                    </button>
-                    <button onclick="app.prevTrack()" class="btn-md3 btn-ghost w-10 h-10 rounded-full hover:text-blue-400 transition-transform hover:scale-110" title="Chương trước" aria-label="Chương trước">
-                        <i class="ph-fill ph-skip-back text-2xl"></i>
-                    </button>
-                    <button onclick="app.togglePlay()" class="btn-md3 btn-primary w-14 h-14 rounded-full flex items-center justify-center text-white shadow-lg hover:scale-105 transition-all active:scale-95" aria-label="Phát hoặc tạm dừng">
-                        <i id="p-play-icon" class="ph-fill ph-play text-2xl ml-1"></i>
-                    </button>
-                    <button onclick="app.nextTrack()" class="btn-md3 btn-ghost w-10 h-10 rounded-full hover:text-blue-400 transition-transform hover:scale-110" title="Chương sau" aria-label="Chương sau">
-                        <i class="ph-fill ph-skip-forward text-2xl"></i>
-                    </button>
-                    <button onclick="app.skip(5)" class="btn-md3 btn-ghost w-10 h-10 rounded-full hover:bg-white/10 transition-transform hover:scale-110" title="Tiến 5 giây" aria-label="Tiến 5 giây">
-                        <i class="ph-fill ph-fast-forward text-lg"></i>
-                    </button>
-                </div>
-                <div class="w-full flex items-center gap-3 text-[10px] font-bold tracking-wider text-gray-400">
-                    <span id="p-current" class="min-w-[35px] text-right">0:00</span>
-                    <div class="relative flex-1 h-4 flex items-center group cursor-pointer">
-                        <div class="absolute w-full h-1 bg-white/20 rounded-full overflow-hidden">
-                            <div id="p-progress-fill" class="h-full bg-gradient-to-r from-blue-500 to-indigo-500 w-0 transition-all duration-100 ease-linear shadow-[0_0_10px_#3b82f6]"></div>
+            <!-- Full Player Content -->
+            <div class="full-player-content w-full">
+                <div class="flex flex-col md:flex-row items-center gap-4 md:gap-6 w-full">
+                    <div class="flex items-center gap-4 w-full md:w-1/3 pl-2">
+                        <div class="w-14 h-14 rounded-full overflow-hidden relative flex-shrink-0 border border-white/20 shadow-lg group">
+                            <img id="p-cover" src="https://via.placeholder.com/150" 
+                                class="w-full h-full object-cover animate-[spin_20s_linear_infinite]" 
+                                style="animation-play-state: paused;"
+                                alt="Album cover">
+                            <div class="absolute inset-0 m-auto w-3 h-3 bg-gray-900 rounded-full border border-gray-700"></div>
+                            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                <i class="ph-fill ph-music-note text-white text-lg"></i>
+                            </div>
                         </div>
-                        <input type="range" id="p-slider" value="0" min="0" max="100" step="0.1" class="absolute w-full opacity-0 cursor-pointer h-full z-10" aria-label="Thanh tiến trình phát nhạc">
+                        <div class="min-w-0 flex-1">
+                            <h4 id="p-title" class="font-bold text-sm text-white truncate pr-2">Chọn chương để bắt đầu</h4>
+                            <p id="p-author" class="text-xs text-gray-400 truncate">Tư Ngữ Audio</p>
+                        </div>
                     </div>
-                    <span id="p-duration" class="min-w-[35px]">0:00</span>
-                </div>
-            </div>
-            
-            <div class="speed-menu-container ml-auto md:ml-0">
-                <button onclick="app.toggleSpeedMenu()" class="speed-menu-trigger group" aria-label="Thay đổi tốc độ phát" aria-expanded="false">
-                    <i class="ph-bold ph-gauge text-xs text-gray-400 group-hover:text-blue-400 transition-colors"></i>
-                    <span id="current-speed-text">1.0</span>x
-                </button>
-                <div id="speed-popup" class="speed-popup">
-                    <div class="speed-item" onclick="app.setSpeed(0.75)">0.75x</div>
-                    <div class="speed-item selected" onclick="app.setSpeed(1.0)">1.0x</div>
-                    <div class="speed-item" onclick="app.setSpeed(1.25)">1.25x</div>
-                    <div class="speed-item" onclick="app.setSpeed(1.5)">1.5x</div>
-                    <div class="speed-item" onclick="app.setSpeed(1.75)">1.75x</div>
-                    <div class="speed-item" onclick="app.setSpeed(2.0)">2.0x</div>
+                    
+                    <div class="flex flex-col w-full md:w-1/3 items-center gap-2">
+                        <div class="flex items-center gap-4">
+                            <button onclick="app.skip(-5)" class="btn-md3 btn-ghost w-10 h-10 rounded-full hover:bg-white/10 transition-transform hover:scale-110" title="Lùi 5 giây" aria-label="Lùi 5 giây">
+                                <i class="ph-fill ph-rewind text-lg"></i>
+                            </button>
+                            <button onclick="app.prevTrack()" class="btn-md3 btn-ghost w-10 h-10 rounded-full hover:text-blue-400 transition-transform hover:scale-110" title="Chương trước" aria-label="Chương trước">
+                                <i class="ph-fill ph-skip-back text-2xl"></i>
+                            </button>
+                            <button onclick="app.togglePlay()" class="btn-md3 btn-primary w-14 h-14 rounded-full flex items-center justify-center text-white shadow-lg hover:scale-105 transition-all active:scale-95" aria-label="Phát hoặc tạm dừng">
+                                <i id="p-play-icon" class="ph-fill ph-play text-2xl ml-1"></i>
+                            </button>
+                            <button onclick="app.nextTrack()" class="btn-md3 btn-ghost w-10 h-10 rounded-full hover:text-blue-400 transition-transform hover:scale-110" title="Chương sau" aria-label="Chương sau">
+                                <i class="ph-fill ph-skip-forward text-2xl"></i>
+                            </button>
+                            <button onclick="app.skip(5)" class="btn-md3 btn-ghost w-10 h-10 rounded-full hover:bg-white/10 transition-transform hover:scale-110" title="Tiến 5 giây" aria-label="Tiến 5 giây">
+                                <i class="ph-fill ph-fast-forward text-lg"></i>
+                            </button>
+                        </div>
+                        <div class="w-full flex items-center gap-3 text-[10px] font-bold tracking-wider text-gray-400">
+                            <span id="p-current" class="min-w-[35px] text-right">0:00</span>
+                            <div class="relative flex-1 h-4 flex items-center group cursor-pointer">
+                                <div class="absolute w-full h-1 bg-white/20 rounded-full overflow-hidden">
+                                    <div id="p-progress-fill" class="h-full bg-gradient-to-r from-blue-500 to-indigo-500 w-0 transition-all duration-100 ease-linear shadow-[0_0_10px_#3b82f6]"></div>
+                                </div>
+                                <input type="range" id="p-slider" value="0" min="0" max="100" step="0.1" class="absolute w-full opacity-0 cursor-pointer h-full z-10" aria-label="Thanh tiến trình phát nhạc">
+                            </div>
+                            <span id="p-duration" class="min-w-[35px]">0:00</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Container chứa tốc độ và hẹn giờ - RESPONSIVE FIX -->
+                    <div class="speed-timer-container w-full md:w-auto flex flex-row justify-between items-center mt-3 md:mt-0 md:ml-2 md:gap-4">
+                        <div class="speed-menu-container">
+                            <button onclick="app.toggleSpeedMenu()" class="speed-menu-trigger group" aria-label="Thay đổi tốc độ phát" aria-expanded="false">
+                                <i class="ph-bold ph-gauge text-xs text-gray-400 group-hover:text-blue-400 transition-colors"></i>
+                                <span id="current-speed-text">1.0</span>x
+                            </button>
+                            <div id="speed-popup" class="speed-popup">
+                                <div class="speed-item" onclick="app.setSpeed(0.75)">0.75x</div>
+                                <div class="speed-item selected" onclick="app.setSpeed(1.0)">1.0x</div>
+                                <div class="speed-item" onclick="app.setSpeed(1.25)">1.25x</div>
+                                <div class="speed-item" onclick="app.setSpeed(1.5)">1.5x</div>
+                                <div class="speed-item" onclick="app.setSpeed(1.75)">1.75x</div>
+                                <div class="speed-item" onclick="app.setSpeed(2.0)">2.0x</div>
+                            </div>
+                        </div>
+
+                        <div class="timer-menu-container">
+                            <button onclick="app.toggleTimerMenu()" class="timer-menu-trigger group" aria-label="Hẹn giờ tắt nhạc" aria-expanded="false">
+                                <i class="ph-bold ph-timer text-xs text-gray-400 group-hover:text-blue-400 transition-colors"></i>
+                                <span id="current-timer-text">Tắt</span>
+                            </button>
+                            <div id="timer-popup" class="timer-popup">
+                                <div class="timer-item selected" onclick="app.setTimer(0)">Tắt</div>
+                                <div class="timer-item" onclick="app.setTimer(-1)">Hết chương</div>
+                                <div class="timer-item" onclick="app.setTimer(15)">15 phút</div>
+                                <div class="timer-item" onclick="app.setTimer(30)">30 phút</div>
+                                <div class="timer-item" onclick="app.setTimer(45)">45 phút</div>
+                                <div class="timer-item" onclick="app.setTimer(60)">60 phút</div>
+                            </div>
+                        </div>
+
+                        <!-- Nút chuyển sang mini player -->
+                        <button class="toggle-player-btn full-to-mini w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 transition" title="Thu nhỏ player">
+                            <i class="ph-bold ph-caret-down text-sm"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <!-- Thêm tính năng hẹn giờ tắt nhạc -->
-            <div class="timer-menu-container ml-2">
-                <button onclick="app.toggleTimerMenu()" class="timer-menu-trigger group" aria-label="Hẹn giờ tắt nhạc" aria-expanded="false">
-                    <i class="ph-bold ph-timer text-xs text-gray-400 group-hover:text-blue-400 transition-colors"></i>
-                    <span id="current-timer-text">Tắt</span>
-                </button>
-                <div id="timer-popup" class="timer-popup">
-                    <div class="timer-item selected" onclick="app.setTimer(0)">Tắt</div>
-                    <div class="timer-item" onclick="app.setTimer(-1)">Hết chương</div>
-                    <div class="timer-item" onclick="app.setTimer(15)">15 phút</div>
-                    <div class="timer-item" onclick="app.setTimer(30)">30 phút</div>
-                    <div class="timer-item" onclick="app.setTimer(45)">45 phút</div>
-                    <div class="timer-item" onclick="app.setTimer(60)">60 phút</div>
+            <!-- Mini Player Content -->
+            <div class="mini-player-content hidden w-full">
+                <div class="flex items-center justify-between w-full">
+                    <div class="flex items-center gap-3 flex-1 min-w-0">
+                        <div class="w-10 h-10 rounded-full overflow-hidden relative flex-shrink-0 border border-white/20 shadow-lg">
+                            <img id="mini-p-cover" src="https://via.placeholder.com/150" 
+                                class="w-full h-full object-cover" 
+                                alt="Mini cover">
+                            <div class="absolute inset-0 m-auto w-1.5 h-1.5 bg-gray-900 rounded-full border border-gray-700"></div>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <h4 id="mini-p-title" class="font-bold text-sm text-white truncate">Chọn chương để bắt đầu</h4>
+                            <p id="mini-p-author" class="text-xs text-gray-400 truncate">Tư Ngữ Audio</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="app.togglePlay()" class="mini-play-btn w-10 h-10 rounded-full flex items-center justify-center bg-blue-600 text-white shadow-lg hover:scale-105 transition-all active:scale-95">
+                            <i id="mini-p-play-icon" class="ph-fill ph-play text-lg ml-0.5"></i>
+                        </button>
+                        <button class="toggle-player-btn mini-to-full w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 transition" title="Mở rộng player">
+                            <i class="ph-bold ph-caret-up text-sm"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -264,18 +302,6 @@
 
     <script src="data.js"></script>
     <script src="main.js"></script>
-    
-    <!-- === KEYBOARD SHORTCUTS GUIDE (Hidden by default) === -->
-    <div class="fixed bottom-24 right-4 z-40 opacity-0 hover:opacity-100 transition-opacity duration-300">
-        <div class="glass-panel p-3 rounded-lg text-xs text-gray-400">
-            <div class="font-bold mb-1 text-white">Phím tắt:</div>
-            <div>Space: Phát/Tạm dừng</div>
-            <div>←/→: Lùi/Tiến 5s</div>
-            <div>Ctrl+←/→: Chương trước/sau</div>
-            <div>Ctrl+B: Về thư viện</div>
-            <div>ESC: Đóng menu</div>
-        </div>
-    </div>
     
     <script>
         // Cập nhật tooltip cho nút tiếp tục

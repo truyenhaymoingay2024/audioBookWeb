@@ -748,7 +748,6 @@ header nav > div:last-child {
   }
 }
 
-/* ==================== THANH TÌM KIẾM RESPONSIVE FIXES ==================== */
 /* Header navigation - tối ưu cho mobile */
 .header-nav {
   position: relative;
@@ -964,4 +963,183 @@ header nav > div:last-child {
 .timer-active:hover {
   color: #fbbf24 !important;
   background: rgba(245, 158, 11, 0.2) !important;
+}
+
+/* Container chứa tốc độ và hẹn giờ */
+.speed-timer-container {
+    transition: all 0.3s ease;
+}
+
+/* Trên mobile: hai nút nằm ngang, chiếm toàn bộ chiều rộng */
+@media (max-width: 768px) {
+    .speed-timer-container {
+        width: 100%;
+        padding: 0 0.5rem;
+        margin-top: 0.75rem;
+    }
+    
+    /* Điều chỉnh kích thước và style của nút tốc độ và hẹn giờ trên mobile */
+    .speed-menu-trigger, .timer-menu-trigger {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+        white-space: nowrap;
+        transition: all 0.3s var(--transition-smooth);
+        min-width: 120px;
+        justify-content: center;
+    }
+    
+    .speed-menu-trigger:hover, .timer-menu-trigger:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateY(-1px);
+    }
+    
+    .speed-menu-trigger i, .timer-menu-trigger i {
+        font-size: 0.875rem;
+    }
+    
+    /* Đảm bảo dropdown menu vẫn hiển thị đúng */
+    .speed-popup, .timer-popup {
+        right: 0;
+        left: auto;
+        bottom: 100%;
+        top: auto;
+        margin-bottom: 0.5rem;
+    }
+    
+    .timer-popup {
+        right: 0;
+        left: auto;
+    }
+    
+    /* Trên mobile rất nhỏ */
+    @media (max-width: 360px) {
+        .speed-menu-trigger, .timer-menu-trigger {
+            min-width: 110px;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8125rem;
+        }
+    }
+}
+
+/* Trên tablet và desktop: giữ nguyên layout */
+@media (min-width: 769px) {
+    .speed-timer-container {
+        width: auto;
+        margin-top: 0;
+        gap: 0.75rem;
+    }
+    
+    .speed-menu-trigger, .timer-menu-trigger {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.8125rem;
+        background: transparent;
+        border: 1px solid transparent;
+	border-radius: 10px;
+    }
+    
+    .speed-menu-trigger:hover, .timer-menu-trigger:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+}
+
+/* Đảm bảo player bar không bị che trên mobile */
+@media (max-width: 640px) {
+    #player-bar {
+        left: 0.5rem;
+        right: 0.5rem;
+        bottom: 0.5rem;
+    }
+    
+    #player-bar > div {
+        padding: 0.75rem;
+    }
+    
+    /* Giảm khoảng cách giữa các phần trên mobile */
+    #player-bar .flex-col {
+        gap: 0.5rem;
+    }
+}
+
+/* Tối ưu cho màn hình rất nhỏ */
+@media (max-width: 400px) {
+    .speed-menu-trigger, .timer-menu-trigger {
+        min-width: 100px;
+        padding: 0.375rem 0.75rem;
+    }
+    
+    #player-bar {
+        left: 0.25rem;
+        right: 0.25rem;
+    }
+}
+
+#player-bar.mini .full-player-content {
+    display: none !important;
+}
+
+#player-bar.mini .mini-player-content {
+    display: block !important;
+}
+
+.mini-player-content {
+    display: none;
+}
+
+#player-bar.mini .glass-panel {
+    padding: 0.75rem 1.25rem !important;
+}
+
+/* Mini player specific styles */
+.mini-player-content .flex {
+    align-items: center;
+}
+
+.mini-player-content .mini-play-btn {
+    flex-shrink: 0;
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+    box-shadow: 0 4px 20px var(--primary-glow),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mini-player-content .mini-play-btn:hover {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+}
+
+.mini-player-content .mini-play-btn:active {
+    transform: scale(0.95);
+}
+
+/* Responsive cho mini player */
+@media (max-width: 640px) {
+    #player-bar.mini .glass-panel {
+        padding: 0.6rem 1rem !important;
+    }
+    
+    .mini-player-content .w-10 {
+        width: 2rem;
+        height: 2rem;
+    }
+    
+    .mini-player-content .mini-play-btn {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+    
+    #mini-p-title {
+        font-size: 0.8rem;
+    }
+    
+    #mini-p-author {
+        font-size: 0.7rem;
+    }
 }

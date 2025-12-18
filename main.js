@@ -26,6 +26,13 @@ const app = (() => {
             speedText: document.getElementById('current-speed-text'),
             speedPopup: document.getElementById('speed-popup')
         },
+        // Thêm các element của mini player
+        mini: {
+            cover: document.getElementById('mini-p-cover'),
+            title: document.getElementById('mini-p-title'),
+            author: document.getElementById('mini-p-author'),
+            playIcon: document.getElementById('mini-p-play-icon')
+        },
         search: document.getElementById('search-input'),
         badge: document.getElementById('last-played-info'),
         sortPopup: document.getElementById('sort-popup'),
@@ -50,7 +57,8 @@ const app = (() => {
         speedMenuOpen: false,
         timerMenuOpen: false,
         durationCache: {}, // Cache for durations
-        lastPlayedData: null // Thêm state lưu thông tin audio đã nghe
+        lastPlayedData: null, // Thêm state lưu thông tin audio đã nghe
+        isMiniPlayer: false // Thêm state cho mini player
     };
 
     // === METADATA QUEUE SYSTEM (FIX 0:00 ISSUE) ===
@@ -150,6 +158,9 @@ const app = (() => {
         // Load last played audio từ localStorage
         loadLastPlayedAudio();
 
+        // Khôi phục trạng thái mini player
+        restorePlayerMode();
+
         // Events
         els.audio.addEventListener('timeupdate', onTimeUpdate);
         els.audio.addEventListener('ended', onTrackEnd);
@@ -213,6 +224,32 @@ const app = (() => {
 
         // Cập nhật timer UI mỗi giây
         setInterval(updateTimerDisplay, 1000);
+
+        // Thêm event listeners cho nút toggle player
+        document.querySelectorAll('.toggle-player-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                togglePlayerMode();
+            });
+        });
+    }
+
+    // Hàm chuyển đổi giữa full player và mini player
+    function togglePlayerMode() {
+        state.isMiniPlayer = !state.isMiniPlayer;
+        els.player.bar.classList.toggle('mini');
+        
+        // Lưu trạng thái vào localStorage
+        localStorage.setItem('playerMode', state.isMiniPlayer ? 'mini' : 'full');
+    }
+
+    // Khôi phục trạng thái player khi load trang
+    function restorePlayerMode() {
+        const savedMode = localStorage.getItem('playerMode');
+        if (savedMode === 'mini') {
+            state.isMiniPlayer = true;
+            els.player.bar.classList.add('mini');
+        }
     }
 
     // === HÀM HẸN GIỜ TẮT NHẠC ===
@@ -538,9 +575,15 @@ const app = (() => {
         els.audio.playbackRate = state.speed;
         els.audio.load();
 
+        // Cập nhật thông tin cho cả full player và mini player
         els.player.title.innerText = track.title;
         els.player.author.innerText = state.currentFolder.title;
         els.player.cover.src = state.currentFolder.cover;
+        
+        // Cập nhật mini player
+        els.mini.title.innerText = track.title;
+        els.mini.author.innerText = state.currentFolder.title;
+        els.mini.cover.src = state.currentFolder.cover;
 
         els.player.bar.classList.remove('translate-y-[150%]');
 
@@ -794,9 +837,13 @@ const app = (() => {
         if (isPlaying) {
             els.player.playIcon.classList.replace('ph-play', 'ph-pause');
             els.player.cover.style.animationPlayState = 'running';
+            // Cập nhật mini player
+            els.mini.playIcon.classList.replace('ph-play', 'ph-pause');
         } else {
             els.player.playIcon.classList.replace('ph-pause', 'ph-play');
             els.player.cover.style.animationPlayState = 'paused';
+            // Cập nhật mini player
+            els.mini.playIcon.classList.replace('ph-pause', 'ph-play');
         }
         highlightCurrentTrack(state.currentIndex);
     }
@@ -973,7 +1020,8 @@ const app = (() => {
         resumeLastPosition,
         resumeLastAudio,
         setTimer,
-        toggleTimerMenu
+        toggleTimerMenu,
+        togglePlayerMode // Xuất hàm này để có thể gọi từ ngoài nếu cần
     };
 })();
 
