@@ -332,4 +332,19 @@ const LIBRARY = [
             manual("Ngoại truyện 1 - 5 (Hết)", "nt1-5.m4a")
         ]
     },
+    {
+        id: 20,
+        folderName: "GiayBaLe",
+        title: "Giày Ba Lê",
+        author: "Ba Lôi Hài",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/GiayBaLe/cover.jpg",
+        desc: 'LƯU Ý: BỘ TRUYỆN CÒN THIẾU 25 CHƯƠNG (TỪ 27-31, 81-98, 2 NGOẠI TRUYỆN), BẠN NÀO CÓ NGUỒN THÌ CHO MÌNH XIN NHÉ. MÌNH CẢM ƠN NHIỀU Ạ!\n\nCâu chuyện kể về một chàng trai nghèo thích thầm cô công chúa nhỏ nhiều năm.\nCô công chúa đứng trên đài cao tỏa sáng rực rỡ, cô không biết rằng ở trong góc tối có một chàng trai đã dõi theo cô rất lâu, rất lâu.\nChàng trai chỉ dám ngắm nhìn công chúa từ xa, bởi cậu biết cậu không xứng với công chúa hơn nữa công chúa đã có người mà mình thích. Chàng trai chỉ có thể âm thầm giữ lấy tình cảm đơn phương của mình, cho đến một ngày trời cao rủ lòng thương xót, an bài cho hai người gặp nhau...',
+	    chapters: 100,
+        tracks: [
+            ...batch(1, 20, 10, 'm4a'),
+            manual("Chương 21 - 26", "c21-26.m4a"),
+            manual("Chương 32 - 40", "c32-40.m4a"),
+            ...batch(41, 80, 10, 'm4a')
+        ]
+    },
 ];
