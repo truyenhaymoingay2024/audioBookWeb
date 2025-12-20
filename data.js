@@ -318,4 +318,18 @@ const LIBRARY = [
             manual("Chương 96 - 99 (Hết)", "c96-99.m4a")
         ]
     },
+    {
+        id: 19,
+        folderName: "ThamSo",
+        title: "Thẩm Sơ",
+        author: "Nhạc Viên Lộ",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/ThamSo/cover.jpg",
+        desc: 'Khi còn nhỏ sinh sống ở hội sở, Thẩm Sơ đã bị nghiện tình dục nặng, trước khi bị đưa tới phòng bao lúc mười lăm tuổi, cô được cảnh sát Hứa Phóng lỡ tay cướp mất, rồi trở về nhà cùng anh.\nNgay từ giây phút đó, con đường cứu rỗi cô thiếu nữ nghiện tình dục của Hứa cảnh sát không đi không về, từ việc trị liệu bằng gậy mát xa đến cách tự an ủi, từ việc trị liệu ngậm tinh dịch đến cách đâm thẳng vào huyệt....\nDần dần trong quá trình trị liệu, Hứa cảnh sát không chỉ bực bội chia tay cô bạn gái của mình, mà còn bất tri bất giác nghiện cô thiếu nữ kia, ngược lại, sau này lỗ huyệt của thiếu nữ đó lại trở thành thứ thuốc trị liệu cho tính nghiện tình dục của Hứa cảnh sát.\nÁng văn này có tiết tấu hơi chậm, cảnh máu chó trước sau như một, không có tam quan, nam chính nữ chính trật bánh, chị em chú ý cẩn thận nhé!',
+	    chapters: 139,
+        tracks: [
+            ...batch(1, 120, 10, 'm4a'),
+            manual("Chương 121 - 134 (Hoàn chính văn)", "c121-134.m4a"),
+            manual("Ngoại truyện 1 - 5 (Hết)", "nt1-5.m4a")
+        ]
+    },
 ];
