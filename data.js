@@ -347,4 +347,17 @@ const LIBRARY = [
             ...batch(41, 80, 10, 'm4a')
         ]
     },
+    {
+        id: 21,
+        folderName: "MuoiNamSauKhiToiChet",
+        title: "Mười Năm Sau Khi Tôi Chết",
+        author: "Sầm Khương",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/MuoiNamSauKhiToiChet/cover.jpg",
+        desc: 'Mười năm sau khi tôi chết.\nMười năm dần bị lãng quên.',
+	    chapters: 19,
+        tracks: [
+            manual("Chương 1 - 10", "c1-10.m4a"),
+            manual("Chương 11 - 19 (Hết)", "c11-19.m4a")
+        ]
+    },
 ];
