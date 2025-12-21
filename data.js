@@ -360,4 +360,17 @@ const LIBRARY = [
             manual("Chương 7 - 12 (Hết)", "c7-12.m4a")
         ]
     },
+    {
+        id: 22,
+        folderName: "MotNgayLaThayCaDoiLaChong",
+        title: "Một Ngày Là Thầy, Cả Đời Là Chồng",
+        author: "Cật Liễu Mộc Ngư Đích Miêu",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/MotNgayLaThayCaDoiLaChong/cover.jpg",
+        desc: 'Triều Tấn từ khi Nữ Đế thượng vị, vị trí nữ tử phát triển không ngừng, cấm chế độ năm thê bảy thiếp, nữ tử cũng có thể kế thừa gia sản.\nDương Nhược Thanh, xuất thân nhà buôn bán , Nữ đế triều Tấn ban thưởng nữ phu tử.\nLâu Ngữ Tuyết, con gái của một nhà giàu .\nHai người quen biết ở trường học, là thân phận  phu tử và học trò, Ngữ Tuyết ba lần mấy lượt cố ý, Nhược Thanh chịu không được hấp dẫn, tuy vẫn tiếp tục bày ra tư thế nghiêm túc cũng thì đã trễ.\n"Phu quân, phụ thân kêu chúng ta sớm trở về."\n"Khụ, ở trong thư viện vẫn là kêu phu tử đi."\n"Phu tử, đêm động phòng hoa chúc há có thể như thế cô phụ."\n"Khụ, ở nhà vẫn là kêu phu quân đi."\n"Phu tử, ngươi rất ưa thích nhi đồng?"\n"... Ân."\n"Vậy ngươi cần phải cố gắng đó."\n"Cố gắng cái gì?"\n"Tự nhiên là tránh bạc , cũng không nên hiểu sai ."\n"Ta mới không có hiểu sai. Ta nói tất cả bao nhiêu lần, ở nhà không cần kêu phu tử."\n"Ta thích ở thư viện gọi ngươi phu quân, ở nhà gọi ngươi phu tử."\n"..."\n"Không được sao?"\n"Được, ngươi thích là được."',
+	    chapters: 19,
+        tracks: [
+            ...batch(1, 15, 5, 'm4a'),
+            manual("Chương 16 - 19 (Hết)", "c16-19.m4a")
+        ]
+    },
 ];
