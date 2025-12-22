@@ -373,4 +373,18 @@ const LIBRARY = [
             manual("Chương 16 - 19 (Hết)", "c16-19.m4a")
         ]
     },
+    {
+        id: 23,
+        folderName: "TamNhat",
+        title: "Tam Nhặt",
+        author: "Tô Tha",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/TamNhat/cover.jpg",
+        desc: '#Chị gái buôn vũ khí (Hình Tố) x em trai học sinh cấp ba ngỗ nghịch (Lâm Nghiệt)#\nChúng ta nên khuất phục trước cơ thể, bởi vì nó luôn dũng cảm hơn trí óc.\n“Hình Tố, chị có trái tim không?”\n“Cậu hãm sâu quá rồi.”\n\nTrích đoạn truyện Tam Nhặt:\n1\nLâm Nghiệt trở về phòng 1102. Vừa mở cửa đã nghe thấy tiếng thở dốc dữ dội, giọng nam nữ lẫn lộn, giọng nói của người phụ nữ gợi cảm cất lên: “Anh có làm được không? Nửa ngày rồi mà chưa vào nổi.”\nMặt Lâm Nghiệt không cảm xúc, bước ra ban công lấy rượu, ngặt nỗi đi ra đi vào đều phải bước qua phòng ngủ chính, lúc này cũng nghe thấy cuộc đối thoại rất rõ, hình như người đàn ông đó không lên được, còn người phụ nữ kia cũng không nể nang mặt mũi gì mà nói thẳng: “Nhanh quá rồi đấy.”\nVừa nghe xong lời này thì cửa phòng cũng đồng thời mở ra, người phụ nữ đã thay sang một bộ váy ren mỏng, nhìn giống như lụa, đứng đối diện với ánh mắt của Lâm Nghiệt.\nLâm Nghiệt nâng rượu trong tay lên, nói: “Tôi lấy đồ.”\nNgười phụ nữ không tỏ vẻ ngạc nhiên, chỉ khoanh tay dựa vào tường, co chân trái lên rồi tựa vào phía sau.\nLâm Nghiệt thấy cô không tin liền nói thêm: “Thật đó.”\nNgười phụ nữ đó tiếp tục nói: “Tôi hỏi cậu là âm thanh đó nghe có êm tai không?”\n\n2\nHình Tố tạm biệt thầy giáo rồi đi tới sân bay. Hôm nay Hạ Yến Kỷ sẽ đáp chuyến bay về nước.\nNhìn thấy Hạ Yến Kỷ đi ra, Hình Tố kéo kính râm xuống. Trên người anh ta đang mặc chiếc áo len cao cổ do chính tay cô mua. Trước đó anh ta còn nói sẽ luôn mặc chiếc áo này, vậy mà trong đoạn video vài ngày trước lại thấy anh ta đã mặc một chiếc áo len khác, chiếc áo mà cô chưa từng thấy bao giờ.\nNhìn thấy Hình Tố, Hạ Yến Kỷ nở một nụ cười.\nAnh ta có vẻ ngoài điển trai, là một người đàn ông trưởng thành đủ tiêu chuẩn, đây cũng là điều cô mà có thể chắc chắn sau 4 năm chung sống.\nHạ Yến Kỷ bước tới gần Hình Tố rồi đưa tay ôm lấy cô: “Vợ.”\nHình Tố để anh ta ôm mình xong rồi mới lấy giấy bút trong tay ra, nhàn nhạt nói: “Ký đi.”\nNgười đàn ông mỉm cười nhận lấy: “Em lại mua cái gì hả?”\nKhi nhìn thấy năm chữ “Đơn thỏa thuận ly hôn”, anh ta không nhịn được cười, ngẩng đầu nhìn cô, nói: “Ý em là gì?”\nHình Tố: “Ý tôi là tôi muốn ly hôn với anh.”\nHạ Yến Kỷ giống như bị sốc, hồi lâu sau cũng không phản ứng được. Dưới biểu cảm đó của anh ta, Hình Tố bỗng nhiên như biến thành kẻ cặn bã: “Tại sao?”\nHình Tố muốn cho anh ta hiểu, cô lấy máy tính ra, đập lên người Hạ Yến Kỷ: “Đồng bộ hóa icloud, cảm ơn anh đã cho tôi xem hơn 20 video khiêu dâm của chồng mình và những người phụ nữ khác. Chỉ là độ phân giải chưa cao thôi.”\nHạ Yến Kỷ bỗng chốc không nói nên lời.\nHình Tố tỏ ra thờ ơ: “Anh đã sớm chán ghét thì sao không nói với tôi?',
+	    chapters: 76,
+        tracks: [
+            ...batch(1, 70, 5, 'm4a'),
+            manual("Chương 71 - 75 (Hoàn chính văn)", "c71-75.m4a"),
+            manual("Phiên ngoại (Hết)", "pn.m4a")
+        ]
+    },
 ];
