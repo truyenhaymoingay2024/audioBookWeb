@@ -387,4 +387,17 @@ const LIBRARY = [
             manual("Phiên ngoại (Hết)", "pn.m4a")
         ]
     },
+    {
+        id: 24,
+        folderName: "HoDiepVaKinhNgu",
+        title: "Hồ Điệp Và Kình Ngư",
+        author: "Tuế Kiến",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/HoDiepVaKinhNgu/cover.jpg",
+        desc: '“Tuổi thọ của một con bướm nằm trong khoảng ba ngày đến một tháng, mà đa số các con bướm chỉ có một tuần tuổi thọ.”\n“Em cũng giống chúng vậy, sinh mạng chỉ kéo dài vài tháng thôi, có lẽ còn ngắn hơn thế nữa.”\n_\n\nLần đầu tiên Hồ Điệp gặp Kinh Du, anh cho rằng cô là thiếu nữ chán đời muốn tự tử.\nLần thứ hai gặp nhau, anh chẳng mấy bận tâm nói với Hồ Điệp rằng: “Hôm nay nếu cậu nhảy xuống thì tôi sẽ không cứu cậu nữa đâu.”\nVề sau lại đến cô bảo anh: “Kinh Du, đừng đau khổ vì em.”\nThật lâu sau này, Kinh Du trở lại sân đấu và đạt được vinh quang thuộc về mình.\nDưới ánh đèn sáng ngời, anh chợt nhớ lại giọng nói và dáng vẻ của cô thiếu nữ ấy rồi thốt ra một câu không đầu không đuôi trước muôn vàn người —– “Anh không đau khổ, chỉ là cảm thấy vào khoảnh khắc này, có em ở đây thì sẽ tốt hơn biết bao.”\n“Anh là cá voi ngao du đại dương, chợt vào một ngày tình cờ, một chú bướm vô tình xông vào tần số của anh. Đó là giây phút đẹp đẽ nhất trong cuộc đời anh.”\n*\n\nThiếu nữ mắc bệnh ung thư x Thiếu niên bơi lội\nTruyện ngắn/BE\nHồ Điệp là vận động viên trượt băng nghệ thuật, sau đó cô qua đời vào mùa hè\nCâu đầu tiên trong văn án là nguồn internet\nTag: Hoa quý mùa mưa, nhân duyên tình cờ gặp gỡ, thiên chi kiều tử\nNhân vật chính: Hồ Điệp, Kinh Du\nMột câu giới thiệu đơn giản: Khoảnh khắc đẹp đẽ nhất trong cuộc đời\nLập ý: Dù cho con đường phía trước đầy khó khăn, cũng đừng quên mất ước mơ',
+	    chapters: 19,
+        tracks: [
+            ...batch(1, 15, 5, 'm4a'),
+            manual("Chương 16 - 19 (Hết)", "c16-19.m4a")
+        ]
+    },
 ];
