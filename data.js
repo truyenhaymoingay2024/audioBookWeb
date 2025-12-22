@@ -400,4 +400,18 @@ const LIBRARY = [
             manual("Chương 16 - 19 (Hết)", "c16-19.m4a")
         ]
     },
+    {        
+        id: 25,
+        folderName: "NoiDien",
+        title: "Nổi Điên",
+        author: "Ái Cật Lạt Điều Đích Cửu",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/NoiDien/cover.jpg",
+        desc: 'Hắn nói: "Sợ hãi mới là thứ tồn tại lâu dài hơn cả tình yêu."\nHắn nói: "Dù có chết thì Lộ Ngôn Quân tôi cũng muốn Ninh Tri Đường phải thành tro mà chôn cùng tôi."\nHắn nói: "Dù thế nào đi nữa, cả đời này anh đều không buông tay em, nếu không thể yêu anh thì cứ sợ anh đi."\n-\n\nLạnh lùng, u ám chiếm hữu x Đơn thuần ngoan ngoãn.\nLưu ý: Nam chính không có đạo đức, không có tam quan, có thể nói là bệnh hoạn, đến mức điên cuồng. Trong truyện có chứa nhiều tình tiết không phù hợp chuẩn mực, có yếu tố giam cầm, đi theo lối cũ máu chó, không có cảnh nam chính theo đuổi lại nữ chính sau khi đánh mất.',
+	    chapters: 82,
+        tracks: [
+            ...batch(1, 70, 10, 'm4a'),
+            manual("Chương 71 - 75 (Hoàn chính văn)", "c71-75.m4a"),
+            manual("Ngoại truyện (Hết)", "nt.m4a")
+        ]
+    },
 ];
