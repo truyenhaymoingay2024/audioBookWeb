@@ -414,4 +414,17 @@ const LIBRARY = [
             manual("Ngoại truyện (Hết)", "nt.m4a")
         ]
     },
+    {        
+        id: 26,
+        folderName: "TruocKhiAnhDen",
+        title: "Trước Khi Anh Đến",
+        author: "Trà Hoa Đậu Biếc",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/TruocKhiAnhDen/cover.jpg",
+        desc: 'Tôi từng nghĩ đến cái chết rất nhiều lần.\nMỗi đêm, tôi tự tưởng tượng ra hàng nghìn viễn cảnh về cái chết của bản thân. Có thể tôi sẽ chết vì bị xe đâm, có thể tôi sẽ được chứng kiến sự sống của chính mình dần xói mòn do mất máu quá nhiều, hoặc tôi sẽ nát vụn dưới chân tòa nhà vài chục tầng... Tôi mường tượng đến rất nhiều trường hợp, nhưng chưa một lần nghĩ mình sẽ chết già.\n\nTrích đoạn 1:\nTôi từng nghĩ đến cái chết rất nhiều lần.\nMỗi đêm, tôi tự tưởng tượng ra hàng nghìn viễn cảnh về cái chết của bản thân. Có thể tôi sẽ chết vì bị xe đâm, có thể tôi sẽ được chứng kiến sự sống của chính mình dần xói mòn do mất máu quá nhiều, hoặc tôi sẽ nát vụn dưới chân tòa nhà vài chục tầng... Tôi mường tượng đến rất nhiều trường hợp, nhưng chưa một lần nghĩ mình sẽ chết già.\n\nTrích đoạn 2:\nAnh ôm siết lấy eo tôi, cúi đầu hôn thật lâu lên đầu vai tôi, thì thầm:\n"Trông giống thân con bướm thật đấy..."\n"Dạ?" Tôi nghiêng đầu, vươn tay khẽ vuốt ve khuôn mặt đẹp như tượng tạc của anh, "Cái gì giống thân con bướm?"\nHơi ấm và mùi gỗ tuyết tùng pha lẫn hương bạc hà dìu dịu tỏa ra trên người anh khiến cơ thể tôi vô thức thả lỏng, tôi thoải mái ngả người ra phía sau, tận hưởng sự âu yếm của anh.\n"Hình xăm dấu chấm phẩy của em..." Anh dùng một tay ôm tôi, tay kia mân mê vùng da thịt ở đầu vai tôi, giọng nói vừa trầm vừa dịu dàng, "Giống thân con bướm ấy."\n"Thật á?" Tôi ngoái đầu lại, ngó chằm chằm hình xăm trên đầu vai một lúc lâu, sau đó bật cười, "Cũng hơi giống nhỉ?"\n"Đợi anh một chút nhé." Trường chợt vươn tay lấy cây bút trên bàn, anh kéo một bên dây áo của tôi xuống, ngay sau đó tôi cảm giác đầu bút chậm rãi di chuyển trên da. Đầu bút nhòn nhọn, hơi lành lạnh khiến tôi vô thức cựa quậy.\n"Ngồi yên nào." Trường cười khẽ, xoa đầu tôi, "Xong rồi."\n"Ôi..." Tôi sửng sốt nhìn con bướm xinh đẹp đang tung cánh trên đầu vai, lẩm bẩm, "Đẹp quá."\n"Thích không?" Trường cong môi cười, dùng cả hai tay ôm lấy mặt tôi, đôi mắt đẹp sâu thăm thẳm ngập tràn hình bóng tôi.\n"Em thích lắm." Tôi nở nụ cười thật tươi, nhưng mi mắt thì ướt nhòe, "Cảm ơn anh."',
+	    chapters: 55,
+        tracks: [
+            ...batch(1, 50, 5, 'm4a'),
+            manual("Chương 51 - 55 (Hết)", "c51-55.m4a")
+        ]
+    },
 ];
