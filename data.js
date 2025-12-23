@@ -427,4 +427,17 @@ const LIBRARY = [
             manual("Chương 51 - 55 (Hết)", "c51-55.m4a")
         ]
     },
+    {        
+        id: 27,
+        folderName: "AnhNgheKiaLaAmThanhThuoDo",
+        title: "Anh Nghe Kìa Là Âm Thanh Của Thuở Đó",
+        author: "Liêm Thập Lí",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/AnhNgheKiaLaAmThanhThuoDo/cover.jpg",
+        desc: 'Chúng ta đừng ở đây\nTheo em quay lại năm mười tám tuổi\nTrốn dưới bụi hoa đỗ quyên ở vườn trường\nĐừng để bị vận mệnh tìm thấy.',
+	    chapters: 17,
+        tracks: [
+            ...batch(1, 15, 5, 'm4a'),
+            manual("Chương 16 - 17 (Hết)", "c16-17.m4a")
+        ]
+    },
 ];
