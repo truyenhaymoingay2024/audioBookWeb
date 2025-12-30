@@ -440,4 +440,18 @@ const LIBRARY = [
             manual("Chương 16 - 17 (Hết)", "c16-17.m4a")
         ]
     },
+    {        
+        id: 28,
+        folderName: "GiamCamSinhMenh",
+        title: "Giam Cầm Sinh Mệnh",
+        author: "Khắc Kinh",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/GiamCamSinhMenh/cover.jpg",
+        desc: 'Nhà họ Lục có hai chị em, cô chị được yêu quý và cưng chiều, trong khi người em thì bị bỏ qua và lạnh nhạt. Nhà Lục đang có hôn ước với nhà họ Trương giữa thiếu gia Trương và đại tiểu thư Lục gia, nhưng bất ngờ nhà Lục quyết định đưa ra nhị tiểu thư thay cho đại tiểu thư.\nĐại tiểu thư không vui và cảm thấy ganh tị với em gái, cô đã liên kết với mẹ để gây khó khăn cho em. Vì tình yêu với Trương Kỳ, nhị tiểu thư Lục gia đã mướn giang hồ bắt cóc em gái và bán cho bọn buôn người.\nSau đó, số phận của nhị tiểu thư Lục gia sẽ đi đến đâu?',
+	    chapters: 52,
+        tracks: [
+            ...batch(1, 45, 5, 'm4a'),
+            manual("Chương 46 - 50 (Hoàn chính văn)", "c46-50.m4a"),
+            manual("Ngoại truyện (Hết)", "nt.m4a")
+        ]
+    },
 ];
