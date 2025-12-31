@@ -454,4 +454,16 @@ const LIBRARY = [
             manual("Ngoại truyện (Hết)", "nt.m4a")
         ]
     },
+    {        
+        id: 29,
+        folderName: "LaRoiKhongVet",
+        title: "Lá Rơi Không Vết",
+        author: "Chưa Rõ",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/LaRoiKhongVet/cover.jpg",
+        desc: 'Có một hôm ngồi vu vơ, mình lại quay sang thủ thỉ với người thương: "Anh biết không, vì yêu mà yêu là thần, vì bị yêu mà yêu là người. Em đọc được nó trong một câu truyện, em nghĩ chính em cũng giống như anh nam chính , vì cảm động trước tình cảm của đối phương mà đã yêu từ mọi ngóc ngách sâu nhất trong tâm hồn."',
+	    chapters: 3,
+        tracks: [
+            manual("Chương 1 - 3 (Hết)", "c1-3.m4a")
+        ]
+    },
 ];
