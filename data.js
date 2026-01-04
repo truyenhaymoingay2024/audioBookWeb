@@ -466,4 +466,17 @@ const LIBRARY = [
             manual("Chương 1 - 3 (Hết)", "c1-3.m4a")
         ]
     },
+    {        
+        id: 30,
+        folderName: "ChuyenTinhKheNui",
+        title: "Chuyện Tình Khe Núi",
+        author: "Noãn Dương Tây Tây",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/ChuyenTinhKheNui/cover.jpg",
+        desc: 'Anh là một người đàn ông như thế này, chưa từng đến những phố xá sầm uất, cũng chưa từng gặp người mình yêu trong biển người rộng lớn, nửa đời chỉ trú ngụ bên ngọn núi này, nhưng trong tim luôn đặt tình yêu và trách nhiệm ngang nhau, một trái tim không phù phiếm, một chấp niệm không từ bỏ.\nTình cờ gặp gỡ, chờ đợi cô, yêu cô, ngủ với cô, đó chính là trách nhiệm nắm tay nhau cả một đời.\nVăn án sơ lược: Đây là nhật ký viết về cuộc sống ung dung ngày qua ngày của một người đàn ông sống trong núi.\nMột chàng trai dịu dàng, trầm tĩnh, tài "giỏi" và một cô gái có thân phận trước mắt chưa được quyết định, cùng nhau giải mã câu chuyện mới nhé?\nAnh nói: "Em đã đến rồi thì đừng hòng đi."\nNhưng, cô vẫn đi mất...\n\n[Một câu chuyện ngày thường đơn giản, thuận tiện khiến bọn họ yêu nhau đến sống dở chết dở, không xa không rời, sống chết có nhau, kiếp trước kiếp này đều thuộc kiểu cuồng yêu não tàn máu chó...]',
+	    chapters: 65,
+        tracks: [
+            ...batch(1, 60, 10, 'm4a'),
+            manual("Chương 61 - 63 + 2 Ngoại truyện (Hết)", "c61-63+nt.m4a")
+        ]
+    },
 ];
