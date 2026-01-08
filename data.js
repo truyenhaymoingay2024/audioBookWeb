@@ -488,7 +488,8 @@ const LIBRARY = [
         desc: 'Lê Tiếu - cô chủ nhỏ được cưng chiều của nhà họ Lê bị từ hôn.\nNgười nhà họ Lê vùng lên khởi nghĩa, chinh phạt khắp nơi, thề phải cho đối phương muối mặt.\n...\nSau đó Lê Tiếu vô tình gặp được anh Cả của người từ hôn.\nCó người nói: Anh ta là người đàn ông thần bí nhất ở Nam Dương, họ Thương, tên Úc, tự Thiếu Diễn.\nCũng có người nói: Anh ta nhìn đời bằng vung, bản tính cố chấp, là ông trùm của thế giới ngầm Nam Dương, không thể chọc vào.\nTrong cơn mưa phùn không dứt, Lê Tiếu nhìn người đàn ông ngang tàng sát phạt, cười khẽ: "Xin chào, tôi là Lê Tiếu."\nKhông làm được vợ chồng, vậy thì làm chị dâu chú vậy.\n...\nMấy tháng sau, gặp nhau giữa đường, người đàn ông từ hôn chê cười Lê Tiếu: "Cô lén theo tôi à? Còn chưa cam lòng sao?"\nSau lưng đột nhiên có giọng nói sắc bén vang lên, "Ăn nói lễ phép với chị dâu cậu một tí!"\nTừ đó, phong ba ở thành Nam Dương chỉ còn lại một lời đồn duy nhất...\nÔng trùm bản tính cố chấp của Nam Dương đội trong tim một cái "bàn thờ", cô họ Lê, tên Tiếu, tự Bàn Thờ!',
 	    chapters: 1598,
         tracks: [
-            ...batch(1, 200, 20, 'm4a'),
+            ...batch(1, 300, 20, 'm4a'),
         ]
     },
+
 ];
