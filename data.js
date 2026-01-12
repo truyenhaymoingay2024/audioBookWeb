@@ -482,7 +482,7 @@ const LIBRARY = [
     {        
         id: 31,
         folderName: "SieuCapCungChieu",
-        title: "Siêu Cấp Cưng Chiều (đang update dần)",
+        title: "Siêu Cấp Cưng Chiều (đang update 505/1598)",
         author: "Mạn Tây",
         cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/SieuCapCungChieu/cover.jpg",
         desc: 'Lê Tiếu - cô chủ nhỏ được cưng chiều của nhà họ Lê bị từ hôn.\nNgười nhà họ Lê vùng lên khởi nghĩa, chinh phạt khắp nơi, thề phải cho đối phương muối mặt.\n...\nSau đó Lê Tiếu vô tình gặp được anh Cả của người từ hôn.\nCó người nói: Anh ta là người đàn ông thần bí nhất ở Nam Dương, họ Thương, tên Úc, tự Thiếu Diễn.\nCũng có người nói: Anh ta nhìn đời bằng vung, bản tính cố chấp, là ông trùm của thế giới ngầm Nam Dương, không thể chọc vào.\nTrong cơn mưa phùn không dứt, Lê Tiếu nhìn người đàn ông ngang tàng sát phạt, cười khẽ: "Xin chào, tôi là Lê Tiếu."\nKhông làm được vợ chồng, vậy thì làm chị dâu chú vậy.\n...\nMấy tháng sau, gặp nhau giữa đường, người đàn ông từ hôn chê cười Lê Tiếu: "Cô lén theo tôi à? Còn chưa cam lòng sao?"\nSau lưng đột nhiên có giọng nói sắc bén vang lên, "Ăn nói lễ phép với chị dâu cậu một tí!"\nTừ đó, phong ba ở thành Nam Dương chỉ còn lại một lời đồn duy nhất...\nÔng trùm bản tính cố chấp của Nam Dương đội trong tim một cái "bàn thờ", cô họ Lê, tên Tiếu, tự Bàn Thờ!',
@@ -492,9 +492,16 @@ const LIBRARY = [
 			...batch(401, 505, 15, 'm4a'),
         ]
     },
-
+    {        
+        id: 32,
+        folderName: "ManThienHoaVu",
+        title: "Mạn Thiên Hoa Vũ (đang update 20/87)",
+        author: "Thường Yên",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/ManThienHoaVu/cover.jpg",
+        desc: 'Mạn Thiên Hoa Vũ được lấy bối cảnh dưới thời vua Trần Anh Tông, vị hoàng đế thứ tư của Hoàng triều Trần trong lịch sử Việt Nam.',
+	    chapters: 87,
+        tracks: [
+            ...batch(1, 20, 5, 'm4a'),
+        ]
+    },
 ];
-
-
-
-
