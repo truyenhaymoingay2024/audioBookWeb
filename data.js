@@ -495,7 +495,7 @@ const LIBRARY = [
     {        
         id: 32,
         folderName: "ManThienHoaVu",
-        title: "Mạn Thiên Hoa Vũ (đang update 20/87)",
+        title: "Mạn Thiên Hoa Vũ (đang update 40/87)",
         author: "Thường Yên",
         cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/ManThienHoaVu/cover.jpg",
         desc: 'Mạn Thiên Hoa Vũ được lấy bối cảnh dưới thời vua Trần Anh Tông, vị hoàng đế thứ tư của Hoàng triều Trần trong lịch sử Việt Nam.',
@@ -506,3 +506,4 @@ const LIBRARY = [
     },
 
 ];
+
