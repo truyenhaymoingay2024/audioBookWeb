@@ -501,7 +501,8 @@ const LIBRARY = [
         desc: 'Mạn Thiên Hoa Vũ được lấy bối cảnh dưới thời vua Trần Anh Tông, vị hoàng đế thứ tư của Hoàng triều Trần trong lịch sử Việt Nam.',
 	    chapters: 87,
         tracks: [
-            ...batch(1, 20, 5, 'm4a'),
+            ...batch(1, 40, 5, 'm4a'),
         ]
     },
+
 ];
