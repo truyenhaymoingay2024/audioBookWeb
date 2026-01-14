@@ -495,17 +495,19 @@ const LIBRARY = [
     {        
         id: 32,
         folderName: "ManThienHoaVu",
-        title: "Mạn Thiên Hoa Vũ (đang update 52/87)",
+        title: "Mạn Thiên Hoa Vũ (đang update 82/87)",
         author: "Thường Yên",
         cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/ManThienHoaVu/cover.jpg",
         desc: 'Mạn Thiên Hoa Vũ được lấy bối cảnh dưới thời vua Trần Anh Tông, vị hoàng đế thứ tư của Hoàng triều Trần trong lịch sử Việt Nam.',
 	    chapters: 87,
         tracks: [
             ...batch(1, 50, 5, 'm4a'),
-            manual("Chương 51 - 52 (Hoàn quyển 1)", "c51-52.m4a")
+            manual("Chương 51 - 52 (Hoàn quyển 1)", "c51-52.m4a"),
+			...batch(53, 82, 3, 'm4a'),
         ]
     },
 
 ];
+
 
 
