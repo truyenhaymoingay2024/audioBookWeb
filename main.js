@@ -682,14 +682,20 @@ const app = (() => {
                                 <i class="ph-fill ph-list-dashes text-white text-3xl drop-shadow-lg transform scale-50 group-hover:scale-100 transition duration-300"></i>
                             </div>
                         </div>
-                        <h3 class="font-bold text-sm leading-tight mb-1 truncate px-1 text-white group-hover:text-blue-400 transition">${folder.title}</h3>
-                        <p class="text-[10px] font-medium text-gray-400 px-1 truncate">${folder.author}</p>
-                        <p class="text-[9px] text-gray-500 mt-2 px-1 flex items-center gap-1 font-mono">
-                            <i class="ph-fill ph-files"></i> ${folder.chapters || folder.tracks.length} chương
-                        </p>
+                        <div class="flex-1 px-1">
+                            <h3 class="font-bold text-sm leading-tight mb-1 truncate text-white group-hover:text-blue-400 transition" title="${folder.title}">${folder.title}</h3>
+                            <p class="text-[10px] font-medium text-gray-400 truncate mb-2" title="${folder.author}">${folder.author}</p>
+                            <div class="flex items-center justify-between text-[9px] text-gray-500 font-mono">
+                                <span class="flex items-center gap-1">
+                                    <i class="ph-fill ph-files"></i> ${folder.chapters || folder.tracks.length} chương
+                                </span>
+                            </div>
+                        </div>
                         ${state.lastPlayedData && state.lastPlayedData.folderId === folder.id ? 
                             `<div class="mt-2 px-1">
-                                <span class="text-[8px] bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded-full">Đang nghe</span>
+                                <span class="text-[8px] bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded-full flex items-center gap-1">
+                                    <i class="ph-fill ph-headphones"></i> Đang nghe
+                                </span>
                             </div>` 
                             : ''}
                     </div>

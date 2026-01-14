@@ -1143,3 +1143,130 @@ header nav > div:last-child {
         font-size: 0.7rem;
     }
 }
+
+/* ==================== TỐI ƯU HÓA KHÔNG GIAN MÀN HÌNH ==================== */
+
+/* Container chính - Tận dụng chiều ngang tối đa */
+@media (min-width: 1400px) {
+  main {
+    max-width: 95% !important;
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+  }
+}
+
+/* Grid thư viện - Tăng số cột trên màn hình lớn */
+@media (min-width: 1600px) {
+  #folder-grid {
+    grid-template-columns: repeat(5, 1fr) !important;
+  }
+}
+
+@media (min-width: 1920px) {
+  #folder-grid {
+    grid-template-columns: repeat(6, 1fr) !important;
+  }
+}
+
+/* Book card - Tối ưu hiển thị thông tin */
+.book-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.book-card .aspect-\[1\/1\] {
+  flex-shrink: 0;
+}
+
+/* Chi tiết truyện - Tận dụng không gian ngang */
+@media (min-width: 1024px) {
+  #detail-view .flex-col.lg\:flex-row {
+    gap: 1.5rem !important;
+  }
+  
+  #detail-view .lg\:w-1\/4 {
+    width: 28% !important;
+    max-width: 320px;
+  }
+  
+  #detail-view .lg\:w-3\/4 {
+    width: 72% !important;
+  }
+}
+
+/* Mô tả truyện - Tăng chiều cao hiển thị */
+#detail-desc {
+  max-height: 280px !important;
+  overflow-y: auto;
+  padding-right: 8px;
+  line-height: 1.6;
+}
+
+/* Tăng khoảng cách giữa các track item để dễ đọc */
+#track-list .track-item {
+  margin-bottom: 0.75rem;
+  padding: 0.875rem 1rem;
+}
+
+/* Tối ưu hiển thị trên màn hình rất nhỏ */
+@media (max-width: 360px) {
+  .book-card {
+    padding: 0.75rem !important;
+  }
+  
+  .book-card h3 {
+    font-size: 0.9rem !important;
+  }
+  
+  .book-card p {
+    font-size: 0.75rem !important;
+  }
+}
+
+/* Tối ưu hiển thị player bar trên màn hình lớn */
+@media (min-width: 1024px) {
+  #player-bar {
+    max-width: 1200px !important;
+    margin: 0 auto;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 3rem);
+  }
+}
+
+/* Tối ưu scrollbar cho mô tả */
+#detail-desc::-webkit-scrollbar {
+  width: 4px;
+}
+
+#detail-desc::-webkit-scrollbar-thumb {
+  background: rgba(59, 130, 246, 0.5);
+  border-radius: 4px;
+}
+
+/* Tận dụng chiều cao màn hình cho grid */
+#folder-grid {
+  min-height: 60vh;
+}
+
+/* Tối ưu header trên màn hình siêu rộng */
+@media (min-width: 2000px) {
+  header nav {
+    max-width: 1800px;
+    margin: 0 auto;
+  }
+}
+
+/* Giảm khoảng trống không cần thiết trên mobile */
+@media (max-width: 640px) {
+  main {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    padding-top: 6rem !important;
+  }
+  
+  .library-header {
+    margin-bottom: 1.5rem !important;
+  }
+}

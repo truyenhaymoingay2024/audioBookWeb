@@ -18,8 +18,8 @@
 
 <body class="pb-32 selection:bg-blue-500/30 selection:text-white overflow-x-hidden">
     <!-- === NAVIGATION (Sticky Top) === -->
-    <div class="fixed top-0 left-0 right-0 z-40 px-4 py-4">
-        <nav class="glass-panel max-w-7xl mx-auto rounded-full px-2 pl-6 py-2 flex justify-between items-center">
+    <div class="fixed top-0 left-0 right-0 z-40 px-4 py-3">
+        <nav class="glass-panel max-w-7xl xl:max-w-[90%] 2xl:max-w-[95%] mx-auto rounded-full px-2 pl-4 md:pl-6 py-2 flex justify-between items-center header-nav">
             <div class="flex items-center gap-3 cursor-pointer group" onclick="app.goHome()" role="button" aria-label="Trở về trang chủ" tabindex="0">
                 <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white shadow-lg shadow-blue-500/20 group-hover:rotate-12 transition shrink-0 brand-icon">
                     <i class="ph-bold ph-books text-xl"></i>
@@ -30,33 +30,32 @@
                 </div>
             </div>
 
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 header-right-section">
                 <!-- Nút tiếp tục audio đã nghe -->
                 <button onclick="app.resumeLastAudio()" id="resume-last-audio-btn" 
-                    class="glass-panel bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 hover:text-white px-4 py-2 rounded-full text-xs font-medium flex items-center gap-2 transition-all hidden group relative resume-btn"
+                    class="glass-panel bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 hover:text-white px-3 md:px-4 py-1.5 md:py-2 rounded-full text-xs font-medium flex items-center gap-2 transition-all hidden group relative resume-btn mobile-hidden"
                     title="Tiếp tục audio đã nghe cuối cùng">
                     <i class="ph-fill ph-play-circle"></i>
-                    <span class="truncate max-w-[100px] sm:max-w-none resume-text">Tiếp tục</span>
+                    <span class="truncate max-w-[80px] sm:max-w-[100px] md:max-w-none resume-text">Tiếp tục</span>
                     <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900/90 backdrop-blur-sm text-xs text-white rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 shadow-xl border border-white/10">
                         <div class="font-bold mb-1">Tiếp tục từ:</div>
                         <div id="resume-tooltip-content" class="text-blue-300"></div>
                     </div>
                 </button>
                 
-                <div class="relative group">
+                <div class="relative group search-container">
                     <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                         <i class="ph ph-magnifying-glass text-lg text-gray-400"></i>
                     </div>
-                    <!-- ĐÃ SỬA: Thêm class md:w-64 để thanh tìm kiếm luôn mở rộng trên màn hình đủ lớn -->
                     <input type="text" id="search-input"
-                        class="glass-panel bg-transparent w-8 focus:w-40 sm:w-10 sm:focus:w-64 md:w-64 h-10 rounded-full pl-10 pr-4 text-sm text-white placeholder-gray-500 transition-all duration-300 focus:ring-2 focus:ring-blue-500/50 focus:outline-none focus:bg-white/5 search-input"
+                        class="glass-panel bg-transparent w-8 focus:w-36 sm:w-10 sm:focus:w-48 md:w-48 lg:w-56 h-9 md:h-10 rounded-full pl-10 pr-4 text-sm text-white placeholder-gray-500 transition-all duration-300 focus:ring-2 focus:ring-blue-500/50 focus:outline-none focus:bg-white/5 search-input"
                         placeholder="Tìm sách, tác giả..."
                         oninput="app.handleSearch(this.value)"
                         aria-label="Tìm kiếm audiobook">
                 </div>
                 
                 <a href="https://www.youtube.com/@tunguaudio0604" target="_blank" rel="noopener noreferrer"
-                    class="w-10 h-10 rounded-full p-[2px] border border-white/20 ml-1 cursor-pointer hover:scale-105 transition block overflow-hidden shrink-0 user-avatar"
+                    class="w-9 h-9 md:w-10 md:h-10 rounded-full p-[2px] border border-white/20 ml-1 cursor-pointer hover:scale-105 transition block overflow-hidden shrink-0 user-avatar"
                     aria-label="Kênh YouTube của Tư Ngữ Audio">
                     <img id="user-avatar" src="./avt.jpg" onerror="this.src='https://via.placeholder.com/150'" class="w-full h-full rounded-full object-cover" alt="Avatar Tư Ngữ Audio">
                 </a>
@@ -65,7 +64,7 @@
     </div>
 
     <!-- === SWIPE AREA INDICATOR === -->
-    <div id="swipe-indicator" class="fixed top-24 left-4 right-4 z-30 flex justify-center pointer-events-none opacity-0 transition-opacity duration-300">
+    <div id="swipe-indicator" class="fixed top-20 md:top-24 left-4 right-4 z-30 flex justify-center pointer-events-none opacity-0 transition-opacity duration-300">
         <div class="glass-panel px-4 py-2 rounded-full text-xs text-gray-400 backdrop-blur-xl">
             <i class="ph-bold ph-arrow-left mr-2"></i> Vuốt để quay lại
             <i class="ph-bold ph-arrow-right ml-2"></i>
@@ -73,12 +72,12 @@
     </div>
 
     <!-- === MAIN CONTENT === -->
-    <main class="max-w-7xl mx-auto pt-28 px-4 min-h-screen relative z-0" id="main-content">
+    <main class="max-w-7xl xl:max-w-[90%] 2xl:max-w-[95%] mx-auto pt-24 md:pt-28 px-3 sm:px-4 md:px-6 min-h-screen relative z-0" id="main-content">
 
         <!-- LIBRARY VIEW -->
         <section id="library-view" class="animate-enter">
-            <!-- ĐÃ SỬA: Toàn bộ header của library view -->
-            <div class="library-header mb-8">
+            <!-- Header của library view -->
+            <div class="library-header mb-6 md:mb-8">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div class="flex items-center gap-2">
                         <h2 class="text-xl sm:text-2xl font-bold flex items-center gap-2 text-white library-title">
@@ -87,7 +86,7 @@
                         <span class="text-xs sm:text-sm text-gray-400 bg-white/5 px-2 py-0.5 rounded-md book-count" id="book-count">0</span>
                     </div>
 
-                    <!-- Sắp xếp dropdown - ĐÃ SỬA RESPONSIVE -->
+                    <!-- Sắp xếp dropdown -->
                     <div class="sort-menu-container relative z-20 self-end sm:self-auto">
                         <button onclick="app.toggleSortMenu()" class="sort-menu-trigger glass-panel rounded-full px-3 py-1.5 sm:px-4 sm:py-2 flex items-center gap-1 sm:gap-2 hover:bg-white/10 transition-all duration-200 group" aria-label="Sắp xếp" aria-expanded="false">
                             <i class="ph-bold ph-sort-ascending text-blue-400 text-sm sm:text-base group-hover:rotate-180 transition-transform duration-300"></i>
@@ -104,41 +103,44 @@
                 </div>
             </div>
 
-            <div id="folder-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-20">
+            <!-- Grid chứa các sách -->
+            <div id="folder-grid" class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 md:gap-6 pb-20">
                 <!-- JS Inject Here -->
             </div>
             
-            <div id="empty-state" class="hidden flex flex-col items-center justify-center py-20 opacity-50 text-center px-4">
-                <i class="ph-duotone ph-ghost text-6xl mb-4 text-blue-300"></i>
-                <p class="text-gray-400">Xin lỗi bạn, truyện bạn đang tìm hiện chưa lên sóng.<br>Bạn nhấn vào avt trên thanh header để vào YouTube đề xuất ngay cho mình đi nè!</p>
+            <!-- Empty state -->
+            <div id="empty-state" class="hidden flex flex-col items-center justify-center py-16 md:py-20 opacity-50 text-center px-4">
+                <i class="ph-duotone ph-ghost text-5xl md:text-6xl mb-4 text-blue-300"></i>
+                <p class="text-gray-400 text-sm md:text-base">Xin lỗi bạn, truyện bạn đang tìm hiện chưa lên sóng.<br>Bạn nhấn vào avt trên thanh header để vào YouTube đề xuất ngay cho mình đi nè!</p>
             </div>
         </section>
 
         <!-- DETAIL VIEW -->
         <section id="detail-view" class="hidden animate-enter pb-32">
-            <button onclick="app.goHome()" class="mb-6 btn-md3 btn-ghost pl-0 gap-2 hover:pl-2 transition-all text-gray-300 hover:text-white group" aria-label="Quay lại thư viện">
+            <button onclick="app.goHome()" class="mb-4 md:mb-6 btn-md3 btn-ghost pl-0 gap-2 hover:pl-2 transition-all text-gray-300 hover:text-white group" aria-label="Quay lại thư viện">
                 <i class="ph-bold ph-arrow-left text-lg group-hover:-translate-x-1 transition-transform"></i> Quay lại thư viện
             </button>
 
-            <div class="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start">
-                <div class="w-full lg:w-auto flex-shrink-0 mx-auto lg:mx-0 lg:sticky lg:top-32 flex flex-col items-center">
-                    <div class="w-full max-w-[260px] glass-panel p-4 rounded-[24px] relative overflow-hidden group">
+            <div class="flex flex-col lg:flex-row gap-6 lg:gap-8 xl:gap-10 items-start">
+                <!-- Phần bìa sách và thông tin -->
+                <div class="w-full lg:w-1/4 xl:w-[28%] flex-shrink-0 mx-auto lg:mx-0 lg:sticky lg:top-28 flex flex-col items-center">
+                    <div class="w-full max-w-[280px] md:max-w-[320px] lg:w-full glass-panel p-4 md:p-5 rounded-[20px] md:rounded-[24px] relative overflow-hidden group">
                         <div class="absolute -top-10 -right-10 w-32 h-32 bg-blue-500/30 rounded-full blur-3xl pointer-events-none"></div>
 
                         <img id="detail-cover" src="" onerror="this.src='https://via.placeholder.com/300x450?text=No+Image'"
-                            class="w-full aspect-[2/3] object-cover rounded-xl shadow-lg mb-4 border border-white/10 group-hover:scale-[1.02] transition-transform duration-300"
+                            class="w-full aspect-[2/3] object-cover rounded-xl md:rounded-xl shadow-lg mb-4 border border-white/10 group-hover:scale-[1.02] transition-transform duration-300"
                             alt="Bìa sách" loading="lazy">
 
-                        <h1 id="detail-title" class="text-xl font-bold mb-1 leading-tight text-center text-white">Title</h1>
-                        <p id="detail-author" class="text-sm text-blue-400 font-medium mb-4 text-center">Author</p>
+                        <h1 id="detail-title" class="text-xl md:text-2xl font-bold mb-1 leading-tight text-center text-white">Title</h1>
+                        <p id="detail-author" class="text-sm md:text-base text-blue-400 font-medium mb-4 text-center">Author</p>
 
-                        <div class="h-[1px] w-full bg-white/10 my-4"></div>
+                        <div class="h-[1px] w-full bg-white/10 my-3 md:my-4"></div>
 
-                        <p id="detail-desc" class="text-sm text-gray-300 leading-relaxed max-h-40 overflow-y-auto pr-2 text-justify custom-scrollbar">
+                        <p id="detail-desc" class="text-sm md:text-base text-gray-300 leading-relaxed md:leading-relaxed text-justify custom-scrollbar">
                             Description...
                         </p>
 
-                        <div class="flex gap-2 mt-4">
+                        <div class="flex flex-col sm:flex-row gap-2 mt-4 md:mt-5">
                             <button onclick="app.playAll()"
                                 class="flex-1 btn-md3 btn-primary py-3 text-base gap-2 rounded-xl group"
                                 aria-label="Phát tất cả các chương">
@@ -159,17 +161,18 @@
                     </div>
                 </div>
 
-                <div class="w-full flex-1">
-                    <div class="flex items-center justify-between mb-4 px-2">
-                        <h3 class="text-xl font-bold flex items-center gap-2 text-white">
+                <!-- Phần danh sách chương -->
+                <div class="w-full lg:w-3/4 xl:w-[72%] flex-1 mt-6 lg:mt-0">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 md:mb-6 px-1 md:px-2 gap-3 sm:gap-0">
+                        <h3 class="text-xl md:text-2xl font-bold flex items-center gap-2 text-white">
                             <i class="ph-duotone ph-playlist text-blue-500"></i> Danh sách chương
                         </h3>
-                        <div class="text-xs text-gray-400 flex items-center gap-2">
+                        <div class="text-xs md:text-sm text-gray-400 flex items-center gap-2">
                             <i class="ph-fill ph-history"></i>
-                            <span id="last-played-info" class="max-w-[200px] truncate sm:max-w-none"></span>
+                            <span id="last-played-info" class="max-w-[180px] md:max-w-[250px] lg:max-w-none truncate"></span>
                         </div>
                     </div>
-                    <div id="track-list" class="space-y-3">
+                    <div id="track-list" class="space-y-3 md:space-y-4">
                         <!-- JS Inject Here -->
                     </div>
                 </div>
@@ -178,50 +181,50 @@
     </main>
 
     <!-- === PLAYER BAR === -->
-    <div id="player-bar" class="fixed bottom-6 left-4 right-4 z-50 transform translate-y-[150%] transition-transform duration-500 cubic-bezier(0.34,1.56,0.64,1)">
-        <div class="max-w-4xl mx-auto glass-panel !bg-[var(--player-bg)] !backdrop-blur-xl rounded-[32px] p-3 pr-6 flex flex-col md:flex-row items-center gap-4 md:gap-6 border border-white/10 shadow-2xl">
+    <div id="player-bar" class="fixed bottom-4 md:bottom-6 left-3 right-3 md:left-4 md:right-4 lg:left-1/2 lg:-translate-x-1/2 lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl z-50 transform translate-y-[150%] transition-transform duration-500 cubic-bezier(0.34,1.56,0.64,1)">
+        <div class="w-full mx-auto glass-panel !bg-[var(--player-bg)] !backdrop-blur-xl rounded-[28px] md:rounded-[32px] p-3 md:p-4 pr-4 md:pr-6 flex flex-col md:flex-row items-center gap-3 md:gap-4 lg:gap-6 border border-white/10 shadow-2xl">
             <!-- Full Player Content -->
             <div class="full-player-content w-full">
-                <div class="flex flex-col md:flex-row items-center gap-4 md:gap-6 w-full">
-                    <div class="flex items-center gap-4 w-full md:w-1/3 pl-2">
-                        <div class="w-14 h-14 rounded-full overflow-hidden relative flex-shrink-0 border border-white/20 shadow-lg group">
+                <div class="flex flex-col md:flex-row items-center gap-3 md:gap-4 lg:gap-6 w-full">
+                    <div class="flex items-center gap-3 md:gap-4 w-full md:w-1/3 pl-1 md:pl-2">
+                        <div class="w-12 h-12 md:w-14 md:h-14 rounded-full overflow-hidden relative flex-shrink-0 border border-white/20 shadow-lg group">
                             <img id="p-cover" src="https://via.placeholder.com/150" 
                                 class="w-full h-full object-cover animate-[spin_20s_linear_infinite]" 
                                 style="animation-play-state: paused;"
                                 alt="Album cover">
-                            <div class="absolute inset-0 m-auto w-3 h-3 bg-gray-900 rounded-full border border-gray-700"></div>
+                            <div class="absolute inset-0 m-auto w-2.5 h-2.5 md:w-3 md:h-3 bg-gray-900 rounded-full border border-gray-700"></div>
                             <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                <i class="ph-fill ph-music-note text-white text-lg"></i>
+                                <i class="ph-fill ph-music-note text-white text-base md:text-lg"></i>
                             </div>
                         </div>
                         <div class="min-w-0 flex-1">
-                            <h4 id="p-title" class="font-bold text-sm text-white truncate pr-2">Chọn chương để bắt đầu</h4>
-                            <p id="p-author" class="text-xs text-gray-400 truncate">Tư Ngữ Audio</p>
+                            <h4 id="p-title" class="font-bold text-sm md:text-base text-white truncate pr-2">Chọn chương để bắt đầu</h4>
+                            <p id="p-author" class="text-xs md:text-sm text-gray-400 truncate">Tư Ngữ Audio</p>
                         </div>
                     </div>
                     
                     <div class="flex flex-col w-full md:w-1/3 items-center gap-2">
-                        <div class="flex items-center gap-4">
-                            <button onclick="app.skip(-5)" class="btn-md3 btn-ghost w-10 h-10 rounded-full hover:bg-white/10 transition-transform hover:scale-110" title="Lùi 5 giây" aria-label="Lùi 5 giây">
-                                <i class="ph-fill ph-rewind text-lg"></i>
+                        <div class="flex items-center gap-3 md:gap-4">
+                            <button onclick="app.skip(-5)" class="btn-md3 btn-ghost w-9 h-9 md:w-10 md:h-10 rounded-full hover:bg-white/10 transition-transform hover:scale-110" title="Lùi 5 giây" aria-label="Lùi 5 giây">
+                                <i class="ph-fill ph-rewind text-base md:text-lg"></i>
                             </button>
-                            <button onclick="app.prevTrack()" class="btn-md3 btn-ghost w-10 h-10 rounded-full hover:text-blue-400 transition-transform hover:scale-110" title="Chương trước" aria-label="Chương trước">
-                                <i class="ph-fill ph-skip-back text-2xl"></i>
+                            <button onclick="app.prevTrack()" class="btn-md3 btn-ghost w-9 h-9 md:w-10 md:h-10 rounded-full hover:text-blue-400 transition-transform hover:scale-110" title="Chương trước" aria-label="Chương trước">
+                                <i class="ph-fill ph-skip-back text-xl md:text-2xl"></i>
                             </button>
-                            <button onclick="app.togglePlay()" class="btn-md3 btn-primary w-14 h-14 rounded-full flex items-center justify-center text-white shadow-lg hover:scale-105 transition-all active:scale-95" aria-label="Phát hoặc tạm dừng">
-                                <i id="p-play-icon" class="ph-fill ph-play text-2xl ml-1"></i>
+                            <button onclick="app.togglePlay()" class="btn-md3 btn-primary w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center text-white shadow-lg hover:scale-105 transition-all active:scale-95" aria-label="Phát hoặc tạm dừng">
+                                <i id="p-play-icon" class="ph-fill ph-play text-xl md:text-2xl ml-0.5 md:ml-1"></i>
                             </button>
-                            <button onclick="app.nextTrack()" class="btn-md3 btn-ghost w-10 h-10 rounded-full hover:text-blue-400 transition-transform hover:scale-110" title="Chương sau" aria-label="Chương sau">
-                                <i class="ph-fill ph-skip-forward text-2xl"></i>
+                            <button onclick="app.nextTrack()" class="btn-md3 btn-ghost w-9 h-9 md:w-10 md:h-10 rounded-full hover:text-blue-400 transition-transform hover:scale-110" title="Chương sau" aria-label="Chương sau">
+                                <i class="ph-fill ph-skip-forward text-xl md:text-2xl"></i>
                             </button>
-                            <button onclick="app.skip(5)" class="btn-md3 btn-ghost w-10 h-10 rounded-full hover:bg-white/10 transition-transform hover:scale-110" title="Tiến 5 giây" aria-label="Tiến 5 giây">
-                                <i class="ph-fill ph-fast-forward text-lg"></i>
+                            <button onclick="app.skip(5)" class="btn-md3 btn-ghost w-9 h-9 md:w-10 md:h-10 rounded-full hover:bg-white/10 transition-transform hover:scale-110" title="Tiến 5 giây" aria-label="Tiến 5 giây">
+                                <i class="ph-fill ph-fast-forward text-base md:text-lg"></i>
                             </button>
                         </div>
-                        <div class="w-full flex items-center gap-3 text-[10px] font-bold tracking-wider text-gray-400">
+                        <div class="w-full flex items-center gap-2 md:gap-3 text-[10px] md:text-xs font-bold tracking-wider text-gray-400">
                             <span id="p-current" class="min-w-[35px] text-right">0:00</span>
-                            <div class="relative flex-1 h-4 flex items-center group cursor-pointer">
-                                <div class="absolute w-full h-1 bg-white/20 rounded-full overflow-hidden">
+                            <div class="relative flex-1 h-3 md:h-4 flex items-center group cursor-pointer">
+                                <div class="absolute w-full h-1 md:h-1.5 bg-white/20 rounded-full overflow-hidden">
                                     <div id="p-progress-fill" class="h-full bg-gradient-to-r from-blue-500 to-indigo-500 w-0 transition-all duration-100 ease-linear shadow-[0_0_10px_#3b82f6]"></div>
                                 </div>
                                 <input type="range" id="p-slider" value="0" min="0" max="100" step="0.1" class="absolute w-full opacity-0 cursor-pointer h-full z-10" aria-label="Thanh tiến trình phát nhạc">
@@ -230,8 +233,8 @@
                         </div>
                     </div>
                     
-                    <!-- Container chứa tốc độ và hẹn giờ - RESPONSIVE FIX -->
-                    <div class="speed-timer-container w-full md:w-auto flex flex-row justify-between items-center mt-3 md:mt-0 md:ml-2 md:gap-4">
+                    <!-- Container chứa tốc độ và hẹn giờ -->
+                    <div class="speed-timer-container w-full md:w-auto flex flex-row justify-between items-center mt-2 md:mt-0 md:ml-2 lg:ml-4 gap-3 md:gap-4">
                         <div class="speed-menu-container">
                             <button onclick="app.toggleSpeedMenu()" class="speed-menu-trigger group" aria-label="Thay đổi tốc độ phát" aria-expanded="false">
                                 <i class="ph-bold ph-gauge text-xs text-gray-400 group-hover:text-blue-400 transition-colors"></i>
@@ -263,7 +266,7 @@
                         </div>
 
                         <!-- Nút chuyển sang mini player -->
-                        <button class="toggle-player-btn full-to-mini w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 transition" title="Thu nhỏ player">
+                        <button class="toggle-player-btn full-to-mini w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center hover:bg-white/10 transition" title="Thu nhỏ player">
                             <i class="ph-bold ph-caret-down text-sm"></i>
                         </button>
                     </div>
@@ -274,7 +277,7 @@
             <div class="mini-player-content hidden w-full">
                 <div class="flex items-center justify-between w-full">
                     <div class="flex items-center gap-3 flex-1 min-w-0">
-                        <div class="w-10 h-10 rounded-full overflow-hidden relative flex-shrink-0 border border-white/20 shadow-lg">
+                        <div class="w-9 h-9 md:w-10 md:h-10 rounded-full overflow-hidden relative flex-shrink-0 border border-white/20 shadow-lg">
                             <img id="mini-p-cover" src="https://via.placeholder.com/150" 
                                 class="w-full h-full object-cover" 
                                 alt="Mini cover">
@@ -286,10 +289,10 @@
                         </div>
                     </div>
                     <div class="flex items-center gap-2">
-                        <button onclick="app.togglePlay()" class="mini-play-btn w-10 h-10 rounded-full flex items-center justify-center bg-blue-600 text-white shadow-lg hover:scale-105 transition-all active:scale-95">
-                            <i id="mini-p-play-icon" class="ph-fill ph-play text-lg ml-0.5"></i>
+                        <button onclick="app.togglePlay()" class="mini-play-btn w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center bg-blue-600 text-white shadow-lg hover:scale-105 transition-all active:scale-95">
+                            <i id="mini-p-play-icon" class="ph-fill ph-play text-base md:text-lg ml-0.5"></i>
                         </button>
-                        <button class="toggle-player-btn mini-to-full w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 transition" title="Mở rộng player">
+                        <button class="toggle-player-btn mini-to-full w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center hover:bg-white/10 transition" title="Mở rộng player">
                             <i class="ph-bold ph-caret-up text-sm"></i>
                         </button>
                     </div>
