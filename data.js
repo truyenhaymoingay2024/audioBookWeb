@@ -507,9 +507,17 @@ const LIBRARY = [
 			manual("Chương 83 - 87 (Hoàn quyển 2)", "c83-87.m4a"),
         ]
     },
-
+    {        
+        id: 33,
+        folderName: "ThienHaKyDuyen",
+        title: "Thiên Hạ Kỳ Duyên",
+        author: "Ánh Tuyết Triều Dương",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/ThienHaKyDuyen/cover.jpg",
+        desc: 'HIỆN MÌNH CHỈ MỚI TÌM ĐƯỢC 61 CHƯƠNG CỦA BỘ NÀY, SỐ CHƯƠNG CỤ THỂ MÌNH KHÔNG RÕ NHƯNG MÌNH BIẾT NÓ VẪN CÒN, BẠN NÀO CÓ THÔNG TIN NGUỒN PHẦN CÒN LẠI THÌ CHO MÌNH XIN NHA\n\n\nKhi Lệ Chi viên oan nghiệt rúng động một thời, cũng chỉ là mắt xích trong một hành trình trả thù đầy máu và nước mắt...\nKhi hậu duệ của những cố nhân hiển hách năm xưa cùng kỳ ngộ, ván cờ giữa họ sẽ là ván cờ giang sơn!\n...\nThiên hạ kỳ duyên là tiểu thuyết hư cấu lấy bối cảnh Đại Việt những năm đầu thời vua Lê Thánh Tông. Hình tượng các nhân vật, hệ thống các sự kiện xảy ra trong truyện hoàn toàn là sự hư cấu của tác giả, không đi ngược lại kết cục lịch sử nhưng cũng không phải diễn biến lịch sử khách quan.\n\nTruyện có tham khảo một số tài liệu sau:\n1. Đại Việt sử ký toàn thư (quyển 2)- Ngô Sĩ Liên - NXB Thời đại - năm 2013.\n2. Đại Việt thông sử (quyển 1) - Lê Quý Đôn - NXB Trẻ - năm 2012.\n3. Việt Nam sử lược - Trần Trọng Kim - NXB Văn hóa Thông tin - năm 2008.\n4. Lịch triều hiến chương loại chí - Phan Huy Chú - NXB Trẻ - năm 2014.\n5. Bên lề chính sử - Đinh Công Vĩ - NXB Văn hóa Thông tin - năm 2005.\n6. Ngàn năm áo mũ - Trần Quang Đức - NXB Thế giới và Nhã Nam - năm 2013.\nVà một số tài liệu khác.',
+	    chapters: 61,
+        tracks: [
+            ...batch(1, 20, 5, 'm4a'),
+            manual("Chương 21 - 24 (Hoàn quyển 1)", "c21-24.m4a"),
+        ]
+    },
 ];
-
-
-
-
