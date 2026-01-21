@@ -519,8 +519,9 @@ const LIBRARY = [
             ...batch(1, 20, 5, 'm4a'),
             manual("Chương 21 - 24 (Hoàn quyển 1)", "c21-24.m4a"),
 			manual("Chương 25 - 30", "c25-30.m4a"),
-			...batch(31, 35, 5, 'm4a'),
+			...batch(31, 45, 5, 'm4a'),
         ]
     },
 
 ];
+
