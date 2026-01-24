@@ -36,7 +36,9 @@ const app = (() => {
         search: document.getElementById('search-input'),
         badge: document.getElementById('last-played-info'),
         sortPopup: document.getElementById('sort-popup'),
+        filterPopup: document.getElementById('filter-popup'),
         currentSortText: document.getElementById('current-sort-text'),
+        currentFilterText: document.getElementById('current-filter-text'),
         timerText: document.getElementById('current-timer-text'),
         timerPopup: document.getElementById('timer-popup')
     };
@@ -48,12 +50,14 @@ const app = (() => {
         isPlaying: false,
         isDragging: false,
         currentSort: 'newest',
+        currentFilter: 'all', // 'all', 'H', 'nonH'
         speed: 1.0,
         timer: 0, // 0 = tắt, -1 = hết chương, >0 = số phút
         timerId: null,
         timerRemaining: 0, // thời gian còn lại (giây)
         timerStartTime: 0,
         sortMenuOpen: false,
+        filterMenuOpen: false,
         speedMenuOpen: false,
         timerMenuOpen: false,
         durationCache: {}, // Cache for durations
@@ -187,6 +191,10 @@ const app = (() => {
                 els.sortPopup.classList.remove('active');
                 state.sortMenuOpen = false;
             }
+            if (!e.target.closest('.filter-menu-container')) {
+                els.filterPopup.classList.remove('active');
+                state.filterMenuOpen = false;
+            }
             if (!e.target.closest('.timer-menu-container')) {
                 els.timerPopup.classList.remove('active');
                 state.timerMenuOpen = false;
@@ -252,6 +260,49 @@ const app = (() => {
         }
     }
 
+    // === HÀM LỌC TRUYỆN H/KHÔNG H ===
+    function setFilter(type) {
+        state.currentFilter = type;
+        const textMap = {
+            'all': 'Tất cả',
+            'H': 'Truyện H',
+            'nonH': 'Không H'
+        };
+        els.currentFilterText.innerText = textMap[type];
+        
+        // Cập nhật UI và render lại thư viện
+        updateFilterUI(type);
+        handleSort(state.currentSort); // Gọi handleSort để render lại với bộ lọc mới
+        
+        els.filterPopup.classList.remove('active');
+        state.filterMenuOpen = false;
+    }
+    
+    function toggleFilterMenu() {
+        state.filterMenuOpen = !state.filterMenuOpen;
+        state.sortMenuOpen = false;
+        state.speedMenuOpen = false;
+        state.timerMenuOpen = false;
+        els.sortPopup.classList.remove('active');
+        els.player.speedPopup.classList.remove('active');
+        els.timerPopup.classList.remove('active');
+        
+        if (state.filterMenuOpen) els.filterPopup.classList.add('active');
+        else els.filterPopup.classList.remove('active');
+    }
+    
+    function updateFilterUI(type) {
+        document.querySelectorAll('.filter-item').forEach(item => {
+            item.classList.remove('selected');
+            const itemText = item.innerText;
+            if ((type === 'all' && itemText === 'Tất cả') ||
+                (type === 'H' && itemText === 'Truyện H') ||
+                (type === 'nonH' && itemText === 'Không H')) {
+                item.classList.add('selected');
+            }
+        });
+    }
+    
     // === HÀM HẸN GIỜ TẮT NHẠC ===
     function setTimer(minutes) {
         // Xóa timer cũ nếu có
@@ -379,8 +430,10 @@ const app = (() => {
         state.timerMenuOpen = !state.timerMenuOpen;
         state.speedMenuOpen = false;
         state.sortMenuOpen = false;
+        state.filterMenuOpen = false;
         els.player.speedPopup.classList.remove('active');
         els.sortPopup.classList.remove('active');
+        els.filterPopup.classList.remove('active');
         
         if (state.timerMenuOpen) els.timerPopup.classList.add('active');
         else els.timerPopup.classList.remove('active');
@@ -678,6 +731,9 @@ const app = (() => {
                     <div class="glass-panel book-card p-3 pb-4 group" onclick="app.openFolder(${folder.id})">
                         <div class="aspect-[1/1] rounded-xl overflow-hidden mb-3 relative bg-gray-900 border border-white/5">
                             <img src="${folder.cover}" loading="lazy" class="w-full h-full object-cover transform group-hover:scale-105 transition duration-500 ease-out img-fade" onload="this.classList.add('img-loaded')" onerror="this.src='https://via.placeholder.com/300x300?text=No+Image'">
+                            ${folder.isH ? `<div class="absolute top-2 right-2 z-10">
+                                <span class="tag-H">H</span>
+                            </div>` : ''}
                             <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition duration-300 flex items-center justify-center backdrop-blur-[2px]">
                                 <i class="ph-fill ph-list-dashes text-white text-3xl drop-shadow-lg transform scale-50 group-hover:scale-100 transition duration-300"></i>
                             </div>
@@ -880,8 +936,10 @@ const app = (() => {
     function toggleSpeedMenu() {
         state.speedMenuOpen = !state.speedMenuOpen;
         state.sortMenuOpen = false;
+        state.filterMenuOpen = false;
         state.timerMenuOpen = false;
         els.sortPopup.classList.remove('active');
+        els.filterPopup.classList.remove('active');
         els.timerPopup.classList.remove('active');
         if (state.speedMenuOpen) els.player.speedPopup.classList.add('active');
         else els.player.speedPopup.classList.remove('active');
@@ -947,7 +1005,19 @@ const app = (() => {
             return;
         }
         const term = removeAccents(query);
-        renderLibrary(LIBRARY.filter(item => removeAccents(item.title).includes(term) || removeAccents(item.author).includes(term)));
+        
+        // Lọc dựa trên currentFilter trước
+        let filteredData = getFilteredData();
+        
+        // Sau đó lọc theo search term
+        filteredData = filteredData.filter(item => 
+            removeAccents(item.title).includes(term) || 
+            removeAccents(item.author).includes(term)
+        );
+        
+        // Sắp xếp
+        const sortedData = getSortedData(filteredData);
+        renderLibrary(sortedData);
     }
 
     function setSort(val) {
@@ -971,22 +1041,50 @@ const app = (() => {
 
     function toggleSortMenu() {
         state.sortMenuOpen = !state.sortMenuOpen;
+        state.filterMenuOpen = false;
         state.speedMenuOpen = false;
         state.timerMenuOpen = false;
+        els.filterPopup.classList.remove('active');
         els.player.speedPopup.classList.remove('active');
         els.timerPopup.classList.remove('active');
+        
         if (state.sortMenuOpen) els.sortPopup.classList.add('active');
         else els.sortPopup.classList.remove('active');
     }
 
+    // Hàm lọc dữ liệu theo currentFilter
+    function getFilteredData() {
+        if (state.currentFilter === 'all') {
+            return [...LIBRARY];
+        } else if (state.currentFilter === 'H') {
+            return LIBRARY.filter(item => item.isH === true);
+        } else if (state.currentFilter === 'nonH') {
+            return LIBRARY.filter(item => item.isH === false);
+        }
+        return [...LIBRARY];
+    }
+
+    // Hàm sắp xếp dữ liệu
+    function getSortedData(data) {
+        let sorted = [...data];
+        if (state.currentSort === 'az') sorted.sort((a, b) => a.title.localeCompare(b.title));
+        if (state.currentSort === 'za') sorted.sort((a, b) => b.title.localeCompare(a.title));
+        if (state.currentSort === 'newest') sorted.sort((a, b) => b.id - a.id);
+        if (state.currentSort === 'oldest') sorted.sort((a, b) => a.id - b.id);
+        return sorted;
+    }
+
     function handleSort(criteria) {
         state.currentSort = criteria;
-        let sorted = [...LIBRARY];
-        if (criteria === 'az') sorted.sort((a, b) => a.title.localeCompare(b.title));
-        if (criteria === 'za') sorted.sort((a, b) => b.title.localeCompare(a.title));
-        if (criteria === 'newest') sorted.sort((a, b) => b.id - a.id);
-        if (criteria === 'oldest') sorted.sort((a, b) => a.id - b.id);
-        renderLibrary(sorted);
+        
+        // Lấy dữ liệu đã lọc
+        let filteredData = getFilteredData();
+        
+        // Sắp xếp dữ liệu
+        const sortedData = getSortedData(filteredData);
+        
+        // Render
+        renderLibrary(sortedData);
     }
 
     function resumeLastPosition() {
@@ -1010,7 +1108,7 @@ const app = (() => {
         init,
         openFolder,
         playTrack,
-        playTrackFromTime, // Xuất thêm hàm này để có thể gọi từ nút resume
+        playTrackFromTime,
         togglePlay,
         playAll,
         skip,
@@ -1027,7 +1125,9 @@ const app = (() => {
         resumeLastAudio,
         setTimer,
         toggleTimerMenu,
-        togglePlayerMode // Xuất hàm này để có thể gọi từ ngoài nếu cần
+        togglePlayerMode,
+        setFilter,
+        toggleFilterMenu
     };
 })();
 

@@ -9,6 +9,8 @@
   --text-muted: #71717a;
   --primary-color: #3b82f6;
   --primary-glow: rgba(59, 130, 246, 0.5);
+  --h-color: #ec4899; /* Màu cho tag H */
+  --h-glow: rgba(236, 72, 153, 0.5);
 
   /* GLASS TOKENS */
   --glass-bg: rgba(30, 30, 30, 0.4);
@@ -42,6 +44,168 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   font-size: 110%; /* Tăng kích thước chữ toàn trang */
+}
+
+/* === TAG H TRÊN BÌA TRUYỆN - ĐÃ CẢI THIỆN === */
+.tag-H {
+  display: inline-block;
+  background: linear-gradient(135deg, 
+    #ff00cc 0%, 
+    #ec4899 30%, 
+    #d946ef 70%, 
+    #a855f7 100%);
+  color: white;
+  font-size: 9px;
+  font-weight: 800;
+  padding: 4px 8px;
+  border-radius: 6px;
+  box-shadow: 
+    0 0 15px rgba(236, 72, 153, 0.6),
+    0 0 30px rgba(168, 85, 247, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  animation: pulse-h 2s ease-in-out infinite;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  z-index: 10;
+  position: relative;
+  overflow: hidden;
+}
+
+.tag-H::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 70%
+  );
+  animation: shine 3s infinite linear;
+}
+
+@keyframes pulse-h {
+  0%, 100% { 
+    transform: scale(1);
+    box-shadow: 
+      0 0 15px rgba(236, 72, 153, 0.6),
+      0 0 30px rgba(168, 85, 247, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+  }
+  50% { 
+    transform: scale(1.08);
+    box-shadow: 
+      0 0 25px rgba(236, 72, 153, 0.8),
+      0 0 50px rgba(168, 85, 247, 0.6),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.3);
+  }
+}
+
+@keyframes shine {
+  0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+  100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+}
+
+/* === BỘ LỌC (FILTER) MENU - ĐÃ CHỈNH SỬA ĐỂ XỔ XUỐNG === */
+.filter-menu-container {
+  position: relative;
+}
+
+.filter-popup {
+  position: absolute;
+  top: 100%; /* Thay đổi từ bottom: 130% thành top: 100% để xổ xuống */
+  right: 0;
+  margin-top: 10px; /* Khoảng cách với trigger */
+  background: rgba(20, 20, 20, 0.95);
+  backdrop-filter: blur(30px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 8px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px) scale(0.95);
+  transition: all 0.3s var(--transition-bounce);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 100;
+  min-width: 140px;
+  transform-origin: top right; /* Điểm gốc cho animation */
+}
+
+.filter-popup.active {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+
+.filter-item {
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  transition: all 0.2s;
+  cursor: pointer;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.filter-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.filter-item.selected {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  color: white;
+}
+
+/* Icon cho filter menu */
+.filter-menu-trigger .ph-funnel-simple {
+  color: #8b5cf6;
+}
+
+.filter-menu-trigger:hover .ph-funnel-simple {
+  color: #a78bfa;
+}
+
+/* Responsive cho filter menu */
+@media (max-width: 640px) {
+  .filter-popup {
+    right: auto;
+    left: 0;
+    min-width: 130px;
+    transform-origin: top left; /* Điểm gốc cho animation trên mobile */
+  }
+  
+  .filter-menu-trigger {
+    padding: 0.375rem 0.75rem !important;
+    font-size: 0.75rem !important;
+  }
+  
+  .filter-menu-trigger i:first-child {
+    font-size: 0.875rem !important;
+  }
+  
+  .filter-menu-trigger #current-filter-text {
+    font-size: 0.75rem !important;
+  }
+}
+
+/* Trên tablet và desktop */
+@media (min-width: 641px) {
+  .filter-menu-trigger {
+    padding: 0.5rem 1rem !important;
+  }
 }
 
 /* COMPONENTS */
@@ -179,31 +343,66 @@ input[type="range"]:hover::-webkit-slider-thumb {
 .timer-menu-container {
   position: relative;
 }
+
+/* === CHỈNH SỬA QUAN TRỌNG: SPEED & TIMER POPUP XỔ LÊN TRÊN DESKTOP/TABLET === */
 .speed-popup,
-.sort-popup,
 .timer-popup {
   position: absolute;
-  bottom: 130%;
+  top: 100%; /* Mặc định xổ xuống cho mobile */
   right: 0;
+  margin-top: 10px;
   background: rgba(20, 20, 20, 0.95);
   backdrop-filter: blur(30px);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-md);
-  padding: 7px; /* Tăng từ 6px */
+  padding: 8px;
   opacity: 0;
   visibility: hidden;
-  transform: translateY(10px) scale(0.95);
+  transform: translateY(-10px) scale(0.95);
   transition: all 0.3s var(--transition-bounce);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
+  z-index: 100;
+  min-width: 100px;
+  transform-origin: top right; /* Điểm gốc cho animation mặc định */
+}
+
+/* Trên tablet & desktop: speed và timer popup xổ LÊN */
+@media (min-width: 641px) {
+  .speed-popup,
+  .timer-popup {
+    top: auto;
+    bottom: 100%; /* Xổ lên */
+    margin-top: 0;
+    margin-bottom: 10px;
+    transform-origin: bottom right; /* Điểm gốc animation xổ lên */
+  }
+}
+
+/* SORT POPUP vẫn giữ nguyên xổ xuống */
+.sort-popup {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 10px;
+  background: rgba(20, 20, 20, 0.95);
+  backdrop-filter: blur(30px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 8px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px) scale(0.95);
+  transition: all 0.3s var(--transition-bounce);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
   z-index: 100;
 }
-.sort-popup {
-  top: 130%;
-  bottom: auto;
-} /* Sort xổ xuống */
+
 .speed-popup.active,
 .sort-popup.active,
 .timer-popup.active {
@@ -211,17 +410,26 @@ input[type="range"]:hover::-webkit-slider-thumb {
   visibility: visible;
   transform: translateY(0) scale(1);
 }
+
+/* Trên tablet & desktop: active state cho popup xổ lên */
+@media (min-width: 641px) {
+  .speed-popup.active,
+  .timer-popup.active {
+    transform: translateY(0) scale(1);
+  }
+}
+
 .speed-item,
 .sort-item,
 .timer-item {
-  padding: 9px 13px; /* Tăng từ 8px 12px */
+  padding: 10px 14px;
   border-radius: var(--radius-sm);
-  font-size: 0.935rem; /* Tăng từ 0.85rem */
+  font-size: 0.875rem;
   color: var(--text-secondary);
   transition: all 0.2s;
   cursor: pointer;
   text-align: center;
-  white-space: nowrap; /* Thêm: không xuống dòng */
+  white-space: nowrap;
 }
 .sort-item {
   text-align: left;
@@ -683,21 +891,31 @@ header nav > div:last-child {
     padding: 0.25rem 0.5rem !important;
   }
   
-  /* Sort button - nhỏ gọn hơn trên mobile */
+  /* Container cho filter và sort */
+  .library-header .flex-col.sm\:flex-row + .flex-col.sm\:flex-row {
+    width: 100%;
+    justify-content: space-between !important;
+  }
+  
+  /* Filter và Sort button - nhỏ gọn hơn trên mobile */
+  .filter-menu-trigger,
   .sort-menu-trigger {
     padding: 0.375rem 0.75rem !important;
     font-size: 0.75rem !important; /* text-xs */
   }
   
+  .filter-menu-trigger i:first-child,
   .sort-menu-trigger i:first-child {
     font-size: 0.875rem !important;
   }
   
+  .filter-menu-trigger #current-filter-text,
   .sort-menu-trigger #current-sort-text {
     font-size: 0.75rem !important;
   }
   
-  /* Dropdown sort menu - căn chỉnh cho mobile */
+  /* Dropdown menus - căn chỉnh cho mobile */
+  .filter-popup,
   .sort-popup {
     left: 0 !important;
     right: auto !important;
@@ -705,8 +923,8 @@ header nav > div:last-child {
   }
   
   /* Đảm bảo dropdown không bị che bởi các phần tử khác */
+  .filter-menu-container,
   .sort-menu-container {
-    align-self: flex-end !important;
     width: auto !important;
   }
 }
@@ -732,10 +950,12 @@ header nav > div:last-child {
     font-size: 0.875rem !important; /* text-sm */
   }
   
+  .filter-menu-trigger,
   .sort-menu-trigger {
     padding: 0.5rem 1rem !important;
   }
   
+  .filter-menu-container,
   .sort-menu-container {
     align-self: auto !important;
   }
@@ -882,6 +1102,7 @@ header nav > div:last-child {
 
 /* Đảm bảo dropdown không bị ảnh hưởng bởi thanh tìm kiếm */
 .sort-popup,
+.filter-popup,
 .speed-popup,
 .timer-popup {
   z-index: 100 !important;
@@ -1040,7 +1261,7 @@ header nav > div:last-child {
         font-size: 0.8125rem;
         background: transparent;
         border: 1px solid transparent;
-	border-radius: 10px;
+        border-radius: 10px;
     }
     
     .speed-menu-trigger:hover, .timer-menu-trigger:hover {
@@ -1221,6 +1442,11 @@ header nav > div:last-child {
   
   .book-card p {
     font-size: 0.75rem !important;
+  }
+  
+  .tag-H {
+    font-size: 8px;
+    padding: 3px 6px;
   }
 }
 

@@ -76,28 +76,44 @@
 
         <!-- LIBRARY VIEW -->
         <section id="library-view" class="animate-enter">
-            <!-- Header của library view -->
+            <!-- Header của library view - ĐÃ CHỈNH SỬA -->
             <div class="library-header mb-6 md:mb-8">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div class="flex items-center gap-2">
+                <div class="flex flex-row items-center justify-between gap-3 sm:gap-4"> <!-- Thay đổi từ flex-col sm:flex-row thành flex-row -->
+                    <div class="flex items-center gap-2 flex-shrink-0 min-w-0">
                         <h2 class="text-xl sm:text-2xl font-bold flex items-center gap-2 text-white library-title">
                             <i class="ph-duotone ph-sparkle text-blue-500 hidden sm:block"></i> Thư Viện
                         </h2>
-                        <span class="text-xs sm:text-sm text-gray-400 bg-white/5 px-2 py-0.5 rounded-md book-count" id="book-count">0</span>
+                        <span class="text-xs sm:text-sm text-gray-400 bg-white/5 px-2 py-0.5 rounded-md book-count flex-shrink-0" id="book-count">0</span>
                     </div>
 
-                    <!-- Sắp xếp dropdown -->
-                    <div class="sort-menu-container relative z-20 self-end sm:self-auto">
-                        <button onclick="app.toggleSortMenu()" class="sort-menu-trigger glass-panel rounded-full px-3 py-1.5 sm:px-4 sm:py-2 flex items-center gap-1 sm:gap-2 hover:bg-white/10 transition-all duration-200 group" aria-label="Sắp xếp" aria-expanded="false">
-                            <i class="ph-bold ph-sort-ascending text-blue-400 text-sm sm:text-base group-hover:rotate-180 transition-transform duration-300"></i>
-                            <span id="current-sort-text" class="text-xs sm:text-sm">Mới nhất</span>
-                            <i class="ph-bold ph-caret-down text-xs text-gray-400 group-hover:text-blue-400 transition-colors duration-200"></i>
-                        </button>
-                        <div id="sort-popup" class="sort-popup">
-                            <div class="sort-item" onclick="app.setSort('az')">Tên A-Z</div>
-                            <div class="sort-item" onclick="app.setSort('za')">Tên Z-A</div>
-                            <div class="sort-item selected" onclick="app.setSort('newest')">Mới nhất</div>
-                            <div class="sort-item" onclick="app.setSort('oldest')">Cũ nhất</div>
+                    <div class="flex flex-row items-center gap-2 sm:gap-4 flex-nowrap min-w-0"> <!-- Thêm min-w-0 và flex-nowrap -->
+                        <!-- Bộ lọc H/Không H/Tất cả -->
+                        <div class="filter-menu-container relative z-20 flex-shrink-0">
+                            <button onclick="app.toggleFilterMenu()" class="filter-menu-trigger glass-panel rounded-full px-3 py-1.5 sm:px-4 sm:py-2 flex items-center gap-1 sm:gap-2 hover:bg-white/10 transition-all duration-200 group" aria-label="Lọc theo nội dung" aria-expanded="false">
+                                <i class="ph-bold ph-funnel-simple text-purple-400 text-sm sm:text-base group-hover:rotate-180 transition-transform duration-300"></i>
+                                <span id="current-filter-text" class="text-xs sm:text-sm">Tất cả</span>
+                                <i class="ph-bold ph-caret-down text-xs text-gray-400 group-hover:text-purple-400 transition-colors duration-200"></i>
+                            </button>
+                            <div id="filter-popup" class="filter-popup">
+                                <div class="filter-item selected" onclick="app.setFilter('all')">Tất cả</div>
+                                <div class="filter-item" onclick="app.setFilter('H')">Truyện H</div>
+                                <div class="filter-item" onclick="app.setFilter('nonH')">Truyện không H</div>
+                            </div>
+                        </div>
+
+                        <!-- Sắp xếp dropdown -->
+                        <div class="sort-menu-container relative z-20 flex-shrink-0">
+                            <button onclick="app.toggleSortMenu()" class="sort-menu-trigger glass-panel rounded-full px-3 py-1.5 sm:px-4 sm:py-2 flex items-center gap-1 sm:gap-2 hover:bg-white/10 transition-all duration-200 group" aria-label="Sắp xếp" aria-expanded="false">
+                                <i class="ph-bold ph-sort-ascending text-blue-400 text-sm sm:text-base group-hover:rotate-180 transition-transform duration-300"></i>
+                                <span id="current-sort-text" class="text-xs sm:text-sm">Mới nhất</span>
+                                <i class="ph-bold ph-caret-down text-xs text-gray-400 group-hover:text-blue-400 transition-colors duration-200"></i>
+                            </button>
+                            <div id="sort-popup" class="sort-popup">
+                                <div class="sort-item" onclick="app.setSort('az')">Tên A-Z</div>
+                                <div class="sort-item" onclick="app.setSort('za')">Tên Z-A</div>
+                                <div class="sort-item selected" onclick="app.setSort('newest')">Mới nhất</div>
+                                <div class="sort-item" onclick="app.setSort('oldest')">Cũ nhất</div>
+                            </div>
                         </div>
                     </div>
                 </div>
