@@ -556,9 +556,7 @@ const LIBRARY = [
             manual("Chương 41 - 45 (Hoàn quyển 2)", "c41-45.m4a"),
             manual("Chương 46 - 50", "c46-50.m4a"),
             manual("Chương 51 - 52", "c51-52.m4a"),
-            manual("Chương 53 - 55", "c53-55.m4a"),
-            manual("Chương 56 - 58", "c56-58.m4a"),
-            manual("Chương 59 - 62", "c59-62.m4a"),
+            ...batch(53, 61, 3, 'm4a'),
         ]
     },
 
