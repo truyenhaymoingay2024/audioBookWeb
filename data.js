@@ -512,7 +512,7 @@ const LIBRARY = [
     {        
         id: 31,
         folderName: "SieuCapCungChieu",
-        title: "Siêu Cấp Cưng Chiều (đang update 505/1598)",
+        title: "Siêu Cấp Cưng Chiều [đang update 505/1598]",
         author: "Mạn Tây",
         cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/SieuCapCungChieu/cover.jpg",
         desc: 'Lê Tiếu - cô chủ nhỏ được cưng chiều của nhà họ Lê bị từ hôn.\nNgười nhà họ Lê vùng lên khởi nghĩa, chinh phạt khắp nơi, thề phải cho đối phương muối mặt.\n...\nSau đó Lê Tiếu vô tình gặp được anh Cả của người từ hôn.\nCó người nói: Anh ta là người đàn ông thần bí nhất ở Nam Dương, họ Thương, tên Úc, tự Thiếu Diễn.\nCũng có người nói: Anh ta nhìn đời bằng vung, bản tính cố chấp, là ông trùm của thế giới ngầm Nam Dương, không thể chọc vào.\nTrong cơn mưa phùn không dứt, Lê Tiếu nhìn người đàn ông ngang tàng sát phạt, cười khẽ: "Xin chào, tôi là Lê Tiếu."\nKhông làm được vợ chồng, vậy thì làm chị dâu chú vậy.\n...\nMấy tháng sau, gặp nhau giữa đường, người đàn ông từ hôn chê cười Lê Tiếu: "Cô lén theo tôi à? Còn chưa cam lòng sao?"\nSau lưng đột nhiên có giọng nói sắc bén vang lên, "Ăn nói lễ phép với chị dâu cậu một tí!"\nTừ đó, phong ba ở thành Nam Dương chỉ còn lại một lời đồn duy nhất...\nÔng trùm bản tính cố chấp của Nam Dương đội trong tim một cái "bàn thờ", cô họ Lê, tên Tiếu, tự Bàn Thờ!',
@@ -559,6 +559,18 @@ const LIBRARY = [
             ...batch(53, 61, 3, 'm4a'),
         ]
     },
-
+    {        
+        id: 34,
+        folderName: "HamMuon",
+        title: "Ham Muốn (Dục Khát) [đang update 160/215]",
+        author: "Đông Trúc",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/HamMuon/cover.jpg",
+        desc: 'Sau hai năm kết hôn, mẹ chồng luôn luôn ghét thân phận người nông thôn của Tô Bối.\nỞ trước mặt bà con và bạn bè, bà ta tìm cách gây khó khăn cho cô, chế nhạo cô tìm kiếm quyền lực bằng mọi giá, âm thầm và công khai coi thường cô như một con gà không biết đẻ trứng.\nTô Bối không thể đáp trả, mẹ chồng làm khó dễ, ông chồng mình thì vừa ngắn vừa nhỏ vừa nhanh, dục vọng của bản thân không được thỏa mãn.\nĐể giữ cuộc hôn nhân và những gì đang có, Tô Bối hắc hóa, chọn cách quyến rũ cha chồng có khí chất nho nhã để trả thù mẹ chồng.\nVăn Quốc Đống lão luyện và thận trọng, đứng đầu Bộ Tư pháp, có vô số ong bướm vây quanh nhưng lại bị con dâu mê hoặc.\nTô Bối có dung mạo, có đầu óc, từng bước kéo một cán bộ kỳ cựu như cha chồng xuống thần đàn, giẫm mẹ chồng để leo lên vị trí.\nThậm chí còn đưa đứa con mà mình lén lút với cha chồng cho mẹ chồng nuôi…\nCả hai đều ngoại tình, không có tam quan, nữ chính có ngực có não.',
+	    isH: true,
+        chapters: 215,
+        tracks: [
+            ...batch(1, 140, 20, 'm4a'),
+			...batch(141, 160, 10, 'm4a'),
+        ]
+    },
 ];
-
