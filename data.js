@@ -562,7 +562,7 @@ const LIBRARY = [
     {        
         id: 34,
         folderName: "HamMuon",
-        title: "Ham Muốn (Dục Khát) [đang update 160/215]",
+        title: "Ham Muốn (Dục Khát)",
         author: "Đông Trúc",
         cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/HamMuon/cover.jpg",
         desc: 'Sau hai năm kết hôn, mẹ chồng luôn luôn ghét thân phận người nông thôn của Tô Bối.\nỞ trước mặt bà con và bạn bè, bà ta tìm cách gây khó khăn cho cô, chế nhạo cô tìm kiếm quyền lực bằng mọi giá, âm thầm và công khai coi thường cô như một con gà không biết đẻ trứng.\nTô Bối không thể đáp trả, mẹ chồng làm khó dễ, ông chồng mình thì vừa ngắn vừa nhỏ vừa nhanh, dục vọng của bản thân không được thỏa mãn.\nĐể giữ cuộc hôn nhân và những gì đang có, Tô Bối hắc hóa, chọn cách quyến rũ cha chồng có khí chất nho nhã để trả thù mẹ chồng.\nVăn Quốc Đống lão luyện và thận trọng, đứng đầu Bộ Tư pháp, có vô số ong bướm vây quanh nhưng lại bị con dâu mê hoặc.\nTô Bối có dung mạo, có đầu óc, từng bước kéo một cán bộ kỳ cựu như cha chồng xuống thần đàn, giẫm mẹ chồng để leo lên vị trí.\nThậm chí còn đưa đứa con mà mình lén lút với cha chồng cho mẹ chồng nuôi…\nCả hai đều ngoại tình, không có tam quan, nữ chính có ngực có não.',
@@ -576,3 +576,4 @@ const LIBRARY = [
     },
 
 ];
+
