@@ -603,5 +603,19 @@ const LIBRARY = [
             manual("Ngoại truyện 1 - 4 (Hết)", "nt1-4.m4a"),
         ]
     },
+    {        
+        id: 37,
+        folderName: "ThuongPhong",
+        title: "Thượng Phong",
+        author: "Tuyết Tùng",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/ThuongPhong/cover.jpg",
+        desc: 'Thể loại: Nguyên sang, Ngôn tình, Hiện đại, HE, Tình cảm H văn, Ngọt sủng, Song khiết 🕊️, Vườn trường, Nhẹ nhàng, Đô thị tình duyên, 1v1\n\nVĂN ÁN:\nChung Linh không cẩn thận va vào anh, khiến điện thoại của anh rơi xuống đất rồi vỡ màn hình, nhưng nề hà điện thoại của anh quá đắt, cô chẳng có đủ tiền để đền.\nMà anh chỉ đạm nhiên nói: "Ồ, vậy lấy cái khác đền lại đi."\nCơn chua xót ở hốc mắt còn chưa tan đi, Chung Linh nhìn dáng người thẳng tắp trước mặt, gương mặt thiếu niên xuất chúng không thể bắt bẻ, vì vậy cô đồng ý với yêu cầu sẽ xuất hiện mọi lúc mọi nơi mỗi khi anh cần.\nNhưng ở trước mặt mọi người mà lấy quần áo, mang nước rồi cùng anh ăn cơm...\nNhư vậy có ổn không?\nCó người đồn hai người đang quen nhau, Chung Linh lập tức xua tay làm sáng tỏ, cô sợ người khác sẽ hiểu lầm.\nTrì Thanh Chước tìm được người, ép đến góc khu dạy học, môi lưỡi cường thế vói vào khoang miệng cô, nước miếng không chịu khống chế mà chảy xuống tay anh.\nHôn xong, anh vén sợi tóc của thiếu nữ đang hổn hển thở dốc ra sau tai, thấp giọng hỏi: "Giữa hai chúng ta là quan hệ gì? Hửm?"\nChung Linh cắn chặt môi dưới, sắc mặt ửng hồng không dám nhìn anh, càng chẳng dám trả lời.',
+	    isH: true,
+        chapters: 106,
+        tracks: [
+            ...batch(1, 100, 10, 'm4a'),
+            manual("Chương 101 - 106 (Hết)", "c101-106.m4a"),
+        ]
+    },
 ];
 
