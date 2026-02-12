@@ -617,5 +617,24 @@ const LIBRARY = [
             manual("Chương 101 - 106 (Hết)", "c101-106.m4a"),
         ]
     },
+    {        
+        id: 38,
+        folderName: "HonDaoNguSay",
+        title: "Hòn Đảo Ngủ Say",
+        author: "Bạch Nhật Phi Nha",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/HonDaoNguSay/cover.jpg",
+        desc: 'Trần Miên của ban xã hội và Thẩm Vực của ban khoa học tự nhiên là hai thế giới đối lập.\nMột người lăn lộn trong vũng bùn, sống qua ngày bằng những công việc lặt vặt.\nNgười kia được bao quanh bởi hào quang, mọi thứ xa hoa, mỗi bước đi đều có xe sang đưa đón.\nBan ngày, bên cạnh Thẩm Vực là những cô gái thay phiên nhau xuất hiện.\nNhưng trong màn đêm, không ai biết rằng anh cúi xuống hôn lên eo Trần Miên, dùng giọng dỗ dành đầy mê hoặc khiến cô không thể kháng cự.\nChờ đợi mãi đến ngày tốt nghiệp, Trần Miên cuối cùng cũng nghĩ mình có thể tự do sống cuộc đời mà cô mong muốn. Nhưng ngay lúc cô rời đi, một bàn tay bất ngờ giữ chặt lấy cổ tay cô.\nGiữa bao ánh mắt, chàng trai lạnh lùng và cao ngạo ngày nào cúi đầu, khẽ cười rồi hỏi:\n"Trần Miên, cậu xem tôi là gì?"\nTrần Miên nhìn anh, giọng điệu vừa bình thản vừa sắc lạnh đáp lại:\n"Chó tôi nuôi."',
+	    isH: true,
+        chapters: 122,
+        tracks: [
+            ...batch(1, 60, 10, 'm4a'),
+            ...batch(61, 80, 5, 'm4a'),
+            ...batch(81, 100, 10, 'm4a'),
+            manual("Chương 101 - 105 (Hoàn chính văn)", "c101-105.m4a"),
+            manual("Ngoại truyện 1 - 5", "nt1-5.m4a"),
+            manual("Ngoại truyện 6 - 10", "nt6-10.m4a"),
+            manual("Ngoại truyện 11 - 17 (Hết)", "nt11-17.m4a"),
+        ]
+    },
 ];
 
