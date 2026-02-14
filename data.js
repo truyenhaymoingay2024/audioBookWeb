@@ -636,5 +636,19 @@ const LIBRARY = [
             manual("Ngoại truyện 11 - 17 (Hết)", "nt11-17.m4a"),
         ]
     },
+    {        
+        id: 39,
+        folderName: "SayDam",
+        title: "Say Đắm",
+        author: "Vô Thanh",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/SayDam/cover.jpg",
+        desc: 'Thể loại: 19+, H có nội dung, sạch sủng sắc, thanh xuân vườn trường, hài hước, ngọt ngào, 1V1\n\nVăn án:\nĐiều duy nhất mà Thành Ngự không chịu đựng nổi là ánh mắt của Thẩm Vân Hề.\nChỉ cần cô dịu dàng nhìn mình là cậu đã không thể từ chối bất cứ yêu cầu gì của cô…\nNgoại trừ lúc trên giường!!!\nThẩm Vân Hề càng nói “Nhẹ thôi”, cậu lại càng điên cuồng đâm vào bên trong cô.',
+	    isH: true,
+        chapters: 36,
+        tracks: [
+            ...batch(1, 30, 10, 'm4a'),
+            manual("Chương 31 - 36 (Hết)", "c31-36.m4a"),
+        ]
+    },
 ];
 
