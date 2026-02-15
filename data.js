@@ -650,5 +650,25 @@ const LIBRARY = [
             manual("Chương 31 - 36 (Hết)", "c31-36.m4a"),
         ]
     },
+    {        
+        id: 40,
+        folderName: "TrieuSa",
+        title: "Triều Sa",
+        author: "Duy Vụ",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/TrieuSa/cover.jpg",
+        desc: 'BỘ NÀY BẢN DỊCH CHỮ FULL MÌNH TÌM ĐƯỢC CÓ CHÚT VẤN ĐỀ NHƯNG LẠI TÌM ĐƯỢC AUDIO FULL SẴN NÊN MÌNH DÙNG NÓ LUÔN\n\nĐại tiểu thư xinh đẹp được nuông chiều x Người đàn ông thanh lãnh phúc hắc tinh anh.\nNgôn Trăn rất chán ghét Trần Hoài Tự, cho dù anh là bạn thân nhất của anh trai mình.\nỞ trong mắt cô, Trần Hoài Tự và cô trời sinh bát tự không hợp.\nNgười này giả đứng đắn lại xấu xa, nhất là kỹ thuật diễn tinh vi, giả dạng làm chính nhân quân tử dạng, lừa gạt tất cả mọi người khen anh không dứt miệng.\nNgôn Trăn quyết định vạch trần gương mặt thật của anh.\nKhông nghĩ tới, thường xuyên gặp nhau, cô lại đem cả bản thân mình sa vào.\nCàng không nghĩ tới nữa là, hóa ra anh đã sớm có mưu đồ từ lâu với cô.\nVăn án tóm gọn: Câu chuyện đại tiểu thư hố người không thành công ngược lại bị ăn sạch sẽ.',
+	    isH: true,
+        chapters: 139,
+        tracks: [
+            ...batch(1, 30, 10, 'm4a'),
+            manual("Chương 31 - 45", "c31-45.m4a"),
+            manual("Chương 46 - 50", "c46-50.m4a"),
+            ...batch(51, 110, 10, 'm4a'),
+            ...batch(111, 125, 5, 'm4a'),
+            manual("Chương 126 - 128 (Hoàn chính văn)", "c126-128.m4a"),
+            manual("Ngoại truyện 1 - 6", "nt1-6.m4a"),
+            manual("Ngoại truyện 7 - 11 (Hết)", "nt7-11.m4a"),
+        ]
+    },
 ];
 
