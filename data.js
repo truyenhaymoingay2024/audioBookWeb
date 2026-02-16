@@ -723,5 +723,18 @@ const LIBRARY = [
             manual("Chương 1 - 5 (Hết)", "c1-5.m4a"),
         ]
     },
+    {        
+        id: 45,
+        folderName: "HaDenMangTheoThoTinh",
+        title: "Hạ Đến Mang Theo Thơ Tình",
+        author: "Thanh Chúc Kỉ Hứa",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/HaDenMangTheoThoTinh/cover.jpg",
+        desc: 'THỂ LOẠI: Hiện đại, Tình chị em, Duyên trời tác hợp, Chức nghiệp tinh anh, Phi song khiết (Nam xử – Nữ phi), 1v1, HE\n\nVăn án:\nTần Thi 26 tuổi, tháo chạy khỏi cuộc hôn nhân đầy bạo lực lạnh.\nNgày thứ hai sau khi ly hôn, Tần Thi ném đơn xin nghỉ việc vào mặt sếp, mua vé máy bay đi du lịch.\nCô tìm lại những chiếc váy từ vài năm trước, ghé tiệm cắt tóc cắt một mái tóc ngắn.\nChẳng phải chỉ là người tình mới thôi sao? Ngày trước cô chỉ cần ra ngoài dạo một vòng là có thể gặp cả tá.\nTrên đường ra sân bay, cô bắt một chuyến xe đi chung, ghế phụ có một người đàn ông trẻ tuổi mặc sơ mi trắng đang ngồi.\nCô đứng bên cửa sổ phía anh nói chuyện với tài xế, mùi nước hoa hoa lan trong đêm khuya cứ thế xộc vào mũi anh…\n“Vì chị, địa ngục tôi cũng đến.”\n\n#Tình Chị Em #Mùa Xuân Thứ Hai\n\nLưu ý trước khi đọc:\nNữ chính không còn nguyên vẹn (không dành cho độc giả cực đoan về sự thuần khiết).\nTình chị em, chênh lệch 6 tuổi.',
+	    isH: false,
+        chapters: 16,
+        tracks: [
+            manual("Chương 1 - 16 (Hết)", "c1-16.m4a"),
+        ]
+    },
 ];
 
