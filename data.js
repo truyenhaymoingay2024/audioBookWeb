@@ -736,5 +736,19 @@ const LIBRARY = [
             manual("Chương 1 - 16 (Hết)", "c1-16.m4a"),
         ]
     },
+    {        
+        id: 46,
+        folderName: "HomNayKhongTien",
+        title: "Hôm Nay Không Tiện",
+        author: "Tê Nhai",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/HomNayKhongTien/cover.jpg",
+        desc: 'Thể loại: Ngôn tình, Cổ đại, HE, Sắc, Hào môn thế gia, Cung đình hầu tước, Cường thủ hào đoạt, 1v1, Thị giác nữ chủ\n\nCouple: Trưởng Công Chúa Kiều Mỵ x Tể Tướng chó điên, cưỡng chế yêu\n\nVăn án:\nHoàng đế ban cho nàng danh hiệu Gia Nghi, với mong ước nàng sẽ có lời nói tao nhã, cử chỉ đoan trang, trưởng thành trong hạnh phúc và tìm được bến đỗ vững chắc.\nCao Trĩ nép mình trên vai phụ hoàng, nũng nịu: “Chỉ cần Trĩ nhi không xuất giá, Đại Minh Cung mãi mãi là nhà Trĩ nhi.”\nTiếc thay, vận mệnh hoàng gia sau này gặp biến cố, vị công chúa từng được ngàn vạn yêu chiều cũng trở thành cánh chim bị giam cầm, trở thành thú vui riêng của một người trong chốn cung cấm.\nTrên triều, hắn không cho phép bất kỳ ai xúc phạm đến nàng. Hạ triều, hắn lại điên cuồng chiếm đoạt nàng, khiến nàng chìm trong đê mê, không lối thoát.\nĐêm khuya, Tạ tể tướng với ngọn lửa dục vọng hừng hực bước vào tẩm điện của trưởng công chúa.\nCao Trĩ với vẻ yếu đuối đáng thương, nhìn hắn: “Hôm nay không tiện.”\nÁnh mắt Tạ Phi si mê đắm chìm trong mái tóc đen huyền của nàng, không ngần ngại gọi tên thân mật: “Không sao cả, ta càng khao khát được cùng Trĩ nhi triền miên mỗi ngày.”\nTóm lại một câu: Người tưởng chừng mong manh, yếu đuối lại chính là người nắm giữ cán cân quyết định trong cuộc tình này.',
+	    isH: true,
+        chapters: 85,
+        tracks: [
+            ...batch(1, 80, 10, 'm4a'),
+            manual("Chương 81 - 85 (Hết)", "c81-85.m4a"),
+        ]
+    },
 ];
 
