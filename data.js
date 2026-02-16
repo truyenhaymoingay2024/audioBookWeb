@@ -684,5 +684,44 @@ const LIBRARY = [
             manual("Chương 81 - 88 (Hết)", "c81-88.m4a"),
         ]
     },
+    {        
+        id: 42,
+        folderName: "GiaNhuMinhDungGapGo",
+        title: "Giá Như Mình Đừng Gặp Gỡ",
+        author: "Mười Bốn Quân Cờ",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/GiaNhuMinhDungGapGo/cover.jpg",
+        desc: 'Thể loại: Hiện đại, góc nhìn nữ chủ, ngược nữ trước ngược nam sau, BE.\n\nVăn án:\nNăm thứ tư kết hôn với Tống Tùy, bạch nguyệt quang của anh ấy ly hôn về nước.\nĐể cho mọi thứ tồi tệ hơn thì lúc này tôi mắc bệnh ung thư sắp ch.ết.\nTrong vòng chưa đầy nửa năm còn lại của đời người, tôi luôn đóng vai một người vợ tốt của anh ấy.\nCho đến khi tôi qua đời, mà Tống Tùy đọc được nhật ký tôi để lại cũng hoàn toàn sụp đổ.',
+	    isH: false,
+        chapters: 10,
+        tracks: [
+            manual("Chương 1 - 10 (Hết)", "c1-10.m4a"),
+        ]
+    },
+    {        
+        id: 43,
+        folderName: "LamSaoMoiCoTheQuenDuocAnh",
+        title: "Làm Sao Mới Có Thể Quên Được Anh",
+        author: "Nhĩ Giả",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/LamSaoMoiCoTheQuenDuocAnh/cover.jpg",
+        desc: 'Thể loại : Ngôn tình, hiện đại, đoản văn, thị giác nữ chủ, thanh xuân vườn trường, BE\n\nVăn án:\n“Xin em đừng nhớ anh nữa” dưới góc nhìn của nữ chính.\n[Sau khi ở bên người mình đã yêu đơn phương nhiều năm, vào năm yêu nhau nhất đó, anh lại rời đi.]\nA Vọng, 10 năm trước, em hỏi anh: “Mười năm sau anh đang làm gì nhỉ?”\nLúc đó anh ôm em rồi nói: “Mười năm sau, chúng ta sẽ kết hôn sinh con.” Bây giờ, em nói anh nghe đáp án: 10 năm sau, chúng ta không kết hôn, cũng không ở bên nhau, thậm chí trên thế giới này chẳng có ai nhớ anh nữa.\nAnh lúc đó thường gọi em là nhóc thúi, bây giờ không thể gọi em như thế được, em đã lớn hơn anh nhiều tuổi rồi, mà anh, mãi mãi trẻ trung, mãi là dáng vẻ hăng hái đó, mãi là thiếu niên.\nKhông phải anh bảo em mà khóc thì anh sẽ luôn dỗ em sao? Anh là tên lừa đảo.\nĐời người thường nhìn về phía trước, bây giờ em thật sự sống rất tốt.\nEm sắp không giữ được lời hứa rồi, em sẽ không nhớ anh nữa đâu.\nEm ghét anh, chẳng nói câu nào cả.\nDây tơ hồng đã phai màu rồi.\nA Vọng, xin lỗi anh. A Vọng, tạm biệt.\n[Viết một bản tuỳ bút, vẽ một dấu chấm tròn hoàn chỉnh cho câu chuyện thời thanh xuân của mình.\nDựa trên bản ghi chép từ câu chuyện có thật]\nMột câu giới thiệu đơn giản: A Vọng, tạm biệt.\nDàn ý: Kỷ niệm thanh xuân',
+	    isH: false,
+        chapters: 1,
+        tracks: [
+            manual("Chương 1", "c1.m4a"),
+        ]
+    },
+    {        
+        id: 44,
+        folderName: "BongCucNho",
+        title: "Bông Cúc Nhỏ",
+        author: "Lạc Tâm",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/BongCucNho/cover.jpg",
+        desc: 'Những bông cúc hoạ mi trắng mỏng, luôn tiêu biểu cho sự thanh cao trong veo...',
+	    isH: false,
+        chapters: 5,
+        tracks: [
+            manual("Chương 1 - 5", "c1-5.m4a"),
+        ]
+    },
 ];
 
