@@ -670,5 +670,19 @@ const LIBRARY = [
             manual("Ngoại truyện 7 - 11 (Hết)", "nt7-11.m4a"),
         ]
     },
+    {        
+        id: 41,
+        folderName: "TriAm",
+        title: "Trì Âm",
+        author: "Duy Vụ",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/TriAm/cover.jpg",
+        desc: 'Sau chín năm chia tay lại lần nữa gặp mặt, Thẩm Từ Âm không biết là Ngôn Chiêu vẫn còn tình cũ khó quên trước người bạn gái cũ là mình, huống chi năm đó là cô vứt bỏ anh.\nNhưng sau này cô mới hiểu được, thật ra cô không hiểu Ngôn Chiêu, cũng không hiểu chính bản thân mình.\n\n#Một câu chuyện về cặp đôi vườn trường gương vỡ lại lành\n\nCouple: Thẩm Từ Âm × Ngôn Chiêu\nMỹ nữ điềm tĩnh lý trí × Đại thiếu gia tản mạn "xấu xa"\n\nLưu ý:\n1. Chậm nhiệt, có thịt có cốt truyện\n2. Nam chính bộ này là anh trai của nữ chính và bạn thân của nam chính bộ truyện Triều Sa',
+	    isH: true,
+        chapters: 88,
+        tracks: [
+            ...batch(1, 80, 10, 'm4a'),
+            manual("Chương 81 - 88 (Hết)", "c81-88.m4a"),
+        ]
+    },
 ];
 
