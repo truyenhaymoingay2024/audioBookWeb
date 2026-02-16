@@ -707,7 +707,7 @@ const LIBRARY = [
 	    isH: false,
         chapters: 1,
         tracks: [
-            manual("Chương 1", "c1.m4a"),
+            manual("Chương 1 (Hết)", "c1.m4a"),
         ]
     },
     {        
@@ -720,7 +720,7 @@ const LIBRARY = [
 	    isH: false,
         chapters: 5,
         tracks: [
-            manual("Chương 1 - 5", "c1-5.m4a"),
+            manual("Chương 1 - 5 (Hết)", "c1-5.m4a"),
         ]
     },
 ];
