@@ -750,5 +750,20 @@ const LIBRARY = [
             manual("Chương 81 - 85 (Hết)", "c81-85.m4a"),
         ]
     },
+    {        
+        id: 47,
+        folderName: "BayMuaHe",
+        title: "Bẫy Mùa Hè",
+        author: "Boldness",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/BayMuaHe/cover.jpg",
+        desc: 'Thể loại: Ngôn tình, Hiện đại, Song khiết, H văn, Song hướng yêu thầm, Thanh mai trúc mã, Sủng, Nhẹ nhàng, Thanh xuân vườn trường, 1v1, HE\n\nSong hướng thầm mến + thanh mai trúc mã = điểm tâm ngọt ngày hè.\nAnh trai lạnh lùng kiềm chế và cô em gái nhỏ mưu mô.\n\nVĂN ÁN:\nVào một đêm hè trời mưa nóng bức, cả tòa nhà bị mất điện.\nCô lao vào vòng tay anh với khuôn mặt đẫm nước mắt: "Anh ơi, em sợ..."\nCách một lớp áo ngủ mỏng manh, cơ thể thiếu nữ mang theo hương thơm thanh mát dán sát lên cơ thể nóng hổi của anh.\nNgoài cửa sổ, tia chớp lóe lên, sấm sét và mưa xối xả, trong phòng nóng nực, anh đổ mồ hôi như mưa, gắt gao ôm cô gái vào lòng an ủi...\nTừ góc độ mà anh không nhìn thấy, cô gái cong mắt cười như một con cáo nhỏ. Nhìn xem, cái bẫy do chính tay cô đào cuối cùng cũng đợi được anh.\n\nLưu ý quan trọng của tác giả, phải đọc trước khi nhảy hố:\nĐối với tag cao h, tất nhiên là trong truyện sẽ xuất hiện rất nhiều cảnh xôi thịt, nhưng vì không chịu nổi việc H không logic, không hợp tình hợp lý... Cho nên giai đoạn đầu tương đối vụn vặt, sẽ có nhiều nội dung làm chất độn, nhưng cũng đảm bảo sẽ có không ít thịt thà ở phía sau. Hi vọng mọi người hiểu.\n\nCảnh báo:  Nam nữ chính quan hệ tinh duc trước 18 tuổi, hai người vẫn còn là học sinh trung học và sẽ có những hành động cùng suy nghĩ vượt quá lứa tuổi nên có, nếu cảm thấy không chấp nhận được vui lòng lướt qua.',
+	    isH: true,
+        chapters: 132,
+        tracks: [
+            ...batch(1, 120, 10, 'm4a'),
+            manual("Chương 121 - 125 (Hoàn chính văn)", "c121-125.m4a"),
+            manual("Ngoại truyện 1 - 7 (Hết)", "nt1-7.m4a"),
+        ]
+    },
 ];
 
