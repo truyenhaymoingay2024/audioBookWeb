@@ -780,5 +780,23 @@ const LIBRARY = [
             manual("Chương 41", "c41.m4a"),
         ]
     },
+    {        
+        id: 49,
+        folderName: "YeuChangQuanNhanDangGhet",
+        title: "Yêu Chàng Quân Nhân Đáng Ghét",
+        author: "Thiền Tâm Nguyệt",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/YeuChangQuanNhanDangGhet/cover.jpg",
+        desc: 'Sống lại một lần nữa, Mục Ảnh Sanh nghĩ thầm, thật là tốt. Thoát khỏi những uất ức ở kiếp trước, kiếp này cô có thể làm lại từ đầu. Đấu trí với người nhà, đăng kí vào trường quân đội trở thành bộ đội đặc chủng. Có thể hoàn thành ước mơ trở thành quân nhân.\nThế nhưng khi gặp lại kẻ không đội trời chung từ kiếp trước, cô vẫn tức giận đến nghiến răng kèn kẹt.\nLà anh kiếp trước luôn đối nghịch với tôi, là anh kiếp trước luôn ngáng đường tôi đi. Lần này tôi biết trước được tương lai, xem tôi đối phó với anh thế nào.\nChẳng qua cô đột nhiên lại phát hiện, người đàn ông ở trước mặt này phong thái hình như có vẻ gì đó là lạ.\nChàng trai anh tuấn đĩnh đạc từng bước tiến tới gần, cô bị anh áp sát lui về phía sau.\n“Việc thăng cấp thuộc về em. Yên tâm, sẽ không ai tranh với em.”\n“Anh có ý gì?” Người đàn ông cười rộ lên để lộ hàm răng trắng, cô lại cảm thấy lỗ chân lông mình dựng đứng lên. Có quỷ mới tin anh ta tự nhiên lại tốt bụng như vậy.\n“Không có ý gì.” Người đàn ông tiến về phía trước, dồn cô áp vào góc tường, ánh mắt thâm thúy tràn ngập vẻ chiếm hữu: “Cấp bậc thuộc về em, em thuộc về anh.”',
+	    isH: false,
+        chapters: 772,
+        tracks: [
+            ...batch(1, 20, 10, 'm4a'),
+            manual("Chương 21 - 25", "c21-25.m4a"),
+            manual("Chương 26", "c26.m4a"),
+            manual("Chương 27 - 30", "c27-30.m4a"),
+            ...batch(31, 40, 5, 'm4a'),
+            manual("Chương 41 - 50", "c41-50.m4a"),
+        ]
+    },
 ];
 
