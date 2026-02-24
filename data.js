@@ -799,5 +799,19 @@ const LIBRARY = [
             ...batch(141, 300, 5, 'm4a'),
         ]
     },
+    {        
+        id: 50,
+        folderName: "NonNoiNonXanh",
+        title: "Non Nối Non Xanh",
+        author: "Thị Tây Qua A",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/NonNoiNonXanh/cover.jpg",
+        desc: 'Văn án\nĐiều hối hận duy nhất trong cuộc đời này là yêu phải thằng sở khanh.\nBạn bè: Mỗi lần nghĩ đến thằng sở khanh đó, tớ sẽ phạt mình nhảy Burpee 50 cái, cho chừa cái tội thích à uôm với chó.\nSau khi nhảy Burpee 7749 cái, Lâm Hàng vẫn lao vào thằng sở khanh.\n#tag: hiện đại, đô thị tình duyên, yêu thầm, HE',
+	    isH: true,
+        chapters: 64,
+        tracks: [
+            ...batch(1, 50, 10, 'm4a'),
+            manual("Chương 51 - 57", "c51-57.m4a"),
+            manual("Chương 58 - 62 + Ngoại truyện (Hết)", "c58-62+2nt.m4a"),
+        ]
+    },
 ];
-
