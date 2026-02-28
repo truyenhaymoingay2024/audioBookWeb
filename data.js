@@ -816,7 +816,7 @@ const LIBRARY = [
     },
     {        
         id: 51,
-        folderName: "NghietAi",
+        folderName: "NghietAi [đang update 30/193]",
         title: "Nghiệt Ái",
         author: "Nhậm Bình Sinh",
         cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/NghietAi/cover.jpg",
