@@ -818,8 +818,8 @@ const LIBRARY = [
     },
     {        
         id: 51,
-        folderName: "NghietAi [đang update 30/193]",
-        title: "Nghiệt Ái",
+        folderName: "NghietAi",
+        title: "Nghiệt Ái [đang update 30/193]",
         author: "Nhậm Bình Sinh",
         cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/NghietAi/cover.jpg",
         desc: '• Thể Loại: Hiện đại, HE, Hào môn, H văn, Ngọt sủng, Hắc ám, Cường thủ hào đoạt, Cận thủy lâu đài, Duyên trời tác hợp, Lôi, 1v1, Chiếm hữu.\n\n• Truyện CaoH(thô tục) có nội dung. Nam chính vờn nữ chính rất cuốnnnnn.\n\nNhân vật và Bối cảnh\n• Nhân vật chính: Uông Thanh Huyền và Đàm Kiến Văn.\n• Sếp của chồng cũ X Vợ là cấp dưới.\n\nVăn án:\nCuộc sống yên ả của Uông Thanh Huyền bị xáo trộn hoàn toàn sau khi người chồng qua đời.\nMột người đàn ông bất ngờ xuất hiện, chen chân vào cuộc đời cô, đó chính là Đàm Kiến Văn.\nCâu hỏi lớn nhất được đặt ra là: Người đàn ông đột ngột xâm nhập này rốt cuộc là thật lòng muốn chuộc lỗi hay có âm mưu nào khác?\nVới các yếu tố "Cưỡng đoạt" và "Ám muội," câu chuyện hứa hẹn sẽ khai thác mối quan hệ đầy kịch tính, phức tạp giữa người phụ nữ vừa mất chồng và cấp trên của chồng cô, xoay quanh một bí mật đen tối nào đó cần được chuộc tội.',
