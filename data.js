@@ -834,16 +834,17 @@ const LIBRARY = [
     {        
         id: 52,
         folderName: "ViQuyen",
-        title: "Vì Quyền [đang update 40/375]",
+        title: "Vì Quyền [đang update 200/375]",
         author: "Phản Phái Giác Sắc",
         cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/ViQuyen/cover.jpg",
         desc: '• Thể loại: Truyện H, ngôn tình, hiện đại, quan chức cấp cao, chính trị, cường thủ hào đoạt, niên thượng, sạch, 1v1\n\n—\n\n• Văn án 1:\nCô xuất hiện dưới dáng dấp một con mồi, dùng cạm bẫy trong chốn phồn hoa hòng dắt anh vào bẫy.\nMọi thứ dường như đã nằm hết trong tầm kiểm soát của cô.\nNhưng không ngờ, đằng sau bọ ngựa bắt ve, còn có thợ săn đang chờ đợi.\n\n• Văn án 2:\nMột ván cờ tranh đoạt quyền lực, Tô Uẩn bị ép buộc vào cuộc, trở thành con rối bị điều khiển.\nKhi gió nổi, con mồi lộ diện, những sợi dây trên người con rối đã trói chặt lấy người đàn ông, kéo anh vào biển dục vọng của chốn phồn hoa.\n“Làm vật hy sinh hay trở thành kẻ chiến thắng.” Tô Uẩn chọn vế sau, và cô cũng chỉ có thể chọn vế sau.\n“Vợ, hay là quân cờ, Lục Dập, anh phân biệt được không?”\nNgười tranh quyền đoạt lợi, thật giả lẫn lộn, thiện ác đều đáng tội.\nThiếu tướng quân đội Thái Lan X Cô gái được gia đình đối thủ nuôi dưỡng\nGã ngụy quân tử đầy tham vọng và thủ đoạn X Cô gái bề ngoài ngây thơ, bên trong lòng dạ thâm sâu khó lường',
 	    isH: true,
         chapters: 375,
         tracks: [
-            ...batch(1, 40, 10, 'm4a'),
+            ...batch(1, 200, 10, 'm4a'),
         ]
     },
 ];
+
 
 
