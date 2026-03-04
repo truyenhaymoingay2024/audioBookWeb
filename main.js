@@ -9,102 +9,79 @@ const app = (() => {
         },
         detail: {
             title: document.getElementById('detail-title'),
-            author: document.getElementById('detail-author'),
+            author: document.querySelector('.author-name'),
             desc: document.getElementById('detail-desc'),
-            cover: document.getElementById('detail-cover')
+            cover: document.getElementById('detail-cover'),
+            favBtn: document.getElementById('detail-fav-btn'),
+            trackCount: document.getElementById('detail-track-count')
         },
         player: {
-            bar: document.getElementById('player-bar'),
+            wrapper: document.getElementById('player-wrapper'),
+            dragHandle: document.getElementById('player-drag-handle'),
             title: document.getElementById('p-title'),
             author: document.getElementById('p-author'),
             cover: document.getElementById('p-cover'),
             playIcon: document.getElementById('p-play-icon'),
+            playIconMini: document.getElementById('p-play-icon-mini'),
             slider: document.getElementById('p-slider'),
             fill: document.getElementById('p-progress-fill'),
+            miniFill: document.getElementById('p-mini-progress-fill'),
             current: document.getElementById('p-current'),
             duration: document.getElementById('p-duration'),
             speedText: document.getElementById('current-speed-text'),
-            speedPopup: document.getElementById('speed-popup')
-        },
-        // Thêm các element của mini player
-        mini: {
-            cover: document.getElementById('mini-p-cover'),
-            title: document.getElementById('mini-p-title'),
-            author: document.getElementById('mini-p-author'),
-            playIcon: document.getElementById('mini-p-play-icon')
+            speedPopup: document.getElementById('speed-popup'),
+            timerBtn: document.getElementById('timer-btn'),
+            timerDot: document.querySelector('.timer-dot'),
+            timerPopup: document.getElementById('timer-popup')
         },
         search: document.getElementById('search-input'),
-        badge: document.getElementById('last-played-info'),
         sortPopup: document.getElementById('sort-popup'),
         filterPopup: document.getElementById('filter-popup'),
-        currentSortText: document.getElementById('current-sort-text'),
-        currentFilterText: document.getElementById('current-filter-text'),
-        timerText: document.getElementById('current-timer-text'),
-        timerPopup: document.getElementById('timer-popup')
+        historyModal: document.getElementById('history-modal'),
+        historyModalContent: document.getElementById('history-modal-content'),
+        historyList: document.getElementById('history-list')
     };
 
     let state = {
         currentFolder: null,
-        playlist: [],
+        playlist:[],
         currentIndex: 0,
         isPlaying: false,
         isDragging: false,
         currentSort: 'newest',
-        currentFilter: 'all', // 'all', 'H', 'nonH'
+        currentFilter: 'all', 
         speed: 1.0,
-        timer: 0, // 0 = tắt, -1 = hết chương, >0 = số phút
+        timer: 0,
         timerId: null,
-        timerRemaining: 0, // thời gian còn lại (giây)
-        timerStartTime: 0,
-        sortMenuOpen: false,
-        filterMenuOpen: false,
-        speedMenuOpen: false,
-        timerMenuOpen: false,
-        durationCache: {}, // Cache for durations
-        lastPlayedData: null, // Thêm state lưu thông tin audio đã nghe
-        isMiniPlayer: false // Thêm state cho mini player
+        favorites: JSON.parse(localStorage.getItem('favorites')) ||[],
+        audioHistory: JSON.parse(localStorage.getItem('audioHistory')) ||[],
+        durationCache: {},
+        lastScrollY: 0
     };
 
-    // === METADATA QUEUE SYSTEM (FIX 0:00 ISSUE) ===
     const metadataQueue = {
-        queue: [],
-        isProcessing: false,
-
+        queue:[], isProcessing: false,
         add(track, elementId) {
-            // Check cache first
             if (state.durationCache[track.src]) {
                 const el = document.getElementById(elementId);
                 if (el) el.innerText = formatTime(state.durationCache[track.src]);
                 return;
             }
-            this.queue.push({
-                track,
-                elementId
-            });
+            this.queue.push({ track, elementId });
             this.process();
         },
-
-        clear() {
-            this.queue = [];
-            this.isProcessing = false;
-        },
-
+        clear() { this.queue =[]; this.isProcessing = false; },
         async process() {
             if (this.isProcessing || this.queue.length === 0) return;
-
             this.isProcessing = true;
             const item = this.queue.shift();
-
             try {
                 const duration = await getTrackDuration(item.track.src);
-                state.durationCache[item.track.src] = duration; // Cache it
+                state.durationCache[item.track.src] = duration;
                 const el = document.getElementById(item.elementId);
                 if (el) el.innerText = formatTime(duration);
-            } catch (e) {
-                console.log("Queue skip:", e);
-            } finally {
+            } catch (e) {} finally {
                 this.isProcessing = false;
-                // Delay small amount to be gentle on network
                 setTimeout(() => this.process(), 50);
             }
         }
@@ -112,1037 +89,526 @@ const app = (() => {
 
     function getTrackDuration(src) {
         return new Promise((resolve) => {
-            const audio = new Audio();
-            audio.preload = 'metadata';
-            // Timeout safety: if metadata loading hangs, resolve 0
-            const timeout = setTimeout(() => {
-                resolve(0);
-            }, 5000);
-
-            audio.onloadedmetadata = () => {
-                clearTimeout(timeout);
-                if (audio.duration === Infinity || isNaN(audio.duration)) {
-                    resolve(0);
-                } else {
-                    resolve(audio.duration);
-                }
-            };
-
-            audio.onerror = () => {
-                clearTimeout(timeout);
-                resolve(0);
-            };
-
+            const audio = new Audio(); audio.preload = 'metadata';
+            const timeout = setTimeout(() => resolve(0), 5000);
+            audio.onloadedmetadata = () => { clearTimeout(timeout); resolve(audio.duration === Infinity || isNaN(audio.duration) ? 0 : audio.duration); };
+            audio.onerror = () => { clearTimeout(timeout); resolve(0); };
             audio.src = src;
         });
     }
 
-    let touchStartX = 0;
-    let touchEndX = 0;
-
     function init() {
         document.getElementById('site-name').innerText = CONFIG.siteName;
         document.getElementById('user-avatar').src = CONFIG.avatar;
-        handleSort('newest');
-
-        // Restore state
+        
         const savedSpeed = sessionStorage.getItem('audioSpeed');
-        if (savedSpeed) {
-            state.speed = parseFloat(savedSpeed);
-            updateSpeedUI(state.speed);
+        if (savedSpeed) setSpeed(parseFloat(savedSpeed));
+
+        if(state.audioHistory.length > 0) {
+            const last = state.audioHistory[0];
+            els.player.title.innerText = last.trackTitle || last.folderTitle;
+            els.player.author.innerText = last.folderTitle;
+            els.player.cover.src = last.cover || 'https://via.placeholder.com/150';
         }
 
-        // Restore timer
-        const savedTimer = sessionStorage.getItem('audioTimer');
-        if (savedTimer) {
-            state.timer = parseInt(savedTimer);
-            updateTimerUI(state.timer);
-        }
+        els.player.wrapper.classList.add('is-paused');
+        _doSort('newest');
 
-        // Load last played audio từ localStorage
-        loadLastPlayedAudio();
-
-        // Khôi phục trạng thái mini player
-        restorePlayerMode();
-
-        // Events
         els.audio.addEventListener('timeupdate', onTimeUpdate);
+        els.audio.addEventListener('timeupdate', debounce(saveCurrentAudioProgress, 3000));
         els.audio.addEventListener('ended', onTrackEnd);
         els.audio.addEventListener('loadedmetadata', onMetadataLoaded);
         els.audio.addEventListener('play', () => updatePlayState(true));
         els.audio.addEventListener('pause', () => updatePlayState(false));
-        els.audio.addEventListener('ratechange', () => {
-            if (els.audio.playbackRate !== state.speed) els.audio.playbackRate = state.speed;
-        });
-
-        // Lưu thời gian phát hiện tại mỗi 5 giây
-        els.audio.addEventListener('timeupdate', debounce(saveCurrentAudioProgress, 5000));
 
         els.player.slider.addEventListener('input', onSeekInput);
         els.player.slider.addEventListener('change', onSeekChange);
 
-        // Click outside
         document.addEventListener('click', (e) => {
-            if (!e.target.closest('.speed-menu-container')) {
-                els.player.speedPopup.classList.remove('active');
-                state.speedMenuOpen = false;
-            }
-            if (!e.target.closest('.sort-menu-container')) {
-                els.sortPopup.classList.remove('active');
-                state.sortMenuOpen = false;
-            }
-            if (!e.target.closest('.filter-menu-container')) {
-                els.filterPopup.classList.remove('active');
-                state.filterMenuOpen = false;
-            }
-            if (!e.target.closest('.timer-menu-container')) {
-                els.timerPopup.classList.remove('active');
-                state.timerMenuOpen = false;
+            if (!e.target.closest('.relative')) {
+                document.querySelectorAll('.dropdown-popup').forEach(p => p.classList.remove('active'));
             }
         });
 
-        document.addEventListener('keydown', (e) => {
-            if (document.activeElement.tagName === 'INPUT') return;
-            switch (e.code) {
-                case 'Space':
-                    e.preventDefault();
-                    togglePlay();
-                    break;
-                case 'ArrowLeft':
-                    skip(-5);
-                    break;
-                case 'ArrowRight':
-                    skip(5);
-                    break;
-            }
+        initSwipeGesture();
+
+        window.addEventListener('popstate', (e) => {
+            if (e.state && e.state.view === 'detail') openFolder(e.state.id, false);
+            else goHome(false);
         });
 
-        const detailView = document.getElementById('detail-view');
-        detailView.addEventListener('touchstart', e => {
-            touchStartX = e.changedTouches[0].screenX;
-        }, {
-            passive: true
-        });
-        detailView.addEventListener('touchend', e => {
-            touchEndX = e.changedTouches[0].screenX;
-            if (touchEndX - touchStartX > 100) goHome();
-        }, {
-            passive: true
-        });
-
-        // Cập nhật timer UI mỗi giây
-        setInterval(updateTimerDisplay, 1000);
-
-        // Thêm event listeners cho nút toggle player
-        document.querySelectorAll('.toggle-player-btn').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                togglePlayerMode();
-            });
-        });
+        els.search.addEventListener('input', (e) => debounceSearch(e.target.value));
     }
 
-    // Hàm chuyển đổi giữa full player và mini player
-    function togglePlayerMode() {
-        state.isMiniPlayer = !state.isMiniPlayer;
-        els.player.bar.classList.toggle('mini');
-        
-        // Lưu trạng thái vào localStorage
-        localStorage.setItem('playerMode', state.isMiniPlayer ? 'mini' : 'full');
-    }
-
-    // Khôi phục trạng thái player khi load trang
-    function restorePlayerMode() {
-        const savedMode = localStorage.getItem('playerMode');
-        if (savedMode === 'mini') {
-            state.isMiniPlayer = true;
-            els.player.bar.classList.add('mini');
-        }
-    }
-
-    // === HÀM LỌC TRUYỆN H/KHÔNG H ===
     function setFilter(type) {
         state.currentFilter = type;
-        const textMap = {
-            'all': 'Tất cả',
-            'H': 'Truyện H',
-            'nonH': 'Không H'
-        };
-        els.currentFilterText.innerText = textMap[type];
-        
-        // Cập nhật UI và render lại thư viện
-        updateFilterUI(type);
-        handleSort(state.currentSort); // Gọi handleSort để render lại với bộ lọc mới
-        
+        const textMap = { 'all': 'Tất cả truyện', 'H': 'Truyện H', 'nonH': 'Truyện không H', 'favorite': 'Yêu thích' };
+        document.getElementById('current-filter-text').innerText = textMap[type];
         els.filterPopup.classList.remove('active');
-        state.filterMenuOpen = false;
+        _doSort(state.currentSort); 
     }
     
-    function toggleFilterMenu() {
-        state.filterMenuOpen = !state.filterMenuOpen;
-        state.sortMenuOpen = false;
-        state.speedMenuOpen = false;
-        state.timerMenuOpen = false;
+    function toggleFilterMenu() { els.filterPopup.classList.toggle('active'); els.sortPopup.classList.remove('active'); }
+    function toggleSortMenu() { els.sortPopup.classList.toggle('active'); els.filterPopup.classList.remove('active'); }
+
+    function setSort(val) {
+        state.currentSort = val;
+        const texts = { 'az': 'Tên A-Z', 'za': 'Tên Z-A', 'newest': 'Mới nhất', 'oldest': 'Cũ nhất' };
+        document.getElementById('current-sort-text').innerText = texts[val];
         els.sortPopup.classList.remove('active');
-        els.player.speedPopup.classList.remove('active');
-        els.timerPopup.classList.remove('active');
-        
-        if (state.filterMenuOpen) els.filterPopup.classList.add('active');
-        else els.filterPopup.classList.remove('active');
-    }
-    
-    function updateFilterUI(type) {
-        document.querySelectorAll('.filter-item').forEach(item => {
-            item.classList.remove('selected');
-            const itemText = item.innerText;
-            if ((type === 'all' && itemText === 'Tất cả') ||
-                (type === 'H' && itemText === 'Truyện H') ||
-                (type === 'nonH' && itemText === 'Không H')) {
-                item.classList.add('selected');
-            }
-        });
-    }
-    
-    // === HÀM HẸN GIỜ TẮT NHẠC ===
-    function setTimer(minutes) {
-        // Xóa timer cũ nếu có
-        clearTimer();
-        
-        state.timer = minutes;
-        sessionStorage.setItem('audioTimer', minutes);
-        updateTimerUI(minutes);
-        
-        // Nếu đang phát và có timer
-        if (state.isPlaying && minutes !== 0) {
-            startTimer(minutes);
-        }
-        
-        els.timerPopup.classList.remove('active');
-        state.timerMenuOpen = false;
-    }
-    
-    function startTimer(minutes) {
-        if (state.timerId) {
-            clearTimeout(state.timerId);
-            state.timerId = null;
-        }
-        
-        if (minutes === -1) {
-            // Hết chương: tính thời gian còn lại của track hiện tại
-            const remaining = els.audio.duration - els.audio.currentTime;
-            if (remaining > 0) {
-                state.timerId = setTimeout(() => {
-                    pause();
-                    showToast('⏰ Hẹn giờ: Đã hết chương, dừng phát.');
-                    setTimer(0); // Reset timer
-                }, remaining * 1000);
-                state.timerStartTime = Date.now();
-                state.timerRemaining = remaining;
-            }
-        } else if (minutes > 0) {
-            // Tính thời gian theo phút
-            const ms = minutes * 60 * 1000;
-            state.timerId = setTimeout(() => {
-                pause();
-                showToast(`⏰ Hẹn giờ: Đã hết ${minutes} phút, dừng phát.`);
-                setTimer(0); // Reset timer
-            }, ms);
-            state.timerStartTime = Date.now();
-            state.timerRemaining = minutes * 60;
-        }
-        
-        // Cập nhật UI
-        updateTimerButton();
-    }
-    
-    function clearTimer() {
-        if (state.timerId) {
-            clearTimeout(state.timerId);
-            state.timerId = null;
-        }
-        state.timerRemaining = 0;
-        updateTimerButton();
-    }
-    
-    function updateTimerUI(minutes) {
-        const textMap = {
-            0: 'Tắt',
-            '-1': 'Hết chương',
-            15: '15p',
-            30: '30p',
-            45: '45p',
-            60: '60p'
-        };
-        els.timerText.innerText = textMap[minutes] || 'Tắt';
-        
-        // Cập nhật selected cho menu
-        document.querySelectorAll('.timer-item').forEach(item => {
-            item.classList.remove('selected');
-            const itemText = item.innerText;
-            if ((minutes === -1 && itemText === 'Hết chương') ||
-                (minutes === 15 && itemText === '15 phút') ||
-                (minutes === 30 && itemText === '30 phút') ||
-                (minutes === 45 && itemText === '45 phút') ||
-                (minutes === 60 && itemText === '60 phút') ||
-                (minutes === 0 && itemText === 'Tắt')) {
-                item.classList.add('selected');
-            }
-        });
-        
-        updateTimerButton();
-    }
-    
-    function updateTimerDisplay() {
-        if (state.timerId && state.timerRemaining > 0) {
-            const elapsed = (Date.now() - state.timerStartTime) / 1000;
-            const remaining = Math.max(0, state.timerRemaining - elapsed);
-            
-            if (remaining <= 0) {
-                // Timer đã hết, sẽ được xử lý trong timeout
-                return;
-            }
-            
-            // Cập nhật tooltip với thời gian còn lại
-            const timerTrigger = document.querySelector('.timer-menu-trigger');
-            if (timerTrigger) {
-                if (state.timer === -1) {
-                    timerTrigger.title = `Hẹn giờ: Hết chương (còn ${formatTime(remaining)})`;
-                } else {
-                    timerTrigger.title = `Hẹn giờ: Còn ${formatTime(remaining)}`;
-                }
-            }
-        }
-    }
-    
-    function updateTimerButton() {
-        const timerTrigger = document.querySelector('.timer-menu-trigger');
-        if (!timerTrigger) return;
-        
-        if (state.timer === 0 || !state.timerId) {
-            timerTrigger.classList.remove('timer-active');
-            timerTrigger.title = 'Hẹn giờ tắt nhạc';
-        } else {
-            timerTrigger.classList.add('timer-active');
-        }
-    }
-    
-    function toggleTimerMenu() {
-        state.timerMenuOpen = !state.timerMenuOpen;
-        state.speedMenuOpen = false;
-        state.sortMenuOpen = false;
-        state.filterMenuOpen = false;
-        els.player.speedPopup.classList.remove('active');
-        els.sortPopup.classList.remove('active');
-        els.filterPopup.classList.remove('active');
-        
-        if (state.timerMenuOpen) els.timerPopup.classList.add('active');
-        else els.timerPopup.classList.remove('active');
-    }
-    
-    function showToast(message) {
-        // Tạo toast thông báo
-        const toast = document.createElement('div');
-        toast.className = 'toast-notification';
-        toast.textContent = message;
-        toast.style.cssText = `
-            position: fixed;
-            bottom: 100px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.9);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 12px;
-            z-index: 10000;
-            font-size: 14px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            animation: toastSlideUp 0.3s ease;
-        `;
-        
-        document.body.appendChild(toast);
-        
-        setTimeout(() => {
-            toast.style.animation = 'toastSlideDown 0.3s ease';
-            setTimeout(() => {
-                if (toast.parentNode) {
-                    document.body.removeChild(toast);
-                }
-            }, 300);
-        }, 3000);
+        _doSort(val);
     }
 
-    // === HÀM LƯU VÀ TẢI AUDIO ĐÃ NGHE (ĐÃ CẢI THIỆN) ===
-    function saveCurrentAudioProgress() {
-        if (!state.currentFolder || !els.audio.src || isNaN(els.audio.currentTime)) return;
+    function _doSort(criteria) {
+        let data = [...LIBRARY];
+        if (state.currentFilter === 'H') data = data.filter(i => i.isH);
+        else if (state.currentFilter === 'nonH') data = data.filter(i => !i.isH);
+        else if (state.currentFilter === 'favorite') data = data.filter(i => state.favorites.includes(i.id));
+
+        if (criteria === 'az') data.sort((a, b) => a.title.localeCompare(b.title));
+        if (criteria === 'za') data.sort((a, b) => b.title.localeCompare(a.title));
+        if (criteria === 'newest') data.sort((a, b) => b.id - a.id);
+        if (criteria === 'oldest') data.sort((a, b) => a.id - b.id);
         
-        const audioData = {
-            folderId: state.currentFolder.id,
-            folderName: state.currentFolder.folderName,
-            trackIndex: state.currentIndex,
-            currentTime: els.audio.currentTime,
-            timestamp: Date.now(),
-            folderTitle: state.currentFolder.title,
-            trackTitle: state.playlist[state.currentIndex]?.title || '',
-            author: state.currentFolder.author,
-            src: els.audio.src,
-            duration: els.audio.duration,
-            totalTracks: state.playlist.length
-        };
-        
-        localStorage.setItem('lastPlayedAudio', JSON.stringify(audioData));
-        state.lastPlayedData = audioData;
-        
-        // Cập nhật badge nếu đang ở detail view
-        updateLastPlayedBadge();
-        
-        // Cập nhật nút tiếp tục trên header
-        updateResumeButton();
+        renderLibrary(data);
     }
 
-    function loadLastPlayedAudio() {
-        try {
-            const saved = localStorage.getItem('lastPlayedAudio');
-            if (saved) {
-                state.lastPlayedData = JSON.parse(saved);
-                console.log('Đã tải audio đã nghe cuối cùng:', state.lastPlayedData);
-                updateResumeButton();
-            }
-        } catch (e) {
-            console.error('Lỗi khi tải audio đã nghe:', e);
-        }
-    }
+    const debounceSearch = debounce((query) => {
+        if (!query) return _doSort(state.currentSort);
+        const term = query.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+        let data = [...LIBRARY].filter(i => 
+            i.title.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().includes(term) || 
+            i.author.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().includes(term)
+        );
+        renderLibrary(data);
+    }, 300);
 
-    function updateResumeButton() {
-        const resumeBtn = document.getElementById('resume-last-audio-btn');
-        if (!resumeBtn) return;
-        
-        if (state.lastPlayedData) {
-            resumeBtn.classList.remove('hidden');
-            const timeAgo = getTimeAgo(state.lastPlayedData.timestamp);
-            resumeBtn.title = `Tiếp tục: ${state.lastPlayedData.trackTitle} (${formatTime(state.lastPlayedData.currentTime)}/${timeAgo})`;
-            
-            // Cập nhật tooltip content
-            const tooltipContent = document.getElementById('resume-tooltip-content');
-            if (tooltipContent) {
-                tooltipContent.innerHTML = `
-                    <div><strong>${state.lastPlayedData.folderTitle}</strong></div>
-                    <div>${state.lastPlayedData.trackTitle}</div>
-                    <div class="text-green-300">${formatTime(state.lastPlayedData.currentTime)} • ${timeAgo}</div>
-                `;
-            }
-        } else {
-            resumeBtn.classList.add('hidden');
-        }
-    }
+    function handleSearch(query) { debounceSearch(query); }
 
-    function updateLastPlayedBadge() {
-        if (!state.lastPlayedData || !els.badge) return;
-        
-        const timeAgo = getTimeAgo(state.lastPlayedData.timestamp);
-        els.badge.innerText = `Đã nghe: ${state.lastPlayedData.trackTitle} (${timeAgo})`;
-        els.badge.title = `Tiếp tục từ ${formatTime(state.lastPlayedData.currentTime)}`;
-    }
-
-    function getTimeAgo(timestamp) {
-        const now = Date.now();
-        const diff = now - timestamp;
-        
-        const minutes = Math.floor(diff / (1000 * 60));
-        const hours = Math.floor(diff / (1000 * 60 * 60));
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        
-        if (minutes < 60) return `${minutes} phút trước`;
-        if (hours < 24) return `${hours} giờ trước`;
-        return `${days} ngày trước`;
-    }
-
-    function resumeLastAudio() {
-        if (!state.lastPlayedData) return;
-        
-        // Tìm folder tương ứng
-        const folder = LIBRARY.find(f => f.id === state.lastPlayedData.folderId);
-        if (!folder) {
-            console.log('Không tìm thấy folder đã lưu');
-            showToast('Không tìm thấy truyện đã nghe. Có thể nó đã bị xóa hoặc thay đổi.');
-            return;
-        }
-        
-        // Mở folder
-        openFolder(folder.id);
-        
-        // Đợi một chút để playlist được tạo, sau đó phát tiếp từ vị trí đã lưu
-        setTimeout(() => {
-            if (state.lastPlayedData.trackIndex < state.playlist.length) {
-                // Kiểm tra xem có cùng file không (tránh trường hợp file bị thay đổi)
-                const savedSrc = state.lastPlayedData.src;
-                const currentSrc = state.playlist[state.lastPlayedData.trackIndex]?.src;
-                
-                // So sánh tên file thay vì toàn bộ URL (vì rootPath có thể thay đổi)
-                const savedFileName = savedSrc ? savedSrc.split('/').pop() : '';
-                const currentFileName = currentSrc ? currentSrc.split('/').pop() : '';
-                
-                if (savedFileName && currentFileName && savedFileName !== currentFileName) {
-                    console.log('File đã thay đổi, tìm track phù hợp...');
-                    // Tìm track có cùng title hoặc gần giống
-                    const matchingTrack = state.playlist.find((track, idx) => 
-                        track.title === state.lastPlayedData.trackTitle || 
-                        idx === state.lastPlayedData.trackIndex
-                    );
-                    
-                    if (matchingTrack) {
-                        const newIndex = state.playlist.indexOf(matchingTrack);
-                        playTrackFromTime(newIndex, 0); // Phát từ đầu nếu file khác
-                        showToast('File đã thay đổi, phát từ đầu chương.');
-                    } else {
-                        playTrack(state.lastPlayedData.trackIndex); // Phát từ đầu
-                        showToast('Không tìm thấy chương chính xác, phát từ đầu.');
-                    }
-                } else {
-                    // Phát từ vị trí đã lưu - đảm bảo không vượt quá duration
-                    const startTime = Math.min(
-                        state.lastPlayedData.currentTime,
-                        els.audio.duration - 5 // Đảm bảo còn ít nhất 5 giây
-                    );
-                    playTrackFromTime(state.lastPlayedData.trackIndex, Math.max(0, startTime));
-                }
-            } else {
-                // Nếu trackIndex không hợp lệ, phát từ đầu
-                playTrack(0);
-            }
-        }, 300);
-    }
-
-    // Hàm mới: phát track từ thời điểm cụ thể
-    function playTrackFromTime(index, startTime) {
-        // Hủy timer cũ
-        if (state.timer === -1) {
-            clearTimer();
-        }
-        
-        state.currentIndex = index;
-        const track = state.playlist[index];
-
-        els.audio.src = track.src;
-        els.audio.playbackRate = state.speed;
-        els.audio.load();
-
-        // Cập nhật thông tin cho cả full player và mini player
-        els.player.title.innerText = track.title;
-        els.player.author.innerText = state.currentFolder.title;
-        els.player.cover.src = state.currentFolder.cover;
-        
-        // Cập nhật mini player
-        els.mini.title.innerText = track.title;
-        els.mini.author.innerText = state.currentFolder.title;
-        els.mini.cover.src = state.currentFolder.cover;
-
-        els.player.bar.classList.remove('translate-y-[150%]');
-
-        // Media Session
-        if ('mediaSession' in navigator) {
-            navigator.mediaSession.metadata = new MediaMetadata({
-                title: track.title,
-                artist: `${state.currentFolder.title} - ${state.currentFolder.author}`,
-                artwork: [{
-                    src: state.currentFolder.cover,
-                    sizes: '512x512',
-                    type: 'image/jpeg'
-                }]
-            });
-            navigator.mediaSession.setActionHandler('play', play);
-            navigator.mediaSession.setActionHandler('pause', pause);
-            navigator.mediaSession.setActionHandler('seekbackward', () => skip(-5));
-            navigator.mediaSession.setActionHandler('seekforward', () => skip(5));
-            navigator.mediaSession.setActionHandler('previoustrack', () => {
-                if (index > 0) playTrack(index - 1);
-            });
-            navigator.mediaSession.setActionHandler('nexttrack', () => {
-                if (index < state.playlist.length - 1) playTrack(index + 1);
-            });
-        }
-
-        // Chờ metadata load xong rồi set currentTime
-        const onLoaded = () => {
-            // Đảm bảo startTime hợp lệ
-            const safeStartTime = Math.max(0, Math.min(startTime, els.audio.duration - 1));
-            if (safeStartTime > 0) {
-                els.audio.currentTime = safeStartTime;
-            }
-            
-            // Khởi động lại timer nếu cần
-            if (state.timer !== 0 && state.isPlaying) {
-                startTimer(state.timer);
-            }
-            
-            play();
-            els.audio.removeEventListener('loadedmetadata', onLoaded);
-        };
-
-        if (els.audio.readyState >= 1) {
-            // Metadata đã được load
-            const safeStartTime = Math.max(0, Math.min(startTime, els.audio.duration - 1));
-            if (safeStartTime > 0) {
-                els.audio.currentTime = safeStartTime;
-            }
-            
-            // Khởi động lại timer nếu cần
-            if (state.timer !== 0 && state.isPlaying) {
-                startTimer(state.timer);
-            }
-            
-            play();
-        } else {
-            // Chờ metadata load
-            els.audio.addEventListener('loadedmetadata', onLoaded);
-        }
-
-        highlightCurrentTrack(index);
-        // Lưu ngay khi bắt đầu phát
-        saveCurrentAudioProgress();
-    }
-
-    function debounce(func, wait) {
-        let timeout;
-        return function executedFunction(...args) {
-            const later = () => {
-                clearTimeout(timeout);
-                func(...args);
-            };
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-        };
-    }
-
-    // === RENDERERS ===
     function renderLibrary(data) {
-        const countEl = document.getElementById('book-count');
-        const emptyEl = document.getElementById('empty-state');
-        countEl.innerText = `${data.length}`;
-        if (data.length === 0) {
-            els.grid.innerHTML = '';
-            emptyEl.classList.remove('hidden');
-            return;
-        }
-        emptyEl.classList.add('hidden');
+        document.getElementById('book-count').innerText = data.length;
+        
+        // Làm mờ mượt mà thay vì giật chớp
+        els.grid.style.transition = 'opacity 0.15s ease-out';
+        els.grid.style.opacity = '0';
+        
+        setTimeout(() => {
+            if (data.length === 0) {
+                els.grid.innerHTML = '';
+                document.getElementById('empty-state').classList.remove('hidden');
+                document.getElementById('empty-state').classList.add('animate-fade-in');
+            } else {
+                document.getElementById('empty-state').classList.add('hidden');
+                
+                els.grid.innerHTML = data.map((folder, index) => {
+                    let progressHtml = '';
+                    const history = state.audioHistory.find(h => h.folderId === folder.id);
+                    if(history && history.totalTracks > 0) {
+                        const pct = Math.min(100, (history.trackIndex / history.totalTracks) * 100);
+                        progressHtml = `<div class="card-progress-bar"><div class="card-progress-fill" style="width: ${pct}%"></div></div>`;
+                    }
+                    const isFav = state.favorites.includes(folder.id);
+                    
+                    // Tính toán độ trễ (Stagger) cho từng card xuất hiện lần lượt
+                    const delay = Math.min(index * 0.04, 0.4);
 
-        els.grid.innerHTML = data.map(folder => `
-                    <div class="glass-panel book-card p-3 pb-4 group" onclick="app.openFolder(${folder.id})">
-                        <div class="aspect-[1/1] rounded-xl overflow-hidden mb-3 relative bg-gray-900 border border-white/5">
-                            <img src="${folder.cover}" loading="lazy" class="w-full h-full object-cover transform group-hover:scale-105 transition duration-500 ease-out img-fade" onload="this.classList.add('img-loaded')" onerror="this.src='https://via.placeholder.com/300x300?text=No+Image'">
-                            ${folder.isH ? `<div class="absolute top-2 right-2 z-10">
-                                <span class="tag-H">H</span>
-                            </div>` : ''}
-                            <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition duration-300 flex items-center justify-center backdrop-blur-[2px]">
-                                <i class="ph-fill ph-list-dashes text-white text-3xl drop-shadow-lg transform scale-50 group-hover:scale-100 transition duration-300"></i>
+                    return `
+                    <div class="book-card grid-enter" style="animation-delay: ${delay}s" onclick="app.openFolder(${folder.id}, true)">
+                        <div class="book-cover-container skeleton-loading">
+                            <img src="${folder.cover}" loading="lazy" onload="this.parentElement.classList.remove('skeleton-loading')" onerror="this.src='https://via.placeholder.com/300x300?text=No+Image'">
+                            ${folder.isH ? `<div class="absolute top-2 right-2 z-10"><span class="tag-H">H</span></div>` : ''}
+                            ${isFav ? `<div class="absolute top-2 left-2 z-10"><i class="ph-fill ph-heart text-red-500 text-xl drop-shadow-md"></i></div>` : ''}
+                            ${progressHtml}
+                            <div class="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition duration-300 flex items-center justify-center backdrop-blur-sm">
+                                <i class="ph-fill ph-play-circle text-white text-5xl shadow-2xl rounded-full"></i>
                             </div>
                         </div>
-                        <div class="flex-1 px-1">
-                            <h3 class="font-bold text-sm leading-tight mb-1 truncate text-white group-hover:text-blue-400 transition" title="${folder.title}">${folder.title}</h3>
-                            <p class="text-[10px] font-medium text-gray-400 truncate mb-2" title="${folder.author}">${folder.author}</p>
-                            <div class="flex items-center justify-between text-[9px] text-gray-500 font-mono">
-                                <span class="flex items-center gap-1">
-                                    <i class="ph-fill ph-files"></i> ${folder.chapters || folder.tracks.length} chương
-                                </span>
+                        <div class="p-3 sm:p-4 flex-1 flex flex-col justify-between">
+                            <div>
+                                <h3 class="font-bold text-sm sm:text-base text-gray-100 leading-tight mb-1.5 line-clamp-2" title="${folder.title}">${folder.title}</h3>
+                                <p class="text-xs font-medium text-blue-400/80 truncate mb-2" title="${folder.author}">${folder.author}</p>
+                            </div>
+                            <div class="flex items-center text-[11px] text-gray-500 font-bold mt-auto bg-white/5 w-fit px-2 py-1 rounded">
+                                <i class="ph-fill ph-files mr-1.5"></i> ${folder.chapters || folder.tracks.length} chương
                             </div>
                         </div>
-                        ${state.lastPlayedData && state.lastPlayedData.folderId === folder.id ? 
-                            `<div class="mt-2 px-1">
-                                <span class="text-[8px] bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded-full flex items-center gap-1">
-                                    <i class="ph-fill ph-headphones"></i> Đang nghe
-                                </span>
-                            </div>` 
-                            : ''}
-                    </div>
-                `).join('');
+                    </div>`;
+                }).join('');
+            }
+            
+            // Khôi phục opacity, hiệu ứng CSS keyframes sẽ take cover
+            els.grid.style.opacity = '1';
+            setTimeout(() => { els.grid.style.transition = ''; }, 150);
+
+        }, 150); // Đợi 150ms cho opacity cũ mờ hẳn mới render cái mới
     }
 
-    function openFolder(id) {
+    function openFolder(id, pushState = true) {
+        state.lastScrollY = window.scrollY; 
         const folder = LIBRARY.find(f => f.id === id);
         if (!folder) return;
         state.currentFolder = folder;
         state.playlist = folder.tracks.map(t => ({
-            ...t,
-            src: `${CONFIG.rootPath}/${folder.folderName}/${t.fileName}`
+            ...t, src: `${CONFIG.rootPath}/${folder.folderName}/${t.fileName}`
         }));
+
+        if (pushState) window.history.pushState({ view: 'detail', id: folder.id }, '', '?book=' + folder.id);
 
         els.detail.title.innerText = folder.title;
         els.detail.author.innerText = folder.author;
-        els.detail.desc.innerText = folder.desc;
+        els.detail.desc.innerText = folder.desc || 'Chưa có thông tin giới thiệu.';
         els.detail.cover.src = folder.cover;
-
-        // Clear old queue before rendering new
+        els.detail.trackCount.innerText = `${state.playlist.length} phần`;
+        
+        updateFavBtnUI();
         metadataQueue.clear();
-
         renderTrackList();
+        
         els.views.library.classList.add('hidden');
         els.views.detail.classList.remove('hidden');
 
-        // Hiển thị nút tiếp tục nếu có dữ liệu audio đã nghe cho folder này
         const resumeBtn = document.getElementById('resume-btn');
-        if (state.lastPlayedData && state.lastPlayedData.folderId === folder.id) {
+        const history = state.audioHistory.find(h => h.folderId === folder.id);
+        if (history) {
             resumeBtn.classList.remove('hidden');
-            updateLastPlayedBadge();
+            resumeBtn.title = `Tiếp tục: ${history.trackTitle}`;
         } else {
             resumeBtn.classList.add('hidden');
-            els.badge.innerText = '';
         }
 
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-        });
+        window.scrollTo({ top: 0, behavior: 'instant' });
+    }
+
+    function goHome(pushState = true) {
+        els.views.detail.classList.add('hidden');
+        els.views.library.classList.remove('hidden');
+        state.currentFolder = null;
+        if (pushState) window.history.pushState({ view: 'home' }, '', window.location.pathname);
+        _doSort(state.currentSort); 
+        window.scrollTo({ top: state.lastScrollY, behavior: 'instant' }); 
+    }
+    
+    function goBack() {
+        if (window.history.length > 1 && window.location.search.includes('book=')) window.history.back();
+        else goHome(true);
+    }
+
+    function toggleFavoriteCurrent() {
+        if (!state.currentFolder) return;
+        const id = state.currentFolder.id;
+        const idx = state.favorites.indexOf(id);
+        if (idx > -1) {
+            state.favorites.splice(idx, 1);
+            showToast('Đã bỏ yêu thích');
+        } else {
+            state.favorites.push(id);
+            showToast('Đã thêm vào yêu thích ♥');
+        }
+        localStorage.setItem('favorites', JSON.stringify(state.favorites));
+        updateFavBtnUI();
+    }
+
+    function updateFavBtnUI() {
+        if (!state.currentFolder) return;
+        const icon = els.detail.favBtn.querySelector('i');
+        if (state.favorites.includes(state.currentFolder.id)) {
+            icon.classList.replace('ph', 'ph-fill');
+            icon.classList.add('text-red-500');
+        } else {
+            icon.classList.replace('ph-fill', 'ph');
+            icon.classList.remove('text-red-500');
+        }
+    }
+
+    function saveCurrentAudioProgress() {
+        if (!state.currentFolder || !els.audio.src || isNaN(els.audio.currentTime)) return;
+        const data = {
+            folderId: state.currentFolder.id,
+            folderTitle: state.currentFolder.title,
+            cover: state.currentFolder.cover,
+            trackIndex: state.currentIndex,
+            trackTitle: state.playlist[state.currentIndex]?.title || '',
+            currentTime: els.audio.currentTime,
+            duration: els.audio.duration,
+            totalTracks: state.playlist.length,
+            timestamp: Date.now()
+        };
+        state.audioHistory = state.audioHistory.filter(h => h.folderId !== data.folderId);
+        state.audioHistory.unshift(data); 
+        if (state.audioHistory.length > 20) state.audioHistory.pop(); 
+        localStorage.setItem('audioHistory', JSON.stringify(state.audioHistory));
+    }
+
+    function toggleHistoryModal() {
+        const modal = els.historyModal;
+        const content = els.historyModalContent;
+        if (modal.classList.contains('hidden')) {
+            renderHistoryList();
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                content.classList.add('active');
+            }, 10);
+        } else {
+            modal.classList.add('opacity-0');
+            content.classList.remove('active');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+    }
+
+    function renderHistoryList() {
+        if (state.audioHistory.length === 0) {
+            els.historyList.innerHTML = `<div class="p-8 text-center text-gray-400 font-medium text-sm">Chưa có lịch sử nghe</div>`;
+            return;
+        }
+        els.historyList.innerHTML = state.audioHistory.map(h => {
+            const pct = h.duration ? Math.min(100, (h.currentTime / h.duration) * 100) : 0;
+            return `
+            <div class="flex items-center gap-3 p-3 hover:bg-white/5 rounded-xl cursor-pointer transition border border-transparent hover:border-white/10 mb-1" onclick="app.resumeFromHistory(${h.folderId})">
+                <img src="${h.cover}" class="w-14 h-14 rounded-lg object-cover shadow-md border border-white/5">
+                <div class="flex-1 min-w-0">
+                    <h4 class="font-bold text-sm text-gray-100 truncate">${h.folderTitle}</h4>
+                    <p class="text-[11px] font-medium text-blue-400 truncate mt-1">${h.trackTitle}</p>
+                    <div class="w-full h-1 bg-white/10 rounded-full mt-2"><div class="h-full bg-blue-500 rounded-full shadow-[0_0_8px_rgba(59,130,246,0.6)]" style="width:${pct}%"></div></div>
+                </div>
+                <button class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white shrink-0 hover:bg-blue-600 hover:scale-105 transition"><i class="ph-fill ph-play text-lg"></i></button>
+            </div>`;
+        }).join('');
+    }
+
+    function resumeFromHistory(folderId) {
+        toggleHistoryModal();
+        if(!state.currentFolder || state.currentFolder.id !== folderId) openFolder(folderId, true);
+        setTimeout(resumeLastPosition, 300); 
+    }
+
+    function resumeLastPosition() {
+        if (!state.currentFolder) return;
+        const history = state.audioHistory.find(h => h.folderId === state.currentFolder.id);
+        if (history && history.trackIndex < state.playlist.length) {
+            playTrackFromTime(history.trackIndex, Math.max(0, history.currentTime - 2)); 
+            showToast(`Tiếp tục: ${history.trackTitle}`);
+        } else {
+            playTrack(0);
+        }
     }
 
     function renderTrackList() {
         els.trackList.innerHTML = state.playlist.map((track, idx) => `
-                    <div id="track-${idx}" onclick="app.playTrack(${idx})" class="track-item glass-panel !bg-white/5 border-transparent p-3 rounded-xl flex items-center gap-3 cursor-pointer group">
-                        <div class="w-8 h-8 flex items-center justify-center font-bold text-gray-500 group-hover:text-blue-400 text-xs">${idx + 1}</div>
-                        <div class="flex-1 min-w-0">
-                            <h4 class="font-medium text-sm text-gray-200 truncate group-hover:text-blue-400 transition">${track.title}</h4>
-                            <p class="text-[10px] text-gray-500 truncate font-mono mt-0.5"><i class="ph-fill ph-clock"></i> <span id="duration-text-${idx}">--:--</span></p>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <a href="${track.src}" download target="_blank" onclick="event.stopPropagation()" 
-                               class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 text-gray-500 hover:text-white transition" title="Tải xuống">
-                                <i class="ph-bold ph-download-simple text-base"></i>
-                            </a>
-                            <button class="w-8 h-8 rounded-full flex items-center justify-center bg-white/5 text-gray-400 group-hover:bg-blue-600 group-hover:text-white transition shadow-sm">
-                                <i class="ph-fill ph-play text-sm"></i>
-                            </button>
-                        </div>
-                    </div>
-                `).join('');
-
-        // Add to queue for lazy loading
-        state.playlist.forEach((track, idx) => {
-            metadataQueue.add(track, `duration-text-${idx}`);
-        });
+            <div id="track-${idx}" onclick="app.playTrack(${idx})" class="track-item flex items-center gap-3 group">
+                <div class="w-8 flex items-center justify-center font-bold text-gray-500 group-hover:text-blue-400 text-sm">${idx + 1}</div>
+                <div class="flex-1 min-w-0">
+                    <h4 class="font-semibold text-sm text-gray-300 transition group-hover:text-white">${track.title}</h4>
+                    <p class="text-[11px] text-gray-500 font-mono mt-1"><i class="ph-fill ph-clock"></i> <span id="dur-${idx}">--:--</span></p>
+                </div>
+                <div class="flex items-center gap-2 track-action-btn">
+                    <button class="w-9 h-9 rounded-full flex items-center justify-center bg-white/5 text-gray-300 group-hover:bg-blue-600 group-hover:text-white transition shadow-sm border border-white/10 group-hover:scale-105">
+                        <i class="ph-fill ph-play text-sm ml-0.5"></i>
+                    </button>
+                </div>
+            </div>`).join('');
+        state.playlist.forEach((t, i) => metadataQueue.add(t, `dur-${i}`));
     }
 
     function highlightCurrentTrack(index) {
         document.querySelectorAll('.track-active').forEach(el => {
-            el.classList.remove('track-active');
-            const btn = el.querySelector('button:last-child');
-            if (btn) {
-                btn.classList.remove('bg-blue-600', 'text-white');
-                btn.classList.add('bg-white/5', 'text-gray-400');
-                btn.querySelector('i').classList.replace('ph-pause', 'ph-play');
+            el.classList.remove('track-active', 'is-paused-track');
+            const btnContainer = el.querySelector('.track-action-btn');
+            if(btnContainer) { 
+                btnContainer.innerHTML = `<button class="w-9 h-9 rounded-full flex items-center justify-center bg-white/5 text-gray-300 group-hover:bg-blue-600 group-hover:text-white transition shadow-sm border border-white/10 group-hover:scale-105"><i class="ph-fill ph-play text-sm ml-0.5"></i></button>`;
             }
         });
 
         const el = document.getElementById(`track-${index}`);
         if (el) {
             el.classList.add('track-active');
-            const btn = el.querySelector('button:last-child');
-            if (btn) {
-                btn.classList.remove('bg-white/5', 'text-gray-400');
-                btn.classList.add('bg-blue-600', 'text-white');
-                if (state.isPlaying) btn.querySelector('i').classList.replace('ph-play', 'ph-pause');
+            if (!state.isPlaying) el.classList.add('is-paused-track');
+            
+            const btnContainer = el.querySelector('.track-action-btn');
+            if(btnContainer) { 
+                if (state.isPlaying) {
+                    btnContainer.innerHTML = `<div class="playing-eq mr-3"><span></span><span></span><span></span></div>`;
+                } else {
+                    btnContainer.innerHTML = `<button class="w-9 h-9 rounded-full flex items-center justify-center bg-blue-600 text-white transition shadow-sm border border-white/10"><i class="ph-fill ph-pause text-sm"></i></button>`;
+                }
             }
-            setTimeout(() => {
-                el.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'center'
-                });
-            }, 300);
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
     }
 
-    function playTrack(index) {
-        playTrackFromTime(index, 0); // Sử dụng hàm mới với startTime = 0
-    }
-
-    function play() {
+    function playTrack(index) { playTrackFromTime(index, 0); }
+    
+    function playTrackFromTime(index, startTime) {
+        state.currentIndex = index;
+        const track = state.playlist[index];
+        els.audio.src = track.src;
         els.audio.playbackRate = state.speed;
-        els.audio.play().catch(e => console.log("Play prevented"));
         
-        // Khởi động lại timer nếu cần
-        if (state.timer !== 0 && !state.timerId) {
-            startTimer(state.timer);
-        }
-    }
+        els.player.title.innerText = track.title;
+        els.player.author.innerText = state.currentFolder.title;
+        els.player.cover.src = state.currentFolder.cover;
 
-    function pause() {
-        els.audio.pause();
-        // Lưu khi tạm dừng
+        if ('mediaSession' in navigator) {
+            navigator.mediaSession.metadata = new MediaMetadata({
+                title: track.title, artist: state.currentFolder.title,
+                artwork:[{ src: state.currentFolder.cover, sizes: '512x512', type: 'image/jpeg' }]
+            });
+            navigator.mediaSession.setActionHandler('play', play);
+            navigator.mediaSession.setActionHandler('pause', pause);
+            navigator.mediaSession.setActionHandler('previoustrack', prevTrack);
+            navigator.mediaSession.setActionHandler('nexttrack', nextTrack);
+        }
+
+        const onLoaded = () => {
+            if (startTime > 0) els.audio.currentTime = startTime;
+            play();
+            els.audio.removeEventListener('loadedmetadata', onLoaded);
+        };
+        els.audio.readyState >= 1 ? onLoaded() : els.audio.addEventListener('loadedmetadata', onLoaded);
         saveCurrentAudioProgress();
-        
-        // Dừng timer nhưng không xóa cài đặt
-        if (state.timerId) {
-            clearTimeout(state.timerId);
-            state.timerId = null;
+    }
+
+    function play() { els.audio.play().catch(e=>{}); }
+    function pause() { els.audio.pause(); saveCurrentAudioProgress(); }
+    
+    function togglePlay(e) {
+        if(e) e.stopPropagation();
+        if (!els.audio.src) {
+            if (state.audioHistory.length > 0) resumeFromHistory(state.audioHistory[0].folderId);
+            else if (state.playlist.length > 0) playTrack(0);
+            else showToast('Vui lòng chọn một truyện để nghe');
+            return;
         }
+        if (els.audio.paused) play();
+        else pause();
     }
-
-    function togglePlay() {
-        if (els.audio.paused) {
-            (!els.audio.src && state.playlist.length > 0) ? playTrack(0): play();
-        } else pause();
-    }
-
-    function playAll() {
-        if (state.playlist.length > 0) playTrack(0);
-    }
-
-    function nextTrack() {
-        if (state.currentIndex < state.playlist.length - 1) playTrack(state.currentIndex + 1);
-    }
-
-    function prevTrack() {
-        if (state.currentIndex > 0) playTrack(state.currentIndex - 1);
-    }
+    
+    function playAll() { if (state.playlist.length > 0) playTrack(0); }
+    function nextTrack() { if (state.currentIndex < state.playlist.length - 1) playTrack(state.currentIndex + 1); }
+    function prevTrack() { if (state.currentIndex > 0) playTrack(state.currentIndex - 1); }
+    function skip(sec) { els.audio.currentTime += sec; saveCurrentAudioProgress(); }
 
     function updatePlayState(isPlaying) {
         state.isPlaying = isPlaying;
-        if (isPlaying) {
-            els.player.playIcon.classList.replace('ph-play', 'ph-pause');
-            els.player.cover.style.animationPlayState = 'running';
-            // Cập nhật mini player
-            els.mini.playIcon.classList.replace('ph-play', 'ph-pause');
-        } else {
-            els.player.playIcon.classList.replace('ph-pause', 'ph-play');
-            els.player.cover.style.animationPlayState = 'paused';
-            // Cập nhật mini player
-            els.mini.playIcon.classList.replace('ph-pause', 'ph-play');
-        }
+        const i1 = isPlaying ? 'ph-pause' : 'ph-play';
+        const i2 = isPlaying ? 'ph-play' : 'ph-pause';
+        els.player.playIcon.classList.replace(i2, i1);
+        els.player.playIconMini.classList.replace(i2, i1);
+        
+        if (isPlaying) els.player.wrapper.classList.remove('is-paused');
+        else els.player.wrapper.classList.add('is-paused');
+
         highlightCurrentTrack(state.currentIndex);
-    }
-
-    function skip(seconds) {
-        els.audio.currentTime += seconds;
-        // Lưu sau khi tua
-        setTimeout(saveCurrentAudioProgress, 100);
-    }
-
-    function setSpeed(val) {
-        state.speed = parseFloat(val);
-        els.audio.playbackRate = state.speed;
-        sessionStorage.setItem('audioSpeed', state.speed);
-        updateSpeedUI(state.speed);
-        els.player.speedPopup.classList.remove('active');
-        state.speedMenuOpen = false;
-    }
-
-    function updateSpeedUI(val) {
-        els.player.speedText.innerText = val;
-        document.querySelectorAll('.speed-item').forEach(item => {
-            item.classList.remove('selected');
-            if (parseFloat(item.innerText) === val) item.classList.add('selected');
-        });
-    }
-
-    function toggleSpeedMenu() {
-        state.speedMenuOpen = !state.speedMenuOpen;
-        state.sortMenuOpen = false;
-        state.filterMenuOpen = false;
-        state.timerMenuOpen = false;
-        els.sortPopup.classList.remove('active');
-        els.filterPopup.classList.remove('active');
-        els.timerPopup.classList.remove('active');
-        if (state.speedMenuOpen) els.player.speedPopup.classList.add('active');
-        else els.player.speedPopup.classList.remove('active');
     }
 
     function onTimeUpdate() {
         if (state.isDragging) return;
-        const curr = els.audio.currentTime;
-        const dur = els.audio.duration || 1;
-        els.player.slider.value = (curr / dur) * 100;
-        els.player.fill.style.width = `${els.player.slider.value}%`;
+        const curr = els.audio.currentTime; const dur = els.audio.duration || 1;
+        const pct = (curr / dur) * 100;
+        els.player.slider.value = pct;
+        els.player.fill.style.width = `${pct}%`;
+        els.player.miniFill.style.width = `${pct}%`;
         els.player.current.innerText = formatTime(curr);
-        els.player.duration.innerText = formatTime(dur);
     }
-
+    
     function onSeekInput() {
         state.isDragging = true;
         els.player.fill.style.width = `${els.player.slider.value}%`;
+        els.player.miniFill.style.width = `${els.player.slider.value}%`;
         els.player.current.innerText = formatTime((els.player.slider.value / 100) * els.audio.duration);
     }
+    function onSeekChange() { state.isDragging = false; els.audio.currentTime = (els.player.slider.value / 100) * els.audio.duration; saveCurrentAudioProgress(); }
+    function onMetadataLoaded() { els.player.duration.innerText = formatTime(els.audio.duration); }
+    function onTrackEnd() { nextTrack(); }
 
-    function onSeekChange() {
-        state.isDragging = false;
-        els.audio.currentTime = (els.player.slider.value / 100) * els.audio.duration;
-        // Lưu sau khi seek
-        saveCurrentAudioProgress();
+    function formatTime(s) {
+        if (!s || isNaN(s)) return "0:00";
+        const h = Math.floor(s/3600), m = Math.floor((s%3600)/60), secs = Math.floor(s%60);
+        return h>0 ? `${h}:${m<10?'0':''}${m}:${secs<10?'0':''}${secs}` : `${m}:${secs<10?'0':''}${secs}`;
     }
+    
+    function debounce(f, wait) { let t; return (...args) => { clearTimeout(t); t = setTimeout(()=>f(...args), wait); }; }
 
-    function onMetadataLoaded() {
-        els.player.duration.innerText = formatTime(els.audio.duration);
-        els.audio.playbackRate = state.speed;
-    }
-
-    function onTrackEnd() {
-        // Xử lý timer "hết chương"
-        if (state.timer === -1 && state.timerId) {
-            clearTimer();
-            setTimer(0);
-        }
-        
-        if (state.currentIndex < state.playlist.length - 1) playTrack(state.currentIndex + 1);
-        else {
-            state.isPlaying = false;
-            updatePlayState(false);
-        }
-    }
-
-    function formatTime(seconds) {
-        if (!seconds || isNaN(seconds) || seconds < 0) return "0:00";
-        const h = Math.floor(seconds / 3600);
-        const m = Math.floor((seconds % 3600) / 60);
-        const s = Math.floor(seconds % 60);
-        return h > 0 ? `${h}:${m < 10 ? '0' + m : m}:${s < 10 ? '0' + s : s}` : `${m}:${s < 10 ? '0' + s : s}`;
-    }
-
-    function removeAccents(str) {
-        return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-    }
-
-    function handleSearch(query) {
-        if (!query) {
-            handleSort(state.currentSort);
-            return;
-        }
-        const term = removeAccents(query);
-        
-        // Lọc dựa trên currentFilter trước
-        let filteredData = getFilteredData();
-        
-        // Sau đó lọc theo search term
-        filteredData = filteredData.filter(item => 
-            removeAccents(item.title).includes(term) || 
-            removeAccents(item.author).includes(term)
-        );
-        
-        // Sắp xếp
-        const sortedData = getSortedData(filteredData);
-        renderLibrary(sortedData);
-    }
-
-    function setSort(val) {
-        state.currentSort = val;
-        const texts = {
-            'az': 'Tên A-Z',
-            'za': 'Tên Z-A',
-            'newest': 'Mới nhất',
-            'oldest': 'Cũ nhất'
-        };
-        els.currentSortText.innerText = texts[val];
-        handleSort(val);
-        els.sortPopup.classList.remove('active');
-        state.sortMenuOpen = false;
-
-        document.querySelectorAll('.sort-item').forEach(item => {
-            item.classList.remove('selected');
-            if (item.innerText === texts[val]) item.classList.add('selected');
-        });
-    }
-
-    function toggleSortMenu() {
-        state.sortMenuOpen = !state.sortMenuOpen;
-        state.filterMenuOpen = false;
-        state.speedMenuOpen = false;
-        state.timerMenuOpen = false;
-        els.filterPopup.classList.remove('active');
+    function toggleSpeedMenu() { els.player.speedPopup.classList.toggle('active'); }
+    function setSpeed(val) {
+        state.speed = val; els.audio.playbackRate = val; sessionStorage.setItem('audioSpeed', val);
+        els.player.speedText.innerText = val;
         els.player.speedPopup.classList.remove('active');
-        els.timerPopup.classList.remove('active');
-        
-        if (state.sortMenuOpen) els.sortPopup.classList.add('active');
-        else els.sortPopup.classList.remove('active');
+        els.player.speedPopup.querySelectorAll('.dropdown-item').forEach(i => i.classList.toggle('selected', parseFloat(i.innerText.split('x')[0]) === val));
     }
 
-    // Hàm lọc dữ liệu theo currentFilter
-    function getFilteredData() {
-        if (state.currentFilter === 'all') {
-            return [...LIBRARY];
-        } else if (state.currentFilter === 'H') {
-            return LIBRARY.filter(item => item.isH === true);
-        } else if (state.currentFilter === 'nonH') {
-            return LIBRARY.filter(item => item.isH === false);
+    function toggleTimerMenu() { els.player.timerPopup.classList.toggle('active'); }
+    function setTimer(m) {
+        state.timer = m; clearTimeout(state.timerId); els.player.timerPopup.classList.remove('active');
+        
+        if(m !== 0) {
+            els.player.timerBtn.classList.add('text-amber-400');
+            els.player.timerDot.classList.remove('hidden');
+        } else {
+            els.player.timerBtn.classList.remove('text-amber-400');
+            els.player.timerDot.classList.add('hidden');
         }
-        return [...LIBRARY];
+
+        els.player.timerPopup.querySelectorAll('.dropdown-item').forEach(i => i.classList.remove('selected'));
+        const activeItem = Array.from(els.player.timerPopup.querySelectorAll('.dropdown-item')).find(i => i.innerText.includes(m === -1 ? 'Hết' : (m===0 ? 'Tắt' : m)));
+        if(activeItem) activeItem.classList.add('selected');
+
+        if(m>0) { state.timerId = setTimeout(()=>{ pause(); showToast(`Hết hẹn giờ ${m} phút`); setTimer(0); }, m*60000); showToast(`Đã hẹn giờ ${m} phút`);}
+        else if (m === -1) { els.audio.addEventListener('ended', ()=>{pause(); setTimer(0);}, {once:true}); showToast('Hẹn giờ hết chương này');}
     }
 
-    // Hàm sắp xếp dữ liệu
-    function getSortedData(data) {
-        let sorted = [...data];
-        if (state.currentSort === 'az') sorted.sort((a, b) => a.title.localeCompare(b.title));
-        if (state.currentSort === 'za') sorted.sort((a, b) => b.title.localeCompare(a.title));
-        if (state.currentSort === 'newest') sorted.sort((a, b) => b.id - a.id);
-        if (state.currentSort === 'oldest') sorted.sort((a, b) => a.id - b.id);
-        return sorted;
-    }
-
-    function handleSort(criteria) {
-        state.currentSort = criteria;
-        
-        // Lấy dữ liệu đã lọc
-        let filteredData = getFilteredData();
-        
-        // Sắp xếp dữ liệu
-        const sortedData = getSortedData(filteredData);
-        
-        // Render
-        renderLibrary(sortedData);
-    }
-
-    function resumeLastPosition() {
-        if (state.lastPlayedData && state.currentFolder && 
-            state.lastPlayedData.folderId === state.currentFolder.id) {
-            // Sử dụng hàm playTrackFromTime để tiếp tục từ đúng vị trí
-            playTrackFromTime(state.lastPlayedData.trackIndex, state.lastPlayedData.currentTime);
+    function openPlayerMobile() {
+        if(window.innerWidth <= 768) {
+            els.player.wrapper.classList.remove('mini-player-mode');
+            els.player.wrapper.classList.add('full-player-mode');
+            document.body.style.overflow = 'hidden'; 
         }
     }
+    
+    function closePlayerMobile() {
+        els.player.wrapper.classList.add('mini-player-mode');
+        els.player.wrapper.classList.remove('full-player-mode');
+        document.body.style.overflow = '';
+    }
 
-    function goHome() {
-        els.views.detail.classList.add('hidden');
-        els.views.library.classList.remove('hidden');
-        state.currentFolder = null;
-        handleSearch(els.search.value);
-        touchStartX = 0;
-        touchEndX = 0;
+    function initSwipeGesture() {
+        let startY = 0;
+        els.player.dragHandle.addEventListener('touchstart', e => startY = e.touches[0].clientY, {passive: true});
+        els.player.dragHandle.addEventListener('touchmove', e => {
+            const deltaY = e.touches[0].clientY - startY;
+            if (deltaY > 50) closePlayerMobile(); 
+        }, {passive: true});
+
+        let startYMini = 0;
+        els.player.wrapper.addEventListener('touchstart', e => {
+            if (els.player.wrapper.classList.contains('mini-player-mode')) startYMini = e.touches[0].clientY;
+        }, {passive: true});
+        els.player.wrapper.addEventListener('touchend', e => {
+            if (els.player.wrapper.classList.contains('mini-player-mode')) {
+                let endY = e.changedTouches[0].clientY;
+                if (startYMini - endY > 20) openPlayerMobile();
+            }
+        }, {passive: true});
+    }
+
+    function showToast(msg) {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = 'bg-zinc-800/95 backdrop-blur-md border border-white/20 text-white px-5 py-3 rounded-full text-sm font-bold shadow-[0_10px_30px_rgba(0,0,0,0.8)] toast-enter flex items-center gap-3 tracking-wide';
+        toast.innerHTML = `<i class="ph-fill ph-check-circle text-green-400 text-xl drop-shadow-md"></i> ${msg}`;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.classList.replace('toast-enter', 'toast-exit');
+            setTimeout(() => toast.remove(), 300);
+        }, 2500);
     }
 
     return {
-        init,
-        openFolder,
-        playTrack,
-        playTrackFromTime,
-        togglePlay,
-        playAll,
-        skip,
-        nextTrack,
-        prevTrack,
-        handleSearch,
-        goHome,
-        toggleSpeedMenu,
-        setSpeed,
-        setSort,
-        toggleSortMenu,
-        handleSort,
-        resumeLastPosition,
-        resumeLastAudio,
-        setTimer,
-        toggleTimerMenu,
-        togglePlayerMode,
-        setFilter,
-        toggleFilterMenu
+        init, openFolder, goHome, goBack, playTrack, playAll, togglePlay, skip, nextTrack, prevTrack, resumeLastPosition,
+        handleSearch, setSort, toggleSortMenu, setFilter, toggleFilterMenu,
+        toggleSpeedMenu, setSpeed, toggleTimerMenu, setTimer,
+        openPlayerMobile, closePlayerMobile, toggleHistoryModal, resumeFromHistory, toggleFavoriteCurrent
     };
 })();
 
 document.addEventListener('DOMContentLoaded', app.init);
-
-// Thêm CSS animation cho toast
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes toastSlideUp {
-        from { transform: translateX(-50%) translateY(20px); opacity: 0; }
-        to { transform: translateX(-50%) translateY(0); opacity: 1; }
-    }
-    @keyframes toastSlideDown {
-        from { transform: translateX(-50%) translateY(0); opacity: 1; }
-        to { transform: translateX(-50%) translateY(20px); opacity: 0; }
-    }
-`;
-document.head.appendChild(style);
