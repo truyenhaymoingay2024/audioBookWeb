@@ -12,6 +12,7 @@ const app = (() => {
             author: document.querySelector('.author-name'),
             desc: document.getElementById('detail-desc'),
             cover: document.getElementById('detail-cover'),
+            coverGlow: document.getElementById('cover-glow'),
             favBtn: document.getElementById('detail-fav-btn'),
             trackCount: document.getElementById('detail-track-count')
         },
@@ -138,6 +139,9 @@ const app = (() => {
         });
 
         els.search.addEventListener('input', (e) => debounceSearch(e.target.value));
+        
+        // Trigger initial view animation
+        setTimeout(() => els.views.library.classList.remove('opacity-0', 'translate-y-5'), 100);
     }
 
     function setFilter(type) {
@@ -188,15 +192,14 @@ const app = (() => {
     function renderLibrary(data) {
         document.getElementById('book-count').innerText = data.length;
         
-        // Làm mờ mượt mà thay vì giật chớp
-        els.grid.style.transition = 'opacity 0.15s ease-out';
+        els.grid.style.transition = 'opacity 0.2s ease-out';
         els.grid.style.opacity = '0';
         
         setTimeout(() => {
             if (data.length === 0) {
                 els.grid.innerHTML = '';
                 document.getElementById('empty-state').classList.remove('hidden');
-                document.getElementById('empty-state').classList.add('animate-fade-in');
+                setTimeout(() => document.getElementById('empty-state').style.opacity = '0.6', 50);
             } else {
                 document.getElementById('empty-state').classList.add('hidden');
                 
@@ -209,8 +212,8 @@ const app = (() => {
                     }
                     const isFav = state.favorites.includes(folder.id);
                     
-                    // Tính toán độ trễ (Stagger) cho từng card xuất hiện lần lượt
-                    const delay = Math.min(index * 0.04, 0.4);
+                    // Giảm độ delay của stagger để cuộn mượt hơn, nhanh hơn
+                    const delay = Math.min(index * 0.025, 0.3);
 
                     return `
                     <div class="book-card grid-enter" style="animation-delay: ${delay}s" onclick="app.openFolder(${folder.id}, true)">
@@ -220,7 +223,7 @@ const app = (() => {
                             ${isFav ? `<div class="absolute top-2 left-2 z-10"><i class="ph-fill ph-heart text-red-500 text-xl drop-shadow-md"></i></div>` : ''}
                             ${progressHtml}
                             <div class="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition duration-300 flex items-center justify-center backdrop-blur-sm">
-                                <i class="ph-fill ph-play-circle text-white text-5xl shadow-2xl rounded-full"></i>
+                                <i class="ph-fill ph-play-circle text-white text-5xl shadow-2xl rounded-full transform scale-90 group-hover:scale-100 transition-transform duration-300"></i>
                             </div>
                         </div>
                         <div class="p-3 sm:p-4 flex-1 flex flex-col justify-between">
@@ -236,11 +239,30 @@ const app = (() => {
                 }).join('');
             }
             
-            // Khôi phục opacity, hiệu ứng CSS keyframes sẽ take cover
             els.grid.style.opacity = '1';
-            setTimeout(() => { els.grid.style.transition = ''; }, 150);
+            setTimeout(() => { els.grid.style.transition = ''; }, 200);
 
-        }, 150); // Đợi 150ms cho opacity cũ mờ hẳn mới render cái mới
+        }, 200);
+    }
+
+    // Logic thay đổi View mượt mà
+    function switchView(hideView, showView, callback) {
+        hideView.style.opacity = '0';
+        hideView.style.pointerEvents = 'none';
+        
+        setTimeout(() => {
+            hideView.classList.add('hidden');
+            showView.classList.remove('hidden');
+            
+            if(callback) callback();
+            
+            // Trigger browser reflow
+            void showView.offsetWidth;
+            
+            showView.style.opacity = '1';
+            showView.style.pointerEvents = 'auto';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 300); // Đợi CSS transition chạy
     }
 
     function openFolder(id, pushState = true) {
@@ -254,38 +276,43 @@ const app = (() => {
 
         if (pushState) window.history.pushState({ view: 'detail', id: folder.id }, '', '?book=' + folder.id);
 
-        els.detail.title.innerText = folder.title;
-        els.detail.author.innerText = folder.author;
-        els.detail.desc.innerText = folder.desc || 'Chưa có thông tin giới thiệu.';
-        els.detail.cover.src = folder.cover;
-        els.detail.trackCount.innerText = `${state.playlist.length} phần`;
-        
-        updateFavBtnUI();
-        metadataQueue.clear();
-        renderTrackList();
-        
-        els.views.library.classList.add('hidden');
-        els.views.detail.classList.remove('hidden');
+        switchView(els.views.library, els.views.detail, () => {
+            els.detail.title.innerText = folder.title;
+            els.detail.author.innerText = folder.author;
+            els.detail.desc.innerText = folder.desc || 'Chưa có thông tin giới thiệu.';
+            els.detail.cover.src = folder.cover;
+            
+            // Set cover glow backgroundImage for ambient depth
+            els.detail.coverGlow.style.backgroundImage = `url(${folder.cover})`;
+            els.detail.coverGlow.style.backgroundSize = 'cover';
+            els.detail.coverGlow.style.backgroundPosition = 'center';
+            
+            els.detail.trackCount.innerText = `${state.playlist.length} phần`;
+            
+            updateFavBtnUI();
+            metadataQueue.clear();
+            renderTrackList();
 
-        const resumeBtn = document.getElementById('resume-btn');
-        const history = state.audioHistory.find(h => h.folderId === folder.id);
-        if (history) {
-            resumeBtn.classList.remove('hidden');
-            resumeBtn.title = `Tiếp tục: ${history.trackTitle}`;
-        } else {
-            resumeBtn.classList.add('hidden');
-        }
-
-        window.scrollTo({ top: 0, behavior: 'instant' });
+            const resumeBtn = document.getElementById('resume-btn');
+            const history = state.audioHistory.find(h => h.folderId === folder.id);
+            if (history) {
+                resumeBtn.classList.remove('hidden');
+                resumeBtn.title = `Tiếp tục: ${history.trackTitle}`;
+            } else {
+                resumeBtn.classList.add('hidden');
+            }
+        });
     }
 
     function goHome(pushState = true) {
-        els.views.detail.classList.add('hidden');
-        els.views.library.classList.remove('hidden');
         state.currentFolder = null;
         if (pushState) window.history.pushState({ view: 'home' }, '', window.location.pathname);
-        _doSort(state.currentSort); 
-        window.scrollTo({ top: state.lastScrollY, behavior: 'instant' }); 
+        
+        switchView(els.views.detail, els.views.library, () => {
+            _doSort(state.currentSort); 
+            // Trở về vị trí cuộn cũ mượt mà sau khi DOM hiện
+            setTimeout(() => window.scrollTo({ top: state.lastScrollY, behavior: 'instant' }), 10);
+        });
     }
     
     function goBack() {
@@ -345,6 +372,7 @@ const app = (() => {
         if (modal.classList.contains('hidden')) {
             renderHistoryList();
             modal.classList.remove('hidden');
+            // Timeout để trigger CSS Animation
             setTimeout(() => {
                 modal.classList.remove('opacity-0');
                 content.classList.add('active');
@@ -352,7 +380,7 @@ const app = (() => {
         } else {
             modal.classList.add('opacity-0');
             content.classList.remove('active');
-            setTimeout(() => modal.classList.add('hidden'), 300);
+            setTimeout(() => modal.classList.add('hidden'), 400); // Dài hơn để spring curve chạy hết
         }
     }
 
@@ -364,14 +392,14 @@ const app = (() => {
         els.historyList.innerHTML = state.audioHistory.map(h => {
             const pct = h.duration ? Math.min(100, (h.currentTime / h.duration) * 100) : 0;
             return `
-            <div class="flex items-center gap-3 p-3 hover:bg-white/5 rounded-xl cursor-pointer transition border border-transparent hover:border-white/10 mb-1" onclick="app.resumeFromHistory(${h.folderId})">
-                <img src="${h.cover}" class="w-14 h-14 rounded-lg object-cover shadow-md border border-white/5">
+            <div class="flex items-center gap-3 p-3 hover:bg-white/5 active:scale-[0.98] rounded-2xl cursor-pointer transition-all duration-300 border border-transparent hover:border-white/10 mb-1" onclick="app.resumeFromHistory(${h.folderId})">
+                <img src="${h.cover}" class="w-14 h-14 rounded-xl object-cover shadow-md border border-white/5">
                 <div class="flex-1 min-w-0">
                     <h4 class="font-bold text-sm text-gray-100 truncate">${h.folderTitle}</h4>
                     <p class="text-[11px] font-medium text-blue-400 truncate mt-1">${h.trackTitle}</p>
                     <div class="w-full h-1 bg-white/10 rounded-full mt-2"><div class="h-full bg-blue-500 rounded-full shadow-[0_0_8px_rgba(59,130,246,0.6)]" style="width:${pct}%"></div></div>
                 </div>
-                <button class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white shrink-0 hover:bg-blue-600 hover:scale-105 transition"><i class="ph-fill ph-play text-lg"></i></button>
+                <button class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white shrink-0 hover:bg-blue-600 hover:scale-110 active:scale-95 transition-all duration-300 shadow-sm"><i class="ph-fill ph-play text-lg"></i></button>
             </div>`;
         }).join('');
     }
@@ -396,13 +424,13 @@ const app = (() => {
     function renderTrackList() {
         els.trackList.innerHTML = state.playlist.map((track, idx) => `
             <div id="track-${idx}" onclick="app.playTrack(${idx})" class="track-item flex items-center gap-3 group">
-                <div class="w-8 flex items-center justify-center font-bold text-gray-500 group-hover:text-blue-400 text-sm">${idx + 1}</div>
+                <div class="w-8 flex items-center justify-center font-bold text-gray-500 group-hover:text-blue-400 text-sm transition-colors duration-300">${idx + 1}</div>
                 <div class="flex-1 min-w-0">
-                    <h4 class="font-semibold text-sm text-gray-300 transition group-hover:text-white">${track.title}</h4>
+                    <h4 class="font-semibold text-sm text-gray-300 transition-colors duration-300 group-hover:text-white">${track.title}</h4>
                     <p class="text-[11px] text-gray-500 font-mono mt-1"><i class="ph-fill ph-clock"></i> <span id="dur-${idx}">--:--</span></p>
                 </div>
                 <div class="flex items-center gap-2 track-action-btn">
-                    <button class="w-9 h-9 rounded-full flex items-center justify-center bg-white/5 text-gray-300 group-hover:bg-blue-600 group-hover:text-white transition shadow-sm border border-white/10 group-hover:scale-105">
+                    <button class="w-9 h-9 rounded-full flex items-center justify-center bg-white/5 text-gray-300 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300 shadow-sm border border-white/10 group-hover:scale-110 active:scale-90">
                         <i class="ph-fill ph-play text-sm ml-0.5"></i>
                     </button>
                 </div>
@@ -415,7 +443,7 @@ const app = (() => {
             el.classList.remove('track-active', 'is-paused-track');
             const btnContainer = el.querySelector('.track-action-btn');
             if(btnContainer) { 
-                btnContainer.innerHTML = `<button class="w-9 h-9 rounded-full flex items-center justify-center bg-white/5 text-gray-300 group-hover:bg-blue-600 group-hover:text-white transition shadow-sm border border-white/10 group-hover:scale-105"><i class="ph-fill ph-play text-sm ml-0.5"></i></button>`;
+                btnContainer.innerHTML = `<button class="w-9 h-9 rounded-full flex items-center justify-center bg-white/5 text-gray-300 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300 shadow-sm border border-white/10 group-hover:scale-110 active:scale-90"><i class="ph-fill ph-play text-sm ml-0.5"></i></button>`;
             }
         });
 
@@ -429,10 +457,11 @@ const app = (() => {
                 if (state.isPlaying) {
                     btnContainer.innerHTML = `<div class="playing-eq mr-3"><span></span><span></span><span></span></div>`;
                 } else {
-                    btnContainer.innerHTML = `<button class="w-9 h-9 rounded-full flex items-center justify-center bg-blue-600 text-white transition shadow-sm border border-white/10"><i class="ph-fill ph-pause text-sm"></i></button>`;
+                    btnContainer.innerHTML = `<button class="w-9 h-9 rounded-full flex items-center justify-center bg-blue-600 text-white transition-all duration-300 shadow-sm border border-white/10 active:scale-90"><i class="ph-fill ph-pause text-sm"></i></button>`;
                 }
             }
-            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            // Smoothly scroll active track into view
+            setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
         }
     }
 
@@ -473,6 +502,16 @@ const app = (() => {
     
     function togglePlay(e) {
         if(e) e.stopPropagation();
+        
+        // Add a micro-animation to the mini play button wrapper
+        if(e && e.target) {
+            const btn = e.target.closest('button');
+            if(btn) {
+                btn.style.transform = 'scale(0.8)';
+                setTimeout(() => btn.style.transform = '', 150);
+            }
+        }
+
         if (!els.audio.src) {
             if (state.audioHistory.length > 0) resumeFromHistory(state.audioHistory[0].folderId);
             else if (state.playlist.length > 0) playTrack(0);
@@ -513,11 +552,19 @@ const app = (() => {
     
     function onSeekInput() {
         state.isDragging = true;
+        els.player.fill.style.transition = 'none'; // Disable transition when dragging for raw feel
+        els.player.miniFill.style.transition = 'none';
         els.player.fill.style.width = `${els.player.slider.value}%`;
         els.player.miniFill.style.width = `${els.player.slider.value}%`;
         els.player.current.innerText = formatTime((els.player.slider.value / 100) * els.audio.duration);
     }
-    function onSeekChange() { state.isDragging = false; els.audio.currentTime = (els.player.slider.value / 100) * els.audio.duration; saveCurrentAudioProgress(); }
+    function onSeekChange() { 
+        state.isDragging = false; 
+        els.player.fill.style.transition = ''; // Restore transitions
+        els.player.miniFill.style.transition = '';
+        els.audio.currentTime = (els.player.slider.value / 100) * els.audio.duration; 
+        saveCurrentAudioProgress(); 
+    }
     function onMetadataLoaded() { els.player.duration.innerText = formatTime(els.audio.duration); }
     function onTrackEnd() { nextTrack(); }
 
@@ -573,33 +620,75 @@ const app = (() => {
 
     function initSwipeGesture() {
         let startY = 0;
-        els.player.dragHandle.addEventListener('touchstart', e => startY = e.touches[0].clientY, {passive: true});
-        els.player.dragHandle.addEventListener('touchmove', e => {
-            const deltaY = e.touches[0].clientY - startY;
-            if (deltaY > 50) closePlayerMobile(); 
+        let startX = 0;
+        let isSwiping = false;
+
+        els.player.wrapper.addEventListener('touchstart', e => {
+            // Bỏ qua nếu người dùng đang thao tác với thanh tiến trình
+            if (e.target.tagName.toLowerCase() === 'input') return;
+            
+            startY = e.touches[0].clientY;
+            startX = e.touches[0].clientX;
+            isSwiping = true;
         }, {passive: true});
 
-        let startYMini = 0;
-        els.player.wrapper.addEventListener('touchstart', e => {
-            if (els.player.wrapper.classList.contains('mini-player-mode')) startYMini = e.touches[0].clientY;
-        }, {passive: true});
-        els.player.wrapper.addEventListener('touchend', e => {
-            if (els.player.wrapper.classList.contains('mini-player-mode')) {
-                let endY = e.changedTouches[0].clientY;
-                if (startYMini - endY > 20) openPlayerMobile();
+        els.player.wrapper.addEventListener('touchmove', e => {
+            if (!isSwiping) return;
+            
+            const currentY = e.touches[0].clientY;
+            const currentX = e.touches[0].clientX;
+            const deltaY = currentY - startY;
+            const deltaX = currentX - startX;
+
+            // Nếu người dùng vuốt ngang nhiều hơn vuốt dọc thì huỷ thao tác vuốt dọc
+            if (Math.abs(deltaX) > Math.abs(deltaY) + 5) {
+                isSwiping = false;
+                return;
+            }
+
+            // Xử lý khi ở Full Player -> Vuốt xuống để thu nhỏ thành Mini Player
+            if (els.player.wrapper.classList.contains('full-player-mode')) {
+                if (deltaY > 60) {
+                    closePlayerMobile();
+                    isSwiping = false;
+                }
+            } 
+            // Xử lý khi ở Mini Player -> Vuốt lên để phóng to thành Full Player
+            else if (els.player.wrapper.classList.contains('mini-player-mode')) {
+                if (deltaY < -30) {
+                    openPlayerMobile();
+                    isSwiping = false;
+                }
             }
         }, {passive: true});
+
+        els.player.wrapper.addEventListener('touchend', () => {
+            isSwiping = false;
+        }, {passive: true});
+        
+        // Cải thiện cuộn ẩn nav bar mượt mà
+        let lastScrollTop = 0;
+        const navbar = document.getElementById('main-nav');
+        window.addEventListener('scroll', () => {
+            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            if (scrollTop > lastScrollTop && scrollTop > 100) {
+                navbar.style.transform = 'translateY(-100%)';
+            } else {
+                navbar.style.transform = 'translateY(0)';
+            }
+            lastScrollTop = scrollTop;
+        }, { passive: true });
     }
 
     function showToast(msg) {
         const container = document.getElementById('toast-container');
         const toast = document.createElement('div');
-        toast.className = 'bg-zinc-800/95 backdrop-blur-md border border-white/20 text-white px-5 py-3 rounded-full text-sm font-bold shadow-[0_10px_30px_rgba(0,0,0,0.8)] toast-enter flex items-center gap-3 tracking-wide';
+        toast.className = 'bg-zinc-800/95 backdrop-blur-xl border border-white/20 text-white px-5 py-3 rounded-full text-sm font-bold shadow-[0_15px_30px_rgba(0,0,0,0.8)] toast-enter flex items-center gap-3 tracking-wide';
         toast.innerHTML = `<i class="ph-fill ph-check-circle text-green-400 text-xl drop-shadow-md"></i> ${msg}`;
         container.appendChild(toast);
         setTimeout(() => {
             toast.classList.replace('toast-enter', 'toast-exit');
-            setTimeout(() => toast.remove(), 300);
+            setTimeout(() => toast.remove(), 400); // Khớp với time animation
         }, 2500);
     }
 
