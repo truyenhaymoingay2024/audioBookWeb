@@ -861,4 +861,18 @@ const LIBRARY = [
             ...batch(1, 100, 10, 'm4a'),
         ]
     },
+    {        
+        id: 54,
+        folderName: "SauKhiVoiVaKetHon",
+        title: "Sau Khi Vội Vã Kết Hôn",
+        author: "Mật Tiền Ngã Hữu Thập Ma Bạn Pháp",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/SauKhiVoiVaKetHon/cover.jpg",
+        desc: 'Tag: Hiện đại, Sắc, Quân nhân, Cưới trước yêu sau, Sủng Ngọt, Nhẹ nhàng, HE, 1v1\n\nGiới thiệu:\nGiản Nịnh được người nhà giới thiệu đối tượng là một quân nhân đang tại ngũ. Lúc đầu cô còn thấy người làm quân nhân rất tốt, vững vàng, ổn định lại biết thương người, thế là cô nhanh như chớp quyết định kết hôn với người ta.\nNhưng chỉ một thời gian sau Giản nịnh lại có ý định ly hôn…Bởi vì người đàn ông nhà cô rất thích cùng cô lăn lộn, tư thế vừa khó lại vừa đồi hỏi thể lực, ai mà chịu cho nổi chứ!\nNữ chính là giáo viên tiểu học, nam chính là quân nhân thô lỗ.',
+	    isH: true,
+        chapters: 66,
+        tracks: [
+            ...batch(1, 60, 10, 'm4a'),
+            manual("Chương 61 - 66 (Hết)", "c61-66.m4a"),
+        ]
+    },
 ];
