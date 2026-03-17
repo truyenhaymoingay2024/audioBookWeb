@@ -31,7 +31,7 @@ const app = (() => {
             speedText: document.getElementById('current-speed-text'),
             speedPopup: document.getElementById('speed-popup'),
             timerBtn: document.getElementById('timer-btn'),
-            timerDot: document.querySelector('.timer-dot'),
+            timerBadge: document.querySelector('.timer-badge'), // ĐÃ THÊM: Badge đếm ngược
             timerPopup: document.getElementById('timer-popup')
         },
         searchDesktop: document.getElementById('search-input-desktop'),
@@ -51,11 +51,13 @@ const app = (() => {
         currentIndex: 0,
         isPlaying: false,
         isDragging: false,
+        isPreloading: false,
         currentSort: 'newest',
         currentFilter: 'all', 
         speed: 1.0,
         timer: 0,
-        timerId: null,
+        timerInterval: null, // ĐÃ SỬA: Thay setTimeout bằng setInterval
+        timerEndTime: 0,     // ĐÃ THÊM: Lưu thời gian kết thúc
         favorites: JSON.parse(localStorage.getItem('favorites')) ||[],
         audioHistory: JSON.parse(localStorage.getItem('audioHistory')) ||[],
         durationCache: {},
@@ -104,7 +106,7 @@ const app = (() => {
         document.getElementById('site-name').innerText = CONFIG.siteName;
         document.getElementById('user-avatar').src = CONFIG.avatar;
         
-        const savedSpeed = sessionStorage.getItem('audioSpeed');
+        const savedSpeed = localStorage.getItem('audioSpeed');
         if (savedSpeed) setSpeed(parseFloat(savedSpeed));
 
         if(state.audioHistory.length > 0) {
@@ -121,7 +123,7 @@ const app = (() => {
 
         els.audio.addEventListener('timeupdate', onTimeUpdate);
         els.audio.addEventListener('timeupdate', debounce(saveCurrentAudioProgress, 3000));
-        els.audio.addEventListener('ended', onTrackEnd);
+        els.audio.addEventListener('ended', onTrackEnd); // Xử lý cả auto-next & timer
         els.audio.addEventListener('loadedmetadata', onMetadataLoaded);
         els.audio.addEventListener('play', () => updatePlayState(true));
         els.audio.addEventListener('pause', () => updatePlayState(false));
@@ -147,14 +149,11 @@ const app = (() => {
         els.searchMobile.addEventListener('input', (e) => debounceSearch(e.target.value));
     }
 
-    // NÂNG CẤP: ColorThief - Lấy màu nền theo bìa truyện (Fix CORS cache bypass)
     function updateAmbientGlow(imgSrc) {
         if (typeof ColorThief === 'undefined') return;
         const colorThief = new ColorThief();
         const img = new Image();
         img.crossOrigin = 'Anonymous';
-        
-        // Cố tình thêm tham số bypass cache để trình duyệt không lấy ảnh chặn CORS từ cache của UI
         img.src = imgSrc + (imgSrc.includes('?') ? '&' : '?') + 'not-from-cache-please=' + new Date().getTime();
         
         img.onload = function() {
@@ -170,7 +169,6 @@ const app = (() => {
         };
     }
 
-    // NÂNG CẤP: Marquee chữ chạy
     function checkMarquee() {
         const titleEl = els.player.title;
         const container = titleEl.parentElement;
@@ -183,7 +181,6 @@ const app = (() => {
         }, 100);
     }
 
-    // NÂNG CẤP: Cuộn trang tới đâu Card hiện ra tới đó
     function observeScrollReveal() {
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -197,7 +194,6 @@ const app = (() => {
         document.querySelectorAll('.reveal-item').forEach(el => observer.observe(el));
     }
 
-    // NÂNG CẤP: Hiệu ứng lan tỏa (Gợn sóng) khi Click
     function initRippleEffect() {
         const createRipple = function(e, isTouch = false) {
             const target = e.target.closest('.ripple-target');
@@ -291,7 +287,6 @@ const app = (() => {
                     }
                     const isFav = state.favorites.includes(folder.id);
 
-                    // Đã loại bỏ crossorigin="anonymous" khỏi tag img
                     return `
                     <div class="book-card reveal-item ripple-target" onclick="app.openFolder(${folder.id}, true)">
                         <div class="book-cover-container skeleton-loading">
@@ -336,7 +331,6 @@ const app = (() => {
             return;
         }
         
-        // Đã loại bỏ crossorigin="anonymous" khỏi tag img
         els.mobileSearchResults.innerHTML = data.map(folder => `
             <div class="flex items-center gap-3 p-3 hover:bg-white/5 rounded-xl cursor-pointer ripple-target" onclick="app.toggleMobileSearch(); app.openFolder(${folder.id}, true)">
                 <img src="${folder.cover}" class="w-12 h-12 rounded-lg object-cover">
@@ -480,7 +474,6 @@ const app = (() => {
             return;
         }
         
-        // Đã loại bỏ crossorigin="anonymous" khỏi tag img
         els.historyList.innerHTML = state.audioHistory.map(h => {
             const pct = h.duration ? Math.min(100, (h.currentTime / h.duration) * 100) : 0;
             return `
@@ -560,7 +553,9 @@ const app = (() => {
     
     function playTrackFromTime(index, startTime) {
         state.currentIndex = index;
+        state.isPreloading = false;
         const track = state.playlist[index];
+        
         els.audio.src = track.src;
         els.audio.playbackRate = state.speed;
         
@@ -573,7 +568,9 @@ const app = (() => {
 
         if ('mediaSession' in navigator) {
             navigator.mediaSession.metadata = new MediaMetadata({
-                title: track.title, artist: state.currentFolder.title,
+                title: `${state.currentFolder.title} - ${track.title}`,
+                artist: state.currentFolder.author || CONFIG.siteName,
+                album: state.currentFolder.title,
                 artwork:[{ src: state.currentFolder.cover, sizes: '512x512', type: 'image/jpeg' }]
             });
             navigator.mediaSession.setActionHandler('play', play);
@@ -582,12 +579,20 @@ const app = (() => {
             navigator.mediaSession.setActionHandler('nexttrack', nextTrack);
         }
 
-        const onLoaded = () => {
-            if (startTime > 0) els.audio.currentTime = startTime;
-            play();
-            els.audio.removeEventListener('loadedmetadata', onLoaded);
-        };
-        els.audio.readyState >= 1 ? onLoaded() : els.audio.addEventListener('loadedmetadata', onLoaded);
+        play(); // Ép trình duyệt load file ngay lập tức
+
+        if (startTime > 0) {
+            const onLoaded = () => {
+                els.audio.currentTime = startTime;
+                els.audio.removeEventListener('loadedmetadata', onLoaded);
+            };
+            if (els.audio.readyState >= 1) {
+                onLoaded();
+            } else {
+                els.audio.addEventListener('loadedmetadata', onLoaded);
+            }
+        }
+
         saveCurrentAudioProgress();
     }
 
@@ -646,6 +651,14 @@ const app = (() => {
             const offset = 125 - (pct / 100) * 125;
             els.player.circleFill.style.strokeDashoffset = offset;
         }
+
+        if (!state.isPreloading && dur > 10 && curr >= dur - 10 && state.currentIndex < state.playlist.length - 1) {
+            state.isPreloading = true;
+            const nextTrack = state.playlist[state.currentIndex + 1];
+            const preloader = new Audio();
+            preloader.preload = 'auto'; 
+            preloader.src = nextTrack.src;
+        }
     }
     
     function onSeekInput() {
@@ -653,9 +666,66 @@ const app = (() => {
         els.player.fill.style.width = `${els.player.slider.value}%`;
         els.player.current.innerText = formatTime((els.player.slider.value / 100) * els.audio.duration);
     }
-    function onSeekChange() { state.isDragging = false; els.audio.currentTime = (els.player.slider.value / 100) * els.audio.duration; saveCurrentAudioProgress(); }
-    function onMetadataLoaded() { els.player.duration.innerText = formatTime(els.audio.duration); }
-    function onTrackEnd() { nextTrack(); }
+    
+    function onSeekChange() { 
+        state.isDragging = false; 
+        els.audio.currentTime = (els.player.slider.value / 100) * els.audio.duration; 
+        saveCurrentAudioProgress(); 
+    }
+    
+    function onMetadataLoaded() { 
+        els.player.duration.innerText = formatTime(els.audio.duration); 
+    }
+
+    // ĐÃ FIX: Sửa lỗi ghi đè lệnh dừng của Hẹn giờ
+    function onTrackEnd() {
+        // Kiểm tra xem người dùng có đang hẹn giờ tắt "Khi hết chương (-1)" không?
+        if (state.timer === -1) {
+            setTimer(0);
+            pause();
+            showToast('Đã dừng vì hết chương (Hẹn giờ)');
+            return; // Dừng hàm ngay lập tức, không cho nhảy bài tiếp theo
+        }
+
+        // Logic Auto-next bình thường
+        if (state.currentIndex < state.playlist.length - 1) {
+            const nextTrackTitle = state.playlist[state.currentIndex + 1].title;
+            showNextTrackToast(
+                `Đang chuyển: ${nextTrackTitle}`, 
+                3000, 
+                () => nextTrack(), 
+                () => { showToast('Đã hủy tự động chuyển chương'); }
+            );
+        }
+    }
+
+    function showNextTrackToast(msg, delay, onComplete, onCancel) {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = 'bg-zinc-800/95 backdrop-blur-md border border-white/20 text-white px-5 py-3 rounded-full text-sm font-bold shadow-[0_10px_30px_rgba(0,0,0,0.8)] toast-enter flex items-center gap-3 tracking-wide pointer-events-auto';
+        toast.innerHTML = `
+            <div class="w-4 h-4 rounded-full border-2 border-blue-500 border-t-transparent animate-spin shrink-0"></div>
+            <span class="flex-1 truncate max-w-[150px] sm:max-w-[200px]">${msg}</span>
+            <button id="cancel-next-btn" class="ml-2 text-[10px] font-bold text-white uppercase px-3 py-1.5 bg-red-500 hover:bg-red-600 rounded-full transition-colors shrink-0">Hủy</button>
+        `;
+        container.appendChild(toast);
+        
+        let isCanceled = false;
+        const timeout = setTimeout(() => {
+            if(isCanceled) return;
+            toast.classList.replace('toast-enter', 'toast-exit');
+            setTimeout(() => toast.remove(), 300);
+            onComplete();
+        }, delay);
+
+        toast.querySelector('#cancel-next-btn').onclick = () => {
+            isCanceled = true;
+            clearTimeout(timeout);
+            toast.classList.replace('toast-enter', 'toast-exit');
+            setTimeout(() => toast.remove(), 300);
+            onCancel();
+        };
+    }
 
     function formatTime(s) {
         if (!s || isNaN(s)) return "0:00";
@@ -666,31 +736,75 @@ const app = (() => {
     function debounce(f, wait) { let t; return (...args) => { clearTimeout(t); t = setTimeout(()=>f(...args), wait); }; }
 
     function toggleSpeedMenu() { els.player.speedPopup.classList.toggle('active'); }
+    
     function setSpeed(val) {
-        state.speed = val; els.audio.playbackRate = val; sessionStorage.setItem('audioSpeed', val);
+        state.speed = val; 
+        els.audio.playbackRate = val; 
+        localStorage.setItem('audioSpeed', val); 
         els.player.speedText.innerText = val;
         els.player.speedPopup.classList.remove('active');
         els.player.speedPopup.querySelectorAll('.dropdown-item').forEach(i => i.classList.toggle('selected', parseFloat(i.innerText.split('x')[0]) === val));
     }
 
     function toggleTimerMenu() { els.player.timerPopup.classList.toggle('active'); }
+    
+    // ĐÃ FIX VÀ NÂNG CẤP: Chuyển setTimeout thành setInterval đếm ngược thời gian thực
     function setTimer(m) {
-        state.timer = m; clearTimeout(state.timerId); els.player.timerPopup.classList.remove('active');
+        state.timer = m; 
+        clearInterval(state.timerInterval); 
+        els.player.timerPopup.classList.remove('active');
         
-        if(m !== 0) {
-            els.player.timerBtn.classList.add('text-amber-400');
-            els.player.timerDot.classList.remove('hidden');
-        } else {
-            els.player.timerBtn.classList.remove('text-amber-400');
-            els.player.timerDot.classList.add('hidden');
-        }
+        const badge = els.player.timerBadge;
 
+        // Xóa class 'selected' trong Menu
         els.player.timerPopup.querySelectorAll('.dropdown-item').forEach(i => i.classList.remove('selected'));
         const activeItem = Array.from(els.player.timerPopup.querySelectorAll('.dropdown-item')).find(i => i.innerText.includes(m === -1 ? 'Hết' : (m===0 ? 'Tắt' : m)));
         if(activeItem) activeItem.classList.add('selected');
 
-        if(m>0) { state.timerId = setTimeout(()=>{ pause(); showToast(`Hết hẹn giờ ${m} phút`); setTimer(0); }, m*60000); showToast(`Đã hẹn giờ ${m} phút`);}
-        else if (m === -1) { els.audio.addEventListener('ended', ()=>{pause(); setTimer(0);}, {once:true}); showToast('Hẹn giờ hết chương này');}
+        // Logic khi tắt Hẹn giờ
+        if (m === 0) {
+            els.player.timerBtn.classList.remove('text-amber-400');
+            badge.classList.add('hidden');
+            badge.innerText = '';
+            showToast('Đã tắt hẹn giờ');
+            return;
+        }
+
+        // Bật UI trạng thái có hẹn giờ
+        els.player.timerBtn.classList.add('text-amber-400');
+        badge.classList.remove('hidden');
+
+        // Logic hẹn giờ "Khi hết chương này"
+        if (m === -1) {
+            badge.innerText = '1 Ch';
+            showToast('Sẽ dừng sau khi hết chương này');
+            return;
+        }
+
+        // Logic hẹn giờ bằng số Phút
+        if (m > 0) {
+            showToast(`Đã hẹn giờ ${m} phút`);
+            state.timerEndTime = Date.now() + (m * 60000); // Tính thời điểm kết thúc
+            
+            const updateCountdown = () => {
+                const remain = state.timerEndTime - Date.now();
+                if (remain <= 0) {
+                    clearInterval(state.timerInterval);
+                    pause();
+                    setTimer(0);
+                    showToast('Đã hết thời gian hẹn giờ');
+                } else {
+                    // Cập nhật text đồng hồ số
+                    const totalSecs = Math.ceil(remain / 1000);
+                    const mins = Math.floor(totalSecs / 60);
+                    const secs = totalSecs % 60;
+                    badge.innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+                }
+            };
+            
+            updateCountdown(); // Cập nhật ngay 1 lần không cần đợi 1s
+            state.timerInterval = setInterval(updateCountdown, 1000); // Cứ 1s cập nhật UI 1 lần
+        }
     }
 
     function openPlayerMobile() {

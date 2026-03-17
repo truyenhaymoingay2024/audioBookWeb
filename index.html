@@ -3,9 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
     <title>Tư Ngữ Audio</title>
     <meta name="description" content="Thư viện audiobook chất lượng cao với giao diện hiện đại, mượt mà">
     <meta name="theme-color" content="#09090b">
+    
+    <!-- === PWA CẤU HÌNH === -->
+    <link rel="manifest" href="./manifest.json">
+    <link rel="apple-touch-icon" href="./avt.jpg">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="icon" type="image/png" href="./favicon/favicon.ico">
 
     <!-- === THƯ VIỆN NGOÀI (CDN) === -->
@@ -26,7 +33,6 @@
     <div class="fixed top-0 left-0 right-0 z-40 px-3 py-3 md:px-4 pt-safe">
         <nav class="glass-panel max-w-7xl xl:max-w-[90%] 2xl:max-w-[95%] mx-auto rounded-full px-2 pl-3 md:pl-6 py-2 flex justify-between items-center header-nav shadow-2xl relative">
             
-            <!-- Logo Section -->
             <div class="flex items-center gap-2 md:gap-3 cursor-pointer group z-10 shrink-0" onclick="app.goHome()" role="button" aria-label="Trở về trang chủ" tabindex="0">
                 <div class="w-9 h-9 md:w-10 md:h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white shadow-lg shadow-blue-500/30 group-hover:rotate-12 transition-transform shrink-0 brand-icon border border-white/10">
                     <i class="ph-bold ph-books text-lg md:text-xl"></i>
@@ -37,20 +43,16 @@
                 </div>
             </div>
 
-            <!-- Right Actions Section -->
             <div class="flex items-center gap-1.5 sm:gap-2 header-right-section z-10 justify-end flex-1 pl-2">
-                <!-- Nút Lịch sử nghe -->
                 <button onclick="app.toggleHistoryModal()" class="interactive-btn bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all group shrink-0 border border-transparent hover:border-white/10" title="Lịch sử nghe">
                     <i class="ph-bold ph-clock-counter-clockwise text-base md:text-lg"></i>
                 </button>
 
-                <!-- Nút Donate -->
                 <a href="https://tu-ngu-audio-0604-donate.vercel.app/" target="_blank" rel="noopener noreferrer" class="interactive-btn donate-btn bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 hover:text-amber-300 px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs font-bold flex items-center gap-1.5 transition-all group shrink-0 border border-amber-500/20">
                     <i class="ph-bold ph-hand-heart text-sm md:text-base"></i>
                     <span class="donate-text hidden sm:block truncate">Donate</span>
                 </a>
                 
-                <!-- Thanh tìm kiếm Desktop -->
                 <div class="relative group search-container shrink-0 hidden md:flex items-center">
                     <div class="absolute left-3 z-10 pointer-events-none text-gray-400 peer-focus:text-blue-400 transition-colors">
                         <i class="ph-bold ph-magnifying-glass text-lg"></i>
@@ -58,12 +60,10 @@
                     <input type="text" id="search-input-desktop" class="peer bg-white/5 hover:bg-white/10 focus:bg-zinc-900/90 w-48 focus:w-64 lg:w-56 h-10 rounded-full pl-10 pr-4 text-sm text-white placeholder-transparent focus:placeholder-gray-500 transition-all duration-300 focus:ring-2 focus:ring-blue-500/50 focus:outline-none border border-transparent focus:border-blue-500/30 shadow-inner" placeholder="Tìm sách..." oninput="app.handleSearch(this.value)" aria-label="Tìm kiếm audiobook">
                 </div>
 
-                <!-- Nút Tìm kiếm Mobile (Mở Modal) -->
                 <button onclick="app.toggleMobileSearch()" class="interactive-btn md:hidden bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white w-9 h-9 rounded-full flex items-center justify-center transition-all group shrink-0 border border-transparent hover:border-white/10">
                     <i class="ph-bold ph-magnifying-glass text-base"></i>
                 </button>
                 
-                <!-- Avatar -->
                 <a href="https://www.youtube.com/@tunguaudio0604" target="_blank" rel="noopener noreferrer" class="interactive-btn w-9 h-9 md:w-10 md:h-10 rounded-full p-[2px] bg-gradient-to-tr from-blue-500 to-purple-500 ml-1 sm:ml-2 cursor-pointer block overflow-hidden shrink-0 shadow-lg relative z-20">
                     <img id="user-avatar" src="./avt.jpg" onerror="this.src='https://via.placeholder.com/150'" class="w-full h-full rounded-full object-cover border-2 border-zinc-900" alt="Avatar">
                 </a>
@@ -83,7 +83,6 @@
                 </div>
 
                 <div class="flex items-center gap-3 w-full sm:w-auto flex-wrap">
-                    <!-- Bộ lọc -->
                     <div class="filter-menu-container relative z-20 shrink-0">
                         <button onclick="app.toggleFilterMenu()" class="interactive-btn glass-btn rounded-full px-3.5 py-2 flex items-center gap-2 transition group text-xs md:text-sm font-semibold">
                             <i class="ph-bold ph-funnel-simple text-purple-400"></i>
@@ -98,7 +97,6 @@
                         </div>
                     </div>
 
-                    <!-- Sắp xếp -->
                     <div class="sort-menu-container relative z-20 shrink-0">
                         <button onclick="app.toggleSortMenu()" class="interactive-btn glass-btn rounded-full px-3.5 py-2 flex items-center gap-2 transition group text-xs md:text-sm font-semibold">
                             <i class="ph-bold ph-sort-ascending text-blue-400"></i>
@@ -120,7 +118,6 @@
                 <!-- JS Inject Here -->
             </div>
             
-            <!-- Trạng thái trống -->
             <div id="empty-state" class="hidden flex flex-col items-center justify-center py-20 text-center px-4">
                 <dotlottie-player src="https://lottie.host/81a539eb-32df-4db2-901a-cf2a900dc2c9/OaI2uW7lQ8.json" background="transparent" speed="1" style="width: 200px; height: 200px;" loop autoplay></dotlottie-player>
                 <p class="text-gray-200 font-bold text-lg mt-2">Không tìm thấy truyện nào!</p>
@@ -136,13 +133,11 @@
             </button>
 
             <div class="flex flex-col md:flex-row gap-8 lg:gap-12 items-start">
-                <!-- Bìa sách & Action -->
                 <div class="w-full max-w-[260px] md:max-w-none md:w-[280px] lg:w-[320px] flex-shrink-0 mx-auto md:mx-0 md:sticky md:top-28">
                     <div class="relative group rounded-2xl overflow-hidden shadow-[0_20px_40px_rgba(0,0,0,0.6)] bg-zinc-900 border border-white/10 aspect-[2/3]">
                         <img id="detail-cover" src="" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Bìa sách">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent pointer-events-none opacity-90"></div>
                         
-                        <!-- Fav Button -->
                         <button onclick="app.toggleFavoriteCurrent()" id="detail-fav-btn" class="interactive-btn absolute top-4 right-4 w-10 h-10 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center text-white hover:bg-black/70 transition-all border border-white/20 z-10 shadow-lg">
                             <i class="ph ph-heart text-xl fav-icon"></i>
                         </button>
@@ -171,7 +166,6 @@
                     </div>
                 </div>
 
-                <!-- Thông tin & Danh sách chương -->
                 <div class="w-full md:flex-1 min-w-0">
                     <div class="mb-8 p-5 lg:p-6 bg-white/5 rounded-2xl border border-white/10 backdrop-blur-sm shadow-xl relative overflow-hidden">
                         <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
@@ -213,13 +207,11 @@
 
             <div class="player-content-area flex flex-row w-full items-center justify-between px-3 py-2 md:px-5 z-10 h-full flex-1 min-h-0">
                 
-                <!-- Left: Info & Cover -->
                 <div class="player-info-section flex items-center gap-3 w-auto md:w-[30%] cursor-pointer md:cursor-default shrink min-w-0" onclick="app.openPlayerMobile()">
                     <div class="cover-wrapper relative flex-shrink-0 rounded-lg overflow-hidden shadow-lg border border-white/10 transition-all duration-500 bg-zinc-800">
                         <img id="p-cover" src="https://via.placeholder.com/150" class="w-full h-full object-cover" alt="Cover">
                         <div class="absolute inset-0 bg-black/20 pointer-events-none"></div>
                     </div>
-                    <!-- Marquee Text -->
                     <div class="text-info-wrapper min-w-0 flex-1 transition-all duration-500 pr-2 md:pr-0 overflow-hidden">
                         <div class="marquee-container">
                             <h4 id="p-title" class="marquee-text font-bold text-sm md:text-base text-white leading-tight">Tư Ngữ Audio</h4>
@@ -228,10 +220,8 @@
                     </div>
                 </div>
                 
-                <!-- Center: Controls & Progress -->
                 <div class="player-controls-section flex flex-col items-center justify-center gap-1 md:gap-2 w-auto md:w-[40%] transition-all duration-500 shrink-0 md:shrink">
                     
-                    <!-- Nút Play (Mini Mobile SVG Circle) -->
                     <div class="relative flex items-center justify-center md:hidden shrink-0 w-11 h-11" onclick="app.togglePlay(event)">
                         <svg class="absolute inset-0 w-full h-full -rotate-90 pointer-events-none" viewBox="0 0 44 44">
                             <circle cx="22" cy="22" r="20" stroke="rgba(255,255,255,0.1)" stroke-width="2" fill="none" />
@@ -242,7 +232,6 @@
                         </button>
                     </div>
 
-                    <!-- Nút điều khiển (Full) -->
                     <div class="controls-wrapper flex items-center justify-center gap-5 sm:gap-6 md:gap-5 transition-all duration-500 w-full mb-1 md:mb-0">
                         <button onclick="app.skip(-5)" class="interactive-btn text-gray-400 hover:text-white transition-all" title="Lùi 5s"><i class="ph-fill ph-rewind text-2xl md:text-xl drop-shadow-md"></i></button>
                         <button onclick="app.prevTrack()" class="interactive-btn text-white hover:text-blue-400 transition-all"><i class="ph-fill ph-skip-back text-3xl md:text-2xl drop-shadow-md"></i></button>
@@ -253,7 +242,6 @@
                         <button onclick="app.skip(5)" class="interactive-btn text-gray-400 hover:text-white transition-all" title="Tiến 5s"><i class="ph-fill ph-fast-forward text-2xl md:text-xl drop-shadow-md"></i></button>
                     </div>
 
-                    <!-- Thanh Progress -->
                     <div class="progress-wrapper w-full max-w-[500px] flex items-center gap-3 text-[10px] md:text-xs font-semibold text-gray-400 transition-all duration-500">
                         <span id="p-current" class="min-w-[40px] text-right tabular-nums">0:00</span>
                         <div class="relative flex-1 h-3 flex items-center group cursor-pointer">
@@ -268,7 +256,6 @@
                     </div>
                 </div>
                 
-                <!-- Right: Utilities (Speed, Timer) -->
                 <div class="player-utils-section flex items-center justify-end gap-2 sm:gap-3 w-[30%] transition-all duration-500">
                     <div class="relative">
                         <button onclick="app.toggleSpeedMenu()" class="interactive-btn text-[11px] font-extrabold px-2.5 py-1.5 rounded-lg bg-white/5 text-gray-300 hover:text-white hover:bg-white/10 transition-colors border border-white/10 backdrop-blur-md">
@@ -284,9 +271,10 @@
                     </div>
 
                     <div class="relative">
-                        <button onclick="app.toggleTimerMenu()" id="timer-btn" class="interactive-btn text-gray-400 hover:text-white transition-colors p-2 rounded-full hover:bg-white/10 relative">
+                        <!-- ĐÃ SỬA: Nút Timer cập nhật thành Đồng hồ đếm ngược -->
+                        <button onclick="app.toggleTimerMenu()" id="timer-btn" class="interactive-btn text-gray-400 hover:text-white transition-colors p-2 rounded-full hover:bg-white/10 relative flex items-center justify-center">
                             <i class="ph-bold ph-timer text-xl"></i>
-                            <span class="timer-dot hidden absolute top-1 right-1 w-2 h-2 bg-amber-500 rounded-full shadow-[0_0_5px_rgba(245,158,11,0.8)]"></span>
+                            <span class="timer-badge hidden absolute -top-2 -right-3 bg-amber-500 text-black text-[9px] font-extrabold px-1.5 py-0.5 rounded-md shadow-[0_0_8px_rgba(245,158,11,0.8)] tabular-nums tracking-tighter"></span>
                         </button>
                         <div id="timer-popup" class="dropdown-popup bottom-full mb-3 right-0 origin-bottom-right shadow-2xl">
                             <div class="dropdown-item selected" onclick="app.setTimer(0)"><i class="ph-bold ph-x mr-1"></i> Tắt hẹn giờ</div>
@@ -334,11 +322,24 @@
     </div>
 
     <!-- Toast Notification Container -->
-    <div id="toast-container" class="fixed top-24 left-1/2 transform -translate-x-1/2 z-[100] flex flex-col items-center gap-2 pointer-events-none w-full px-4 items-center"></div>
+    <div id="toast-container" class="fixed top-24 left-1/2 transform -translate-x-1/2 z-[100] flex flex-col items-center gap-2 w-full px-4 pointer-events-none"></div>
 
     <audio id="audio-core" preload="metadata"></audio>
 
     <script src="data.js"></script>
     <script src="main.js"></script>
+    
+    <!-- === PWA: ĐĂNG KÝ SERVICE WORKER === -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').then(reg => {
+                    console.log('Service Worker đã đăng ký thành công.', reg);
+                }).catch(err => {
+                    console.log('Lỗi đăng ký Service Worker:', err);
+                });
+            });
+        }
+    </script>
 </body>
 </html>
