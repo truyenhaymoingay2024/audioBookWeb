@@ -20,7 +20,9 @@
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
+    <!-- Lấy màu từ ảnh (Ambient Glow) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"></script>
+    <!-- Lottie Animation (Ảnh động Vector) -->
     <script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
     
     <link rel="stylesheet" href="style.css">
@@ -208,9 +210,11 @@
                 <button aria-label="Tùy chọn khác" class="interactive-btn text-transparent p-2"><i class="ph-bold ph-dots-three text-xl"></i></button>
             </div>
 
-            <div class="player-content-area flex flex-row w-full items-center justify-between px-3 py-2 md:px-5 z-10 h-full flex-1 min-h-0">
+            <!-- GẮN SỰ KIỆN MỞ PLAYER VÀO TOÀN BỘ KHU VỰC CONTENT -->
+            <div class="player-content-area flex flex-row w-full items-center justify-between px-3 py-2 md:px-5 z-10 h-full flex-1 min-h-0 cursor-pointer md:cursor-default" onclick="app.openPlayerMobile(event)">
                 
-                <div class="player-info-section flex items-center gap-3 w-auto md:w-[30%] cursor-pointer md:cursor-default shrink min-w-0" onclick="app.openPlayerMobile()" aria-label="Mở trình phát toàn màn hình" tabindex="0" onkeydown="if(event.key === 'Enter' || event.key === ' ') app.openPlayerMobile()">
+                <!-- Bỏ onclick ở info-section đi -->
+                <div class="player-info-section flex items-center gap-3 w-auto md:w-[30%] shrink min-w-0" aria-label="Mở trình phát toàn màn hình" tabindex="0" onkeydown="if(event.key === 'Enter' || event.key === ' ') app.openPlayerMobile(event)">
                     <div class="cover-wrapper relative flex-shrink-0 rounded-lg overflow-hidden shadow-lg border border-white/10 transition-all duration-500 bg-zinc-800">
                         <img id="p-cover" src="https://via.placeholder.com/150" class="w-full h-full object-cover" alt="Cover">
                         <div class="absolute inset-0 bg-black/20 pointer-events-none"></div>
@@ -238,7 +242,7 @@
                     <div class="controls-wrapper flex items-center justify-center gap-5 sm:gap-6 md:gap-5 transition-all duration-500 w-full mb-1 md:mb-0">
                         <button onclick="app.skip(-5)" aria-label="Lùi lại 5 giây" class="interactive-btn text-gray-400 hover:text-white transition-all focus-visible-ring"><i class="ph-fill ph-rewind text-2xl md:text-xl drop-shadow-md"></i></button>
                         <button onclick="app.prevTrack()" aria-label="Chương trước" class="interactive-btn text-white hover:text-blue-400 transition-all focus-visible-ring"><i class="ph-fill ph-skip-back text-3xl md:text-2xl drop-shadow-md"></i></button>
-                        <button onclick="app.togglePlay()" aria-label="Phát / Tạm dừng" class="interactive-btn main-play-btn w-16 h-16 md:w-12 md:h-12 rounded-full bg-white text-black flex items-center justify-center transition-all shadow-[0_0_20px_rgba(255,255,255,0.2)] focus-visible-ring">
+                        <button onclick="app.togglePlay(event)" aria-label="Phát / Tạm dừng" class="interactive-btn main-play-btn w-16 h-16 md:w-12 md:h-12 rounded-full bg-white text-black flex items-center justify-center transition-all shadow-[0_0_20px_rgba(255,255,255,0.2)] focus-visible-ring">
                             <i id="p-play-icon" class="ph-fill ph-play text-2xl md:text-xl ml-1 icon-morph"></i>
                         </button>
                         <button onclick="app.nextTrack()" aria-label="Chương tiếp theo" class="interactive-btn text-white hover:text-blue-400 transition-all focus-visible-ring"><i class="ph-fill ph-skip-forward text-3xl md:text-2xl drop-shadow-md"></i></button>
@@ -309,8 +313,8 @@
         </div>
     </div>
 
-    <!-- MODAL TÌM KIẾM MOBILE -->
-    <div id="mobile-search-modal" aria-modal="true" role="dialog" class="fixed inset-0 z-[100] bg-zinc-950/95 backdrop-blur-xl hidden flex-col transition-opacity opacity-0">
+    <!-- MODAL TÌM KIẾM MOBILE ĐÃ THÊM SỰ KIỆN CLICK NGOÀI ĐỂ ĐÓNG -->
+    <div id="mobile-search-modal" aria-modal="true" role="dialog" class="fixed inset-0 z-[100] bg-zinc-950/95 backdrop-blur-xl hidden flex-col transition-opacity opacity-0" onclick="app.closeMobileSearchOnOutsideClick(event)">
         <div class="flex items-center gap-3 p-4 pt-safe border-b border-white/10 bg-zinc-900/50">
             <button onclick="app.toggleMobileSearch()" aria-label="Đóng tìm kiếm" class="interactive-btn text-gray-400 p-2"><i class="ph-bold ph-arrow-left text-xl"></i></button>
             <div class="flex-1 relative">
@@ -319,7 +323,7 @@
             </div>
         </div>
         <div id="mobile-search-results" class="flex-1 overflow-y-auto p-4 flex flex-col gap-2 custom-scrollbar" role="list">
-            <div class="text-center text-gray-500 text-sm mt-10">Nhập từ khóa để tìm kiếm...</div>
+            <div class="text-center text-gray-500 text-sm mt-10 pointer-events-none">Nhập từ khóa để tìm kiếm...</div>
         </div>
     </div>
 

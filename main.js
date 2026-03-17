@@ -63,13 +63,12 @@ const app = (() => {
         audioHistory: JSON.parse(localStorage.getItem('audioHistory')) ||[],
         durationCache: {},
         lastScrollY: 0,
-        // Chunking State (Lazy Load)
         filteredData:[],
         renderedCount: 0,
         chunkSize: 24 
     };
 
-    // --- ĐỒNG BỘ ĐA TAB (Cross-tab Sync) ---
+    // --- ĐỒNG BỘ ĐA TAB ---
     let audioChannel = null;
     if ('BroadcastChannel' in window) {
         audioChannel = new BroadcastChannel('tungu_audio_sync');
@@ -81,7 +80,7 @@ const app = (() => {
         };
     }
 
-    // --- BẢO VỆ BỘ NHỚ (Safe Storage) ---
+    // --- BẢO VỆ BỘ NHỚ ---
     function safeSetStorage(key, value) {
         try {
             localStorage.setItem(key, value);
@@ -89,9 +88,9 @@ const app = (() => {
             console.warn("Storage Full! Đang dọn dẹp lịch sử cũ...");
             if (key === 'audioHistory') {
                 let history = JSON.parse(localStorage.getItem('audioHistory') || '[]');
-                history = history.slice(0, Math.floor(history.length * 0.7)); // Xóa 30% cũ nhất
+                history = history.slice(0, Math.floor(history.length * 0.7)); 
                 localStorage.setItem('audioHistory', JSON.stringify(history));
-                localStorage.setItem(key, value); // Thử lưu lại
+                localStorage.setItem(key, value); 
             }
         }
     }
@@ -152,14 +151,12 @@ const app = (() => {
 
         els.player.wrapper.classList.add('is-paused');
         
-        // --- XỬ LÝ SỰ CỐ MẠNG & AUDIO (Audio Resilience) ---
+        // --- XỬ LÝ SỰ CỐ MẠNG & AUDIO ---
         els.audio.addEventListener('waiting', () => {
-            // Khi xoay vòng chờ tải
             els.player.playIcon.className = 'ph-bold ph-spinner animate-spin text-2xl md:text-xl ml-1 text-blue-400';
             els.player.playIconMini.className = 'ph-bold ph-spinner animate-spin text-base ml-0.5 text-blue-400';
         });
         els.audio.addEventListener('canplay', () => {
-            // Khi có mạng lại
             updatePlayState(state.isPlaying); 
         });
         els.audio.addEventListener('error', () => {
@@ -186,9 +183,11 @@ const app = (() => {
             }
         });
 
+        // KÍCH HOẠT GESTURES (Cử chỉ vuốt)
         initSwipeGesture();
+        initDetailSwipeBack(); 
         initRippleEffect();
-        initLazyLoadObserver(); // Khởi tạo Load More
+        initLazyLoadObserver(); 
 
         window.addEventListener('popstate', (e) => {
             if (e.state && e.state.view === 'detail') openFolder(e.state.id, false);
@@ -292,20 +291,19 @@ const app = (() => {
         if (criteria === 'newest') data.sort((a, b) => b.id - a.id);
         if (criteria === 'oldest') data.sort((a, b) => a.id - b.id);
         
-        // Reset state Lazy Load
         state.filteredData = data;
         state.renderedCount = 0;
         els.grid.innerHTML = '';
         
         document.getElementById('book-count').innerText = data.length;
-        renderNextChunk(); // Render lô đầu tiên
+        renderNextChunk(); 
         renderMobileSearch(data);
     }
 
     const debounceSearch = debounce((query) => {
         if (!query) return _doSort(state.currentSort);
         const term = query.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-        let data = [...LIBRARY].filter(i => 
+        let data =[...LIBRARY].filter(i => 
             i.title.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().includes(term) || 
             i.author.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().includes(term)
         );
@@ -319,7 +317,6 @@ const app = (() => {
 
     function handleSearch(query) { debounceSearch(query); }
 
-    // --- LAZY LOAD: Khởi tạo Observer ---
     function initLazyLoadObserver() {
         const observer = new IntersectionObserver((entries) => {
             if(entries[0].isIntersecting && state.renderedCount < state.filteredData.length) {
@@ -329,7 +326,6 @@ const app = (() => {
         observer.observe(els.loadMoreTrigger);
     }
 
-    // --- LAZY LOAD: Hàm render lô tiếp theo ---
     function renderNextChunk() {
         const dataToRender = state.filteredData.slice(state.renderedCount, state.renderedCount + state.chunkSize);
         if (state.filteredData.length === 0) {
@@ -349,7 +345,6 @@ const app = (() => {
             }
             const isFav = state.favorites.includes(folder.id);
 
-            // NÂNG CẤP a11y & LQIP Blur-up (Tải ảnh dần dần)
             return `
             <div class="book-card reveal-item ripple-target" tabindex="0" role="button" aria-label="Xem truyện ${folder.title}" onclick="app.openFolder(${folder.id}, true)" onkeydown="if(event.key==='Enter'||event.key===' ') {event.preventDefault(); app.openFolder(${folder.id}, true);}">
                 <div class="book-cover-container skeleton-loading">
@@ -377,7 +372,6 @@ const app = (() => {
         state.renderedCount += dataToRender.length;
         observeScrollReveal();
 
-        // Ẩn hiện trigger loading
         if (state.renderedCount >= state.filteredData.length) els.loadMoreTrigger.classList.add('opacity-0');
         else els.loadMoreTrigger.classList.remove('opacity-0');
     }
@@ -385,11 +379,11 @@ const app = (() => {
     function renderMobileSearch(data) {
         const query = els.searchMobile.value.trim();
         if(!query) {
-            els.mobileSearchResults.innerHTML = `<div class="text-center text-gray-500 text-sm mt-10">Nhập từ khóa để tìm kiếm...</div>`;
+            els.mobileSearchResults.innerHTML = `<div class="text-center text-gray-500 text-sm mt-10 pointer-events-none">Nhập từ khóa để tìm kiếm...</div>`;
             return;
         }
         if(data.length === 0) {
-            els.mobileSearchResults.innerHTML = `<div class="text-center text-gray-500 text-sm mt-10">Không tìm thấy kết quả nào.</div>`;
+            els.mobileSearchResults.innerHTML = `<div class="text-center text-gray-500 text-sm mt-10 pointer-events-none">Không tìm thấy kết quả nào.</div>`;
             return;
         }
         
@@ -413,6 +407,15 @@ const app = (() => {
             els.mobileSearchModal.classList.add('opacity-0');
             setTimeout(() => { els.mobileSearchModal.classList.add('hidden'); }, 300);
             document.body.style.overflow = '';
+        }
+    }
+
+    // NÂNG CẤP: Chạm khoảng trống để tắt Mobile Search
+    function closeMobileSearchOnOutsideClick(e) {
+        if (e.target.id === 'mobile-search-modal' || e.target.id === 'mobile-search-results') {
+            if (!els.mobileSearchModal.classList.contains('hidden')) {
+                toggleMobileSearch();
+            }
         }
     }
 
@@ -466,6 +469,26 @@ const app = (() => {
         else goHome(true);
     }
 
+    // NÂNG CẤP: Vuốt trái -> phải ở trang Chi tiết (Detail View) để Quay lại
+    function initDetailSwipeBack() {
+        let startX = 0;
+        let startY = 0;
+        els.views.detail.addEventListener('touchstart', e => {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+        }, {passive: true});
+        
+        els.views.detail.addEventListener('touchend', e => {
+            let endX = e.changedTouches[0].clientX;
+            let endY = e.changedTouches[0].clientY;
+            
+            // Xử lý vuốt: Bắt đầu từ rìa trái (<= 40px), di chuyển ngang > 80px, dọc ít bị lệch (< 50px)
+            if (startX <= 40 && (endX - startX) > 80 && Math.abs(endY - startY) < 50) {
+                goBack();
+            }
+        }, {passive: true});
+    }
+
     function toggleFavoriteCurrent() {
         if (!state.currentFolder) return;
         const id = state.currentFolder.id;
@@ -508,7 +531,7 @@ const app = (() => {
         };
         state.audioHistory = state.audioHistory.filter(h => h.folderId !== data.folderId);
         state.audioHistory.unshift(data); 
-        if (state.audioHistory.length > 30) state.audioHistory.pop(); // Tăng giới hạn xíu
+        if (state.audioHistory.length > 30) state.audioHistory.pop(); 
         safeSetStorage('audioHistory', JSON.stringify(state.audioHistory));
     }
 
@@ -660,6 +683,7 @@ const app = (() => {
     function play() { els.audio.play().catch(e=>{}); }
     function pause() { els.audio.pause(); saveCurrentAudioProgress(); }
     
+    // NÂNG CẤP: Sửa lỗi khi TogglePlay vô tình kích hoạt OpenPlayer do event bubbling
     function togglePlay(e) {
         if(e) e.stopPropagation();
         if (!els.audio.src) {
@@ -680,9 +704,7 @@ const app = (() => {
     function updatePlayState(isPlaying) {
         state.isPlaying = isPlaying;
         const iconMain = els.player.playIcon;
-        const iconMini = els.player.playIconMini;
-        
-        [iconMain, iconMini].forEach(icon => {
+        const iconMini = els.player.playIconMini;[iconMain, iconMini].forEach(icon => {
             icon.style.transform = 'scale(0) rotate(-90deg)';
             icon.style.opacity = '0';
             setTimeout(() => {
@@ -858,8 +880,13 @@ const app = (() => {
         }
     }
 
-    function openPlayerMobile() {
-        if(window.innerWidth <= 768) {
+    // NÂNG CẤP: Chặn việc mở Player khi click nhầm vào các nút chức năng bên trong Player
+    function openPlayerMobile(e) {
+        // Nếu sự kiện được kích hoạt từ một nút hoặc phần tử kéo (input, button) thì thoát
+        if (e && e.target.closest('button, input, .dropdown-popup, .interactive-btn:not(.player-info-section)')) {
+            return;
+        }
+        if(window.innerWidth <= 768 && els.player.wrapper.classList.contains('mini-player-mode')) {
             els.player.wrapper.classList.remove('mini-player-mode');
             els.player.wrapper.classList.add('full-player-mode');
             document.body.style.overflow = 'hidden'; 
@@ -872,22 +899,38 @@ const app = (() => {
         document.body.style.overflow = '';
     }
 
+    // NÂNG CẤP: Vuốt xuống TẠI BẤT CỨ ĐÂU trên Player để thu nhỏ, và Vuốt lên để phóng to
     function initSwipeGesture() {
         let startY = 0;
-        els.player.dragHandle.addEventListener('touchstart', e => startY = e.touches[0].clientY, {passive: true});
-        els.player.dragHandle.addEventListener('touchmove', e => {
-            const deltaY = e.touches[0].clientY - startY;
-            if (deltaY > 50) closePlayerMobile(); 
+        let startX = 0;
+        const player = els.player.wrapper;
+
+        player.addEventListener('touchstart', e => {
+            // Không chặn vuốt nếu đang kéo thanh thời gian
+            if (e.target.tagName === 'INPUT' || e.target.closest('.dropdown-popup')) return;
+            startY = e.touches[0].clientY;
+            startX = e.touches[0].clientX;
         }, {passive: true});
 
-        let startYMini = 0;
-        els.player.wrapper.addEventListener('touchstart', e => {
-            if (els.player.wrapper.classList.contains('mini-player-mode')) startYMini = e.touches[0].clientY;
-        }, {passive: true});
-        els.player.wrapper.addEventListener('touchend', e => {
-            if (els.player.wrapper.classList.contains('mini-player-mode')) {
-                let endY = e.changedTouches[0].clientY;
-                if (startYMini - endY > 20) openPlayerMobile();
+        player.addEventListener('touchend', e => {
+            if (e.target.tagName === 'INPUT' || e.target.closest('.dropdown-popup')) return;
+            
+            let endY = e.changedTouches[0].clientY;
+            let endX = e.changedTouches[0].clientX;
+            
+            let deltaY = endY - startY;
+            let deltaX = endX - startX;
+
+            // Đảm bảo là thao tác vuốt dọc, không phải vuốt ngang
+            if (Math.abs(deltaY) > Math.abs(deltaX)) {
+                // Đang mở Full Player -> Vuốt xuống trên 50px -> Đóng
+                if (player.classList.contains('full-player-mode') && deltaY > 50) {
+                    closePlayerMobile();
+                } 
+                // Đang ở Mini Player -> Vuốt lên (trên 20px) -> Mở Full
+                else if (player.classList.contains('mini-player-mode') && deltaY < -20) {
+                    openPlayerMobile();
+                }
             }
         }, {passive: true});
     }
@@ -907,7 +950,7 @@ const app = (() => {
     return {
         init, openFolder, goHome, goBack, playTrack, playAll, togglePlay, skip, nextTrack, prevTrack, resumeLastPosition,
         handleSearch, setSort, toggleSortMenu, setFilter, toggleFilterMenu,
-        toggleSpeedMenu, setSpeed, toggleTimerMenu, setTimer, toggleMobileSearch,
+        toggleSpeedMenu, setSpeed, toggleTimerMenu, setTimer, toggleMobileSearch, closeMobileSearchOnOutsideClick,
         openPlayerMobile, closePlayerMobile, toggleHistoryModal, resumeFromHistory, toggleFavoriteCurrent
     };
 })();
