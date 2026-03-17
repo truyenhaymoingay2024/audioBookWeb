@@ -875,4 +875,17 @@ const LIBRARY = [
             manual("Chương 61 - 66 (Hết)", "c61-66.m4a"),
         ]
     },
+    {        
+        id: 55,
+        folderName: "MonQua",
+        title: "Món Quà",
+        author: "Khâm Điểm Phế Sài",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/MonQua/cover.png",
+        desc: 'Anh là ác quỷ, và cũng là món quà.\nTin tốt: Không ai biết cô thầm yêu anh trai mình.\nTin xấu: Anh trai cô là đồ cà chớn.\n“Con trai có em gái sẽ không lắp giỏ đựng đồ ở yên sau xe đạp.”\n\nNote: Nam nữ chính không cùng huyết thống và hộ khẩu.\nTóm tắt một câu: Cặp anh em “hờ” yêu nhau lắm cắn nhau đau.\nChủ đề: Tình yêu sâu đậm nảy mầm từ thuở thiếu thời.',
+	    isH: true,
+        chapters: 118,
+        tracks: [
+            ...batch(1, 50, 5, 'm4a'),
+        ]
+    },
 ];
