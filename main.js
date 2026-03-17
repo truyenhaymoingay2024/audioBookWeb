@@ -3,6 +3,7 @@ const app = (() => {
         audio: document.getElementById('audio-core'),
         grid: document.getElementById('folder-grid'),
         trackList: document.getElementById('track-list'),
+        loadMoreTrigger: document.getElementById('load-more-trigger'),
         views: {
             library: document.getElementById('library-view'),
             detail: document.getElementById('detail-view')
@@ -31,7 +32,7 @@ const app = (() => {
             speedText: document.getElementById('current-speed-text'),
             speedPopup: document.getElementById('speed-popup'),
             timerBtn: document.getElementById('timer-btn'),
-            timerBadge: document.querySelector('.timer-badge'), // ĐÃ THÊM: Badge đếm ngược
+            timerBadge: document.querySelector('.timer-badge'),
             timerPopup: document.getElementById('timer-popup')
         },
         searchDesktop: document.getElementById('search-input-desktop'),
@@ -56,13 +57,44 @@ const app = (() => {
         currentFilter: 'all', 
         speed: 1.0,
         timer: 0,
-        timerInterval: null, // ĐÃ SỬA: Thay setTimeout bằng setInterval
-        timerEndTime: 0,     // ĐÃ THÊM: Lưu thời gian kết thúc
-        favorites: JSON.parse(localStorage.getItem('favorites')) ||[],
+        timerInterval: null, 
+        timerEndTime: 0,     
+        favorites: JSON.parse(localStorage.getItem('favorites')) || [],
         audioHistory: JSON.parse(localStorage.getItem('audioHistory')) ||[],
         durationCache: {},
-        lastScrollY: 0
+        lastScrollY: 0,
+        // Chunking State (Lazy Load)
+        filteredData:[],
+        renderedCount: 0,
+        chunkSize: 24 
     };
+
+    // --- ĐỒNG BỘ ĐA TAB (Cross-tab Sync) ---
+    let audioChannel = null;
+    if ('BroadcastChannel' in window) {
+        audioChannel = new BroadcastChannel('tungu_audio_sync');
+        audioChannel.onmessage = (event) => {
+            if (event.data === 'PLAYING_ELSEWHERE' && !els.audio.paused) {
+                pause();
+                showToast('Đã dừng vì một Tab khác đang phát nhạc');
+            }
+        };
+    }
+
+    // --- BẢO VỆ BỘ NHỚ (Safe Storage) ---
+    function safeSetStorage(key, value) {
+        try {
+            localStorage.setItem(key, value);
+        } catch (e) {
+            console.warn("Storage Full! Đang dọn dẹp lịch sử cũ...");
+            if (key === 'audioHistory') {
+                let history = JSON.parse(localStorage.getItem('audioHistory') || '[]');
+                history = history.slice(0, Math.floor(history.length * 0.7)); // Xóa 30% cũ nhất
+                localStorage.setItem('audioHistory', JSON.stringify(history));
+                localStorage.setItem(key, value); // Thử lưu lại
+            }
+        }
+    }
 
     const metadataQueue = {
         queue:[], isProcessing: false,
@@ -119,13 +151,30 @@ const app = (() => {
         }
 
         els.player.wrapper.classList.add('is-paused');
-        _doSort('newest');
+        
+        // --- XỬ LÝ SỰ CỐ MẠNG & AUDIO (Audio Resilience) ---
+        els.audio.addEventListener('waiting', () => {
+            // Khi xoay vòng chờ tải
+            els.player.playIcon.className = 'ph-bold ph-spinner animate-spin text-2xl md:text-xl ml-1 text-blue-400';
+            els.player.playIconMini.className = 'ph-bold ph-spinner animate-spin text-base ml-0.5 text-blue-400';
+        });
+        els.audio.addEventListener('canplay', () => {
+            // Khi có mạng lại
+            updatePlayState(state.isPlaying); 
+        });
+        els.audio.addEventListener('error', () => {
+            showToast('Lỗi tải audio, tự động chuyển bài sau 3s...');
+            setTimeout(() => nextTrack(), 3000);
+        });
 
         els.audio.addEventListener('timeupdate', onTimeUpdate);
         els.audio.addEventListener('timeupdate', debounce(saveCurrentAudioProgress, 3000));
-        els.audio.addEventListener('ended', onTrackEnd); // Xử lý cả auto-next & timer
+        els.audio.addEventListener('ended', onTrackEnd);
         els.audio.addEventListener('loadedmetadata', onMetadataLoaded);
-        els.audio.addEventListener('play', () => updatePlayState(true));
+        els.audio.addEventListener('play', () => {
+            updatePlayState(true);
+            if(audioChannel) audioChannel.postMessage('PLAYING_ELSEWHERE');
+        });
         els.audio.addEventListener('pause', () => updatePlayState(false));
 
         els.player.slider.addEventListener('input', onSeekInput);
@@ -139,6 +188,7 @@ const app = (() => {
 
         initSwipeGesture();
         initRippleEffect();
+        initLazyLoadObserver(); // Khởi tạo Load More
 
         window.addEventListener('popstate', (e) => {
             if (e.state && e.state.view === 'detail') openFolder(e.state.id, false);
@@ -147,6 +197,8 @@ const app = (() => {
 
         els.searchDesktop.addEventListener('input', (e) => debounceSearch(e.target.value));
         els.searchMobile.addEventListener('input', (e) => debounceSearch(e.target.value));
+
+        _doSort('newest');
     }
 
     function updateAmbientGlow(imgSrc) {
@@ -173,11 +225,8 @@ const app = (() => {
         const titleEl = els.player.title;
         const container = titleEl.parentElement;
         titleEl.classList.remove('is-scrolling');
-        
         setTimeout(() => {
-            if (titleEl.scrollWidth > container.clientWidth) {
-                titleEl.classList.add('is-scrolling');
-            }
+            if (titleEl.scrollWidth > container.clientWidth) titleEl.classList.add('is-scrolling');
         }, 100);
     }
 
@@ -190,32 +239,25 @@ const app = (() => {
                 }
             });
         }, { rootMargin: '0px 0px -50px 0px' });
-
-        document.querySelectorAll('.reveal-item').forEach(el => observer.observe(el));
+        document.querySelectorAll('.reveal-item:not(.visible)').forEach(el => observer.observe(el));
     }
 
     function initRippleEffect() {
         const createRipple = function(e, isTouch = false) {
             const target = e.target.closest('.ripple-target');
             if (!target) return;
-            
             const rect = target.getBoundingClientRect();
             const ripple = document.createElement('span');
             const size = Math.max(rect.width, rect.height);
-            
             ripple.style.width = ripple.style.height = `${size}px`;
-            
             const clientX = isTouch ? e.touches[0].clientX : e.clientX;
             const clientY = isTouch ? e.touches[0].clientY : e.clientY;
-            
             ripple.style.left = `${clientX - rect.left - size/2}px`;
             ripple.style.top = `${clientY - rect.top - size/2}px`;
             ripple.className = 'ripple';
-            
             target.appendChild(ripple);
             setTimeout(() => ripple.remove(), 600);
         };
-
         document.addEventListener('mousedown', e => createRipple(e));
         document.addEventListener('touchstart', e => createRipple(e, true), {passive: true});
     }
@@ -250,7 +292,14 @@ const app = (() => {
         if (criteria === 'newest') data.sort((a, b) => b.id - a.id);
         if (criteria === 'oldest') data.sort((a, b) => a.id - b.id);
         
-        renderLibrary(data);
+        // Reset state Lazy Load
+        state.filteredData = data;
+        state.renderedCount = 0;
+        els.grid.innerHTML = '';
+        
+        document.getElementById('book-count').innerText = data.length;
+        renderNextChunk(); // Render lô đầu tiên
+        renderMobileSearch(data);
     }
 
     const debounceSearch = debounce((query) => {
@@ -260,64 +309,77 @@ const app = (() => {
             i.title.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().includes(term) || 
             i.author.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().includes(term)
         );
-        renderLibrary(data);
+        state.filteredData = data;
+        state.renderedCount = 0;
+        els.grid.innerHTML = '';
+        document.getElementById('book-count').innerText = data.length;
+        renderNextChunk();
+        renderMobileSearch(data);
     }, 300);
 
     function handleSearch(query) { debounceSearch(query); }
 
-    function renderLibrary(data) {
-        document.getElementById('book-count').innerText = data.length;
-        els.grid.style.transition = 'opacity 0.15s ease-out';
-        els.grid.style.opacity = '0';
-        
-        setTimeout(() => {
-            if (data.length === 0) {
-                els.grid.innerHTML = '';
-                document.getElementById('empty-state').classList.remove('hidden');
-                document.getElementById('empty-state').classList.add('animate-fade-in');
-            } else {
-                document.getElementById('empty-state').classList.add('hidden');
-                
-                els.grid.innerHTML = data.map((folder, index) => {
-                    let progressHtml = '';
-                    const history = state.audioHistory.find(h => h.folderId === folder.id);
-                    if(history && history.totalTracks > 0) {
-                        const pct = Math.min(100, (history.trackIndex / history.totalTracks) * 100);
-                        progressHtml = `<div class="card-progress-bar"><div class="card-progress-fill" style="width: ${pct}%"></div></div>`;
-                    }
-                    const isFav = state.favorites.includes(folder.id);
-
-                    return `
-                    <div class="book-card reveal-item ripple-target" onclick="app.openFolder(${folder.id}, true)">
-                        <div class="book-cover-container skeleton-loading">
-                            <img src="${folder.cover}" loading="lazy" onload="this.parentElement.classList.remove('skeleton-loading')" onerror="this.src='https://via.placeholder.com/300x300?text=No+Image'">
-                            ${folder.isH ? `<div class="absolute top-2 right-2 z-10"><span class="tag-H">H</span></div>` : ''}
-                            ${isFav ? `<div class="absolute top-2 left-2 z-10"><i class="ph-fill ph-heart text-red-500 text-xl drop-shadow-md"></i></div>` : ''}
-                            ${progressHtml}
-                            <div class="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition duration-300 flex items-center justify-center backdrop-blur-sm">
-                                <i class="ph-fill ph-play-circle text-white text-5xl shadow-2xl rounded-full"></i>
-                            </div>
-                        </div>
-                        <div class="p-3 sm:p-4 flex-1 flex flex-col justify-between">
-                            <div>
-                                <h3 class="font-bold text-sm sm:text-base text-gray-100 leading-tight mb-1.5 line-clamp-2" title="${folder.title}">${folder.title}</h3>
-                                <p class="text-xs font-medium text-blue-400/80 truncate mb-2" title="${folder.author}">${folder.author}</p>
-                            </div>
-                            <div class="flex items-center text-[11px] text-gray-500 font-bold mt-auto bg-white/5 w-fit px-2 py-1 rounded">
-                                <i class="ph-fill ph-files mr-1.5"></i> ${folder.chapters || folder.tracks.length} chương
-                            </div>
-                        </div>
-                    </div>`;
-                }).join('');
-                observeScrollReveal();
+    // --- LAZY LOAD: Khởi tạo Observer ---
+    function initLazyLoadObserver() {
+        const observer = new IntersectionObserver((entries) => {
+            if(entries[0].isIntersecting && state.renderedCount < state.filteredData.length) {
+                renderNextChunk();
             }
-            
-            els.grid.style.opacity = '1';
-            setTimeout(() => { els.grid.style.transition = ''; }, 150);
+        }, { rootMargin: '0px 0px 200px 0px' });
+        observer.observe(els.loadMoreTrigger);
+    }
 
-        }, 150);
+    // --- LAZY LOAD: Hàm render lô tiếp theo ---
+    function renderNextChunk() {
+        const dataToRender = state.filteredData.slice(state.renderedCount, state.renderedCount + state.chunkSize);
+        if (state.filteredData.length === 0) {
+            document.getElementById('empty-state').classList.remove('hidden');
+            els.loadMoreTrigger.classList.add('opacity-0');
+            return;
+        } else {
+            document.getElementById('empty-state').classList.add('hidden');
+        }
 
-        renderMobileSearch(data);
+        const html = dataToRender.map((folder) => {
+            let progressHtml = '';
+            const history = state.audioHistory.find(h => h.folderId === folder.id);
+            if(history && history.totalTracks > 0) {
+                const pct = Math.min(100, (history.trackIndex / history.totalTracks) * 100);
+                progressHtml = `<div class="card-progress-bar"><div class="card-progress-fill" style="width: ${pct}%"></div></div>`;
+            }
+            const isFav = state.favorites.includes(folder.id);
+
+            // NÂNG CẤP a11y & LQIP Blur-up (Tải ảnh dần dần)
+            return `
+            <div class="book-card reveal-item ripple-target" tabindex="0" role="button" aria-label="Xem truyện ${folder.title}" onclick="app.openFolder(${folder.id}, true)" onkeydown="if(event.key==='Enter'||event.key===' ') {event.preventDefault(); app.openFolder(${folder.id}, true);}">
+                <div class="book-cover-container skeleton-loading">
+                    <img src="${folder.cover}" class="blur-up" loading="lazy" alt="Bìa truyện ${folder.title}" onload="this.classList.add('loaded'); this.parentElement.classList.remove('skeleton-loading')" onerror="this.src='https://via.placeholder.com/300x300?text=No+Image'; this.classList.add('loaded');">
+                    ${folder.isH ? `<div class="absolute top-2 right-2 z-10"><span class="tag-H">H</span></div>` : ''}
+                    ${isFav ? `<div class="absolute top-2 left-2 z-10"><i class="ph-fill ph-heart text-red-500 text-xl drop-shadow-md"></i></div>` : ''}
+                    ${progressHtml}
+                    <div class="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition duration-300 flex items-center justify-center backdrop-blur-sm">
+                        <i class="ph-fill ph-play-circle text-white text-5xl shadow-2xl rounded-full"></i>
+                    </div>
+                </div>
+                <div class="p-3 sm:p-4 flex-1 flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-bold text-sm sm:text-base text-gray-100 leading-tight mb-1.5 line-clamp-2" title="${folder.title}">${folder.title}</h3>
+                        <p class="text-xs font-medium text-blue-400/80 truncate mb-2" title="${folder.author}">${folder.author}</p>
+                    </div>
+                    <div class="flex items-center text-[11px] text-gray-500 font-bold mt-auto bg-white/5 w-fit px-2 py-1 rounded">
+                        <i class="ph-fill ph-files mr-1.5"></i> ${folder.chapters || folder.tracks.length} chương
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
+
+        els.grid.insertAdjacentHTML('beforeend', html);
+        state.renderedCount += dataToRender.length;
+        observeScrollReveal();
+
+        // Ẩn hiện trigger loading
+        if (state.renderedCount >= state.filteredData.length) els.loadMoreTrigger.classList.add('opacity-0');
+        else els.loadMoreTrigger.classList.remove('opacity-0');
     }
 
     function renderMobileSearch(data) {
@@ -332,7 +394,7 @@ const app = (() => {
         }
         
         els.mobileSearchResults.innerHTML = data.map(folder => `
-            <div class="flex items-center gap-3 p-3 hover:bg-white/5 rounded-xl cursor-pointer ripple-target" onclick="app.toggleMobileSearch(); app.openFolder(${folder.id}, true)">
+            <div class="flex items-center gap-3 p-3 hover:bg-white/5 rounded-xl cursor-pointer ripple-target" tabindex="0" role="button" aria-label="Mở truyện ${folder.title}" onclick="app.toggleMobileSearch(); app.openFolder(${folder.id}, true)" onkeydown="if(event.key==='Enter'||event.key===' ') {app.toggleMobileSearch(); app.openFolder(${folder.id}, true);}">
                 <img src="${folder.cover}" class="w-12 h-12 rounded-lg object-cover">
                 <div class="flex-1 min-w-0">
                     <h4 class="font-bold text-sm text-gray-100 truncate">${folder.title}</h4>
@@ -396,7 +458,6 @@ const app = (() => {
         els.views.library.classList.remove('hidden');
         state.currentFolder = null;
         if (pushState) window.history.pushState({ view: 'home' }, '', window.location.pathname);
-        _doSort(state.currentSort); 
         window.scrollTo({ top: state.lastScrollY, behavior: 'instant' }); 
     }
     
@@ -416,7 +477,7 @@ const app = (() => {
             state.favorites.push(id);
             showToast('Đã thêm vào yêu thích ♥');
         }
-        localStorage.setItem('favorites', JSON.stringify(state.favorites));
+        safeSetStorage('favorites', JSON.stringify(state.favorites));
         updateFavBtnUI();
     }
 
@@ -447,8 +508,8 @@ const app = (() => {
         };
         state.audioHistory = state.audioHistory.filter(h => h.folderId !== data.folderId);
         state.audioHistory.unshift(data); 
-        if (state.audioHistory.length > 20) state.audioHistory.pop(); 
-        localStorage.setItem('audioHistory', JSON.stringify(state.audioHistory));
+        if (state.audioHistory.length > 30) state.audioHistory.pop(); // Tăng giới hạn xíu
+        safeSetStorage('audioHistory', JSON.stringify(state.audioHistory));
     }
 
     function toggleHistoryModal() {
@@ -477,14 +538,14 @@ const app = (() => {
         els.historyList.innerHTML = state.audioHistory.map(h => {
             const pct = h.duration ? Math.min(100, (h.currentTime / h.duration) * 100) : 0;
             return `
-            <div class="flex items-center gap-3 p-3 hover:bg-white/5 rounded-xl cursor-pointer ripple-target transition border border-transparent hover:border-white/10 mb-1" onclick="app.resumeFromHistory(${h.folderId})">
+            <div class="flex items-center gap-3 p-3 hover:bg-white/5 rounded-xl cursor-pointer ripple-target transition border border-transparent hover:border-white/10 mb-1" tabindex="0" role="listitem" onclick="app.resumeFromHistory(${h.folderId})" onkeydown="if(event.key==='Enter'||event.key===' ') app.resumeFromHistory(${h.folderId})">
                 <img src="${h.cover}" class="w-14 h-14 rounded-lg object-cover shadow-md border border-white/5">
                 <div class="flex-1 min-w-0">
                     <h4 class="font-bold text-sm text-gray-100 truncate">${h.folderTitle}</h4>
                     <p class="text-[11px] font-medium text-blue-400 truncate mt-1">${h.trackTitle}</p>
                     <div class="w-full h-1 bg-white/10 rounded-full mt-2"><div class="h-full bg-blue-500 rounded-full shadow-[0_0_8px_rgba(59,130,246,0.6)]" style="width:${pct}%"></div></div>
                 </div>
-                <button class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white shrink-0 hover:bg-blue-600 transition"><i class="ph-fill ph-play text-lg"></i></button>
+                <button class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white shrink-0 hover:bg-blue-600 transition" aria-hidden="true"><i class="ph-fill ph-play text-lg"></i></button>
             </div>`;
         }).join('');
     }
@@ -508,13 +569,13 @@ const app = (() => {
 
     function renderTrackList() {
         els.trackList.innerHTML = state.playlist.map((track, idx) => `
-            <div id="track-${idx}" onclick="app.playTrack(${idx})" class="track-item ripple-target flex items-center gap-3 group">
-                <div class="w-8 flex items-center justify-center font-bold text-gray-500 group-hover:text-blue-400 text-sm">${idx + 1}</div>
+            <div id="track-${idx}" onclick="app.playTrack(${idx})" class="track-item ripple-target flex items-center gap-3 group" tabindex="0" role="listitem" aria-label="Phát ${track.title}" onkeydown="if(event.key==='Enter'||event.key===' ') {event.preventDefault(); app.playTrack(${idx});}">
+                <div class="w-8 flex items-center justify-center font-bold text-gray-500 group-hover:text-blue-400 text-sm" aria-hidden="true">${idx + 1}</div>
                 <div class="flex-1 min-w-0">
                     <h4 class="font-semibold text-sm text-gray-300 transition group-hover:text-white">${track.title}</h4>
                     <p class="text-[11px] text-gray-500 font-mono mt-1"><i class="ph-fill ph-clock"></i> <span id="dur-${idx}">--:--</span></p>
                 </div>
-                <div class="flex items-center gap-2 track-action-btn">
+                <div class="flex items-center gap-2 track-action-btn" aria-hidden="true">
                     <button class="w-9 h-9 rounded-full flex items-center justify-center bg-white/5 text-gray-300 group-hover:bg-blue-600 group-hover:text-white transition shadow-sm border border-white/10 group-hover:scale-105">
                         <i class="ph-fill ph-play text-sm ml-0.5"></i>
                     </button>
@@ -579,7 +640,7 @@ const app = (() => {
             navigator.mediaSession.setActionHandler('nexttrack', nextTrack);
         }
 
-        play(); // Ép trình duyệt load file ngay lập tức
+        play(); 
 
         if (startTime > 0) {
             const onLoaded = () => {
@@ -677,17 +738,14 @@ const app = (() => {
         els.player.duration.innerText = formatTime(els.audio.duration); 
     }
 
-    // ĐÃ FIX: Sửa lỗi ghi đè lệnh dừng của Hẹn giờ
     function onTrackEnd() {
-        // Kiểm tra xem người dùng có đang hẹn giờ tắt "Khi hết chương (-1)" không?
         if (state.timer === -1) {
             setTimer(0);
             pause();
             showToast('Đã dừng vì hết chương (Hẹn giờ)');
-            return; // Dừng hàm ngay lập tức, không cho nhảy bài tiếp theo
+            return; 
         }
 
-        // Logic Auto-next bình thường
         if (state.currentIndex < state.playlist.length - 1) {
             const nextTrackTitle = state.playlist[state.currentIndex + 1].title;
             showNextTrackToast(
@@ -706,7 +764,7 @@ const app = (() => {
         toast.innerHTML = `
             <div class="w-4 h-4 rounded-full border-2 border-blue-500 border-t-transparent animate-spin shrink-0"></div>
             <span class="flex-1 truncate max-w-[150px] sm:max-w-[200px]">${msg}</span>
-            <button id="cancel-next-btn" class="ml-2 text-[10px] font-bold text-white uppercase px-3 py-1.5 bg-red-500 hover:bg-red-600 rounded-full transition-colors shrink-0">Hủy</button>
+            <button id="cancel-next-btn" aria-label="Hủy chuyển bài" class="ml-2 text-[10px] font-bold text-white uppercase px-3 py-1.5 bg-red-500 hover:bg-red-600 rounded-full transition-colors shrink-0 focus-visible-ring">Hủy</button>
         `;
         container.appendChild(toast);
         
@@ -740,7 +798,7 @@ const app = (() => {
     function setSpeed(val) {
         state.speed = val; 
         els.audio.playbackRate = val; 
-        localStorage.setItem('audioSpeed', val); 
+        safeSetStorage('audioSpeed', val); 
         els.player.speedText.innerText = val;
         els.player.speedPopup.classList.remove('active');
         els.player.speedPopup.querySelectorAll('.dropdown-item').forEach(i => i.classList.toggle('selected', parseFloat(i.innerText.split('x')[0]) === val));
@@ -748,7 +806,6 @@ const app = (() => {
 
     function toggleTimerMenu() { els.player.timerPopup.classList.toggle('active'); }
     
-    // ĐÃ FIX VÀ NÂNG CẤP: Chuyển setTimeout thành setInterval đếm ngược thời gian thực
     function setTimer(m) {
         state.timer = m; 
         clearInterval(state.timerInterval); 
@@ -756,12 +813,10 @@ const app = (() => {
         
         const badge = els.player.timerBadge;
 
-        // Xóa class 'selected' trong Menu
         els.player.timerPopup.querySelectorAll('.dropdown-item').forEach(i => i.classList.remove('selected'));
         const activeItem = Array.from(els.player.timerPopup.querySelectorAll('.dropdown-item')).find(i => i.innerText.includes(m === -1 ? 'Hết' : (m===0 ? 'Tắt' : m)));
         if(activeItem) activeItem.classList.add('selected');
 
-        // Logic khi tắt Hẹn giờ
         if (m === 0) {
             els.player.timerBtn.classList.remove('text-amber-400');
             badge.classList.add('hidden');
@@ -770,21 +825,18 @@ const app = (() => {
             return;
         }
 
-        // Bật UI trạng thái có hẹn giờ
         els.player.timerBtn.classList.add('text-amber-400');
         badge.classList.remove('hidden');
 
-        // Logic hẹn giờ "Khi hết chương này"
         if (m === -1) {
             badge.innerText = '1 Ch';
             showToast('Sẽ dừng sau khi hết chương này');
             return;
         }
 
-        // Logic hẹn giờ bằng số Phút
         if (m > 0) {
             showToast(`Đã hẹn giờ ${m} phút`);
-            state.timerEndTime = Date.now() + (m * 60000); // Tính thời điểm kết thúc
+            state.timerEndTime = Date.now() + (m * 60000); 
             
             const updateCountdown = () => {
                 const remain = state.timerEndTime - Date.now();
@@ -794,7 +846,6 @@ const app = (() => {
                     setTimer(0);
                     showToast('Đã hết thời gian hẹn giờ');
                 } else {
-                    // Cập nhật text đồng hồ số
                     const totalSecs = Math.ceil(remain / 1000);
                     const mins = Math.floor(totalSecs / 60);
                     const secs = totalSecs % 60;
@@ -802,8 +853,8 @@ const app = (() => {
                 }
             };
             
-            updateCountdown(); // Cập nhật ngay 1 lần không cần đợi 1s
-            state.timerInterval = setInterval(updateCountdown, 1000); // Cứ 1s cập nhật UI 1 lần
+            updateCountdown(); 
+            state.timerInterval = setInterval(updateCountdown, 1000); 
         }
     }
 
