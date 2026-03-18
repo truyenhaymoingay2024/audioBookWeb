@@ -59,7 +59,7 @@ const app = (() => {
         timer: 0,
         timerInterval: null, 
         timerEndTime: 0,     
-        favorites: JSON.parse(localStorage.getItem('favorites')) || [],
+        favorites: JSON.parse(localStorage.getItem('favorites')) ||[],
         audioHistory: JSON.parse(localStorage.getItem('audioHistory')) ||[],
         durationCache: {},
         lastScrollY: 0,
@@ -410,7 +410,6 @@ const app = (() => {
         }
     }
 
-    // NÂNG CẤP: Chạm khoảng trống để tắt Mobile Search
     function closeMobileSearchOnOutsideClick(e) {
         if (e.target.id === 'mobile-search-modal' || e.target.id === 'mobile-search-results') {
             if (!els.mobileSearchModal.classList.contains('hidden')) {
@@ -469,7 +468,6 @@ const app = (() => {
         else goHome(true);
     }
 
-    // NÂNG CẤP: Vuốt trái -> phải ở trang Chi tiết (Detail View) để Quay lại
     function initDetailSwipeBack() {
         let startX = 0;
         let startY = 0;
@@ -482,7 +480,6 @@ const app = (() => {
             let endX = e.changedTouches[0].clientX;
             let endY = e.changedTouches[0].clientY;
             
-            // Xử lý vuốt: Bắt đầu từ rìa trái (<= 40px), di chuyển ngang > 80px, dọc ít bị lệch (< 50px)
             if (startX <= 40 && (endX - startX) > 80 && Math.abs(endY - startY) < 50) {
                 goBack();
             }
@@ -590,6 +587,65 @@ const app = (() => {
         }
     }
 
+    // --- TÍNH NĂNG MỚI: TẢI FILE TỪNG CHƯƠNG ---
+    async function downloadTrack(e, index) {
+        e.stopPropagation(); // Ngăn sự kiện click lan ra ngoài (không tự động Play khi bấm Download)
+        
+        const track = state.playlist[index];
+        if (!track) return;
+
+        const btn = e.currentTarget;
+        const originalHtml = btn.innerHTML; // Lưu lại icon Download cũ
+        
+        // Đổi nút thành trạng thái xoay vòng Loading
+        btn.innerHTML = `<i class="ph-bold ph-spinner animate-spin text-sm text-green-400"></i>`;
+        btn.style.pointerEvents = 'none';
+
+        showToast(`Đang chuẩn bị tải: ${track.title}...`);
+
+        try {
+            // Tải file trực tiếp thông qua Fetch API (Blob) để ép tải xuống thay vì mở tab mới
+            const response = await fetch(track.src);
+            if (!response.ok) throw new Error('Lỗi mạng khi tải');
+            
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            
+            // Đặt tên file chuẩn: "Tên Truyện - Chương X.mp3"
+            const ext = track.src.split('.').pop().split('?')[0] || 'mp3';
+            a.download = `${state.currentFolder.title} - ${track.title}.${ext}`;
+            
+            document.body.appendChild(a);
+            a.click();
+            
+            // Dọn dẹp RAM sau khi tải xong
+            window.URL.revokeObjectURL(url);
+            a.remove();
+            
+            showToast('Tải xuống hoàn tất!');
+        } catch (err) {
+            console.error('Lỗi tải file ngầm:', err);
+            // Fallback: Nếu lỗi CORS hoặc lỗi mạng, tự động mở link trong Tab mới để tải
+            const a = document.createElement('a');
+            a.href = track.src;
+            a.download = `${state.currentFolder.title} - ${track.title}`;
+            a.target = '_blank';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            showToast('Mở liên kết tải xuống trực tiếp');
+        } finally {
+            // Khôi phục nút Download về ban đầu
+            btn.innerHTML = originalHtml;
+            btn.style.pointerEvents = 'auto';
+        }
+    }
+
+    // ĐÃ CẬP NHẬT: Thêm nút Download vào giao diện Danh sách chương
     function renderTrackList() {
         els.trackList.innerHTML = state.playlist.map((track, idx) => `
             <div id="track-${idx}" onclick="app.playTrack(${idx})" class="track-item ripple-target flex items-center gap-3 group" tabindex="0" role="listitem" aria-label="Phát ${track.title}" onkeydown="if(event.key==='Enter'||event.key===' ') {event.preventDefault(); app.playTrack(${idx});}">
@@ -599,18 +655,28 @@ const app = (() => {
                     <p class="text-[11px] text-gray-500 font-mono mt-1"><i class="ph-fill ph-clock"></i> <span id="dur-${idx}">--:--</span></p>
                 </div>
                 <div class="flex items-center gap-2 track-action-btn" aria-hidden="true">
-                    <button class="w-9 h-9 rounded-full flex items-center justify-center bg-white/5 text-gray-300 group-hover:bg-blue-600 group-hover:text-white transition shadow-sm border border-white/10 group-hover:scale-105">
-                        <i class="ph-fill ph-play text-sm ml-0.5"></i>
+                    
+                    <!-- Khung chứa Nút Play/Pause (Để highlightCurrentTrack dễ thay đổi mà không đụng tới nút Download) -->
+                    <div class="play-btn-container flex items-center justify-center w-9 h-9">
+                        <button class="w-9 h-9 rounded-full flex items-center justify-center bg-white/5 text-gray-300 group-hover:bg-blue-600 group-hover:text-white transition shadow-sm border border-white/10 group-hover:scale-105">
+                            <i class="ph-fill ph-play text-sm ml-0.5"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Nút Download -->
+                    <button onclick="app.downloadTrack(event, ${idx})" aria-label="Tải xuống ${track.title}" class="interactive-btn w-9 h-9 rounded-full flex items-center justify-center bg-white/5 text-gray-300 hover:bg-green-600 hover:text-white transition shadow-sm border border-white/10 z-10" title="Tải xuống">
+                        <i class="ph-bold ph-download-simple text-sm"></i>
                     </button>
                 </div>
             </div>`).join('');
         state.playlist.forEach((t, i) => metadataQueue.add(t, `dur-${i}`));
     }
 
+    // ĐÃ CẬP NHẬT: Tránh làm mất nút Download khi đang phát nhạc
     function highlightCurrentTrack(index) {
         document.querySelectorAll('.track-active').forEach(el => {
             el.classList.remove('track-active', 'is-paused-track');
-            const btnContainer = el.querySelector('.track-action-btn');
+            const btnContainer = el.querySelector('.play-btn-container'); // Trỏ đúng tới container của nút play
             if(btnContainer) { 
                 btnContainer.innerHTML = `<button class="w-9 h-9 rounded-full flex items-center justify-center bg-white/5 text-gray-300 group-hover:bg-blue-600 group-hover:text-white transition shadow-sm border border-white/10 group-hover:scale-105"><i class="ph-fill ph-play text-sm ml-0.5"></i></button>`;
             }
@@ -621,10 +687,10 @@ const app = (() => {
             el.classList.add('track-active');
             if (!state.isPlaying) el.classList.add('is-paused-track');
             
-            const btnContainer = el.querySelector('.track-action-btn');
+            const btnContainer = el.querySelector('.play-btn-container');
             if(btnContainer) { 
                 if (state.isPlaying) {
-                    btnContainer.innerHTML = `<div class="playing-eq mr-3"><span></span><span></span><span></span></div>`;
+                    btnContainer.innerHTML = `<div class="playing-eq"><span></span><span></span><span></span></div>`;
                 } else {
                     btnContainer.innerHTML = `<button class="w-9 h-9 rounded-full flex items-center justify-center bg-blue-600 text-white transition shadow-sm border border-white/10"><i class="ph-fill ph-pause text-sm"></i></button>`;
                 }
@@ -683,7 +749,6 @@ const app = (() => {
     function play() { els.audio.play().catch(e=>{}); }
     function pause() { els.audio.pause(); saveCurrentAudioProgress(); }
     
-    // NÂNG CẤP: Sửa lỗi khi TogglePlay vô tình kích hoạt OpenPlayer do event bubbling
     function togglePlay(e) {
         if(e) e.stopPropagation();
         if (!els.audio.src) {
@@ -704,7 +769,9 @@ const app = (() => {
     function updatePlayState(isPlaying) {
         state.isPlaying = isPlaying;
         const iconMain = els.player.playIcon;
-        const iconMini = els.player.playIconMini;[iconMain, iconMini].forEach(icon => {
+        const iconMini = els.player.playIconMini;
+        
+        [iconMain, iconMini].forEach(icon => {
             icon.style.transform = 'scale(0) rotate(-90deg)';
             icon.style.opacity = '0';
             setTimeout(() => {
@@ -880,9 +947,7 @@ const app = (() => {
         }
     }
 
-    // NÂNG CẤP: Chặn việc mở Player khi click nhầm vào các nút chức năng bên trong Player
     function openPlayerMobile(e) {
-        // Nếu sự kiện được kích hoạt từ một nút hoặc phần tử kéo (input, button) thì thoát
         if (e && e.target.closest('button, input, .dropdown-popup, .interactive-btn:not(.player-info-section)')) {
             return;
         }
@@ -899,14 +964,12 @@ const app = (() => {
         document.body.style.overflow = '';
     }
 
-    // NÂNG CẤP: Vuốt xuống TẠI BẤT CỨ ĐÂU trên Player để thu nhỏ, và Vuốt lên để phóng to
     function initSwipeGesture() {
         let startY = 0;
         let startX = 0;
         const player = els.player.wrapper;
 
         player.addEventListener('touchstart', e => {
-            // Không chặn vuốt nếu đang kéo thanh thời gian
             if (e.target.tagName === 'INPUT' || e.target.closest('.dropdown-popup')) return;
             startY = e.touches[0].clientY;
             startX = e.touches[0].clientX;
@@ -921,13 +984,10 @@ const app = (() => {
             let deltaY = endY - startY;
             let deltaX = endX - startX;
 
-            // Đảm bảo là thao tác vuốt dọc, không phải vuốt ngang
             if (Math.abs(deltaY) > Math.abs(deltaX)) {
-                // Đang mở Full Player -> Vuốt xuống trên 50px -> Đóng
                 if (player.classList.contains('full-player-mode') && deltaY > 50) {
                     closePlayerMobile();
                 } 
-                // Đang ở Mini Player -> Vuốt lên (trên 20px) -> Mở Full
                 else if (player.classList.contains('mini-player-mode') && deltaY < -20) {
                     openPlayerMobile();
                 }
@@ -951,7 +1011,8 @@ const app = (() => {
         init, openFolder, goHome, goBack, playTrack, playAll, togglePlay, skip, nextTrack, prevTrack, resumeLastPosition,
         handleSearch, setSort, toggleSortMenu, setFilter, toggleFilterMenu,
         toggleSpeedMenu, setSpeed, toggleTimerMenu, setTimer, toggleMobileSearch, closeMobileSearchOnOutsideClick,
-        openPlayerMobile, closePlayerMobile, toggleHistoryModal, resumeFromHistory, toggleFavoriteCurrent
+        openPlayerMobile, closePlayerMobile, toggleHistoryModal, resumeFromHistory, toggleFavoriteCurrent,
+        downloadTrack // XUẤT HÀM DOWNLOAD RA TOÀN CỤC
     };
 })();
 
