@@ -903,7 +903,7 @@ const LIBRARY = [
         chapters: 75,
         tracks: [
             ...batch(1, 60, 10, 'm4a'),
-			manual("Chương 61 - 67 (Hoàn chính văn)", "c101-103.m4a"),
+			manual("Chương 61 - 67 (Hoàn chính văn)", "c61-67.m4a"),
             manual("Ngoại truyện (Hết)", "nt.m4a"),
         ]
     },
