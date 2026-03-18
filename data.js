@@ -892,4 +892,19 @@ const LIBRARY = [
             manual("Ngoại truyện 11 - 15 (Hết)", "nt11-15.m4a"),
         ]
     },
+    {        
+        id: 56,
+        folderName: "DaChanhTuyet",
+        title: "Đá Chanh Tuyết",
+        author: "Má Bánh Bao",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/DaChanhTuyet/cover.png",
+        desc: 'Văn án:\nTôi khẽ chớp mắt, trái tim cũng theo đó rung lên từng hồi. Huy Anh chợt tiến lại gần tôi, mang theo mùi hương gì đó chẳng thể diễn tả bằng lời.\nCó lẽ do hương men nồng say của rượu, hoặc cũng có thể do sâu thẳm trong cõi lòng đơn độc đã bị đánh thức bởi thứ tình cảm khó nói, Huy Anh bỗng nhiên gục xuống hõm vai tôi. Nó chẳng chê hõm vai ấy gầy gò, hay xấu xí mà chỉ nhẹ nhàng ôm lấy người tôi. Chất giọng trầm khàn của kẻ trước mặt cứ như gió xuân thổi nhẹ bên tai, nó nỉ non bên vành tai đỏ ửng của tôi:\n- Trịnh Hữu Huy Anh suy em đến thế đấy!\nLại thế nữa rồi, tôi cố gắng trấn tĩnh đầu óc mình: yêu ai cũng được, ngoại trừ Trịnh Hữu Huy Anh.\n\nĐá Chanh Tuyết nằm trong chuỗi truyện "Em và Bảo Lộc".\nLưu ý: Truyện còn nhiều thiếu sót, nhân vật chưa hoàn thiện. Rất mong nhận được góp ý từ độc giả để tác giả có thể cải thiện và rút kinh nghiệm cho những tác phẩm sau. Xin chân thành cảm ơn ạ.',
+	    isH: true,
+        chapters: 118,
+        tracks: [
+            ...batch(1, 60, 10, 'm4a'),
+			manual("Chương 61 - 67 (Hoàn chính văn)", "c101-103.m4a"),
+            manual("Ngoại truyện (Hết)", "nt.m4a"),
+        ]
+    },
 ];
