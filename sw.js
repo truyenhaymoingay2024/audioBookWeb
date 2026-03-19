@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tungu-audio-v2'; // Đã tăng version lên v2 để ép trình duyệt xóa cache cũ
+const CACHE_NAME = 'tungu-audio-v2026.03.19'; // Đã tăng version lên v2 để ép trình duyệt xóa cache cũ
 const ASSETS_TO_CACHE =[
     './',
     './index.html',
@@ -15,7 +15,7 @@ self.addEventListener('install', event => {
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then(cache => {
-                console.log('Đã mở cache v2');
+                console.log('Đã mở cache v2026.03.19');
                 return cache.addAll(ASSETS_TO_CACHE);
             })
     );
