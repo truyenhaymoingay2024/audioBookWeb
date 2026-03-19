@@ -21,10 +21,11 @@ body {
   background-color: var(--bg-body);
   color: var(--text-primary);
   min-height: 100vh;
-  padding-bottom: calc(6rem + var(--safe-bottom)); 
+  /* Chừa khoảng trống cho cả Nav và Mini Player ở Mobile */
+  padding-bottom: calc(10rem + var(--safe-bottom)); 
 }
 
-/* === ACCESSIBILITY: FOCUS RING === */
+/* === ACCESSIBILITY === */
 .focus-visible-ring:focus-visible,[tabindex="0"]:focus-visible {
   outline: 2px solid #3b82f6;
   outline-offset: 2px;
@@ -55,6 +56,7 @@ body {
 
 /* Utils */
 .pt-safe { padding-top: calc(0.75rem + env(safe-area-inset-top, 0px)); }
+.pb-safe { padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px)); }
 
 /* === GLASS COMPONENTS === */
 .glass-panel {
@@ -72,7 +74,7 @@ body {
   background: rgba(24, 24, 27, 0.95); backdrop-filter: blur(10px);
 }
 
-/* === TACTILE MICRO-INTERACTIONS === */
+/* === TACTILE INTERACTION === */
 .interactive-btn { 
   transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s, color 0.2s, box-shadow 0.2s; 
 }
@@ -93,7 +95,7 @@ body {
 }
 .reveal-item.visible { opacity: 1; transform: translateY(0) scale(1); }
 
-/* === MARQUEE TEXT === */
+/* === MARQUEE === */
 .marquee-container {
   overflow: hidden; white-space: nowrap; width: 100%;
   mask-image: linear-gradient(90deg, #000 85%, transparent);
@@ -117,23 +119,13 @@ body {
 
 .book-cover-container { position: relative; aspect-ratio: 1/1; background: #1f1f22; border-radius: 16px 16px 0 0; overflow: hidden; }
 
-/* === PROGRESSIVE IMAGE (LQIP Blur-up) === */
-.blur-up {
-    filter: blur(15px);
-    transform: scale(1.1); /* Chống viền mờ lộ ra ngoài */
-    transition: filter 0.8s ease-out, transform 0.8s ease-out;
-}
-.blur-up.loaded {
-    filter: blur(0);
-    transform: scale(1);
-}
+.blur-up { filter: blur(15px); transform: scale(1.1); transition: filter 0.8s ease-out, transform 0.8s ease-out; }
+.blur-up.loaded { filter: blur(0); transform: scale(1); }
 .book-card:hover .blur-up.loaded { transform: scale(1.1); }
 
-/* Shimmer Loading (Khung xương cho bìa chờ ảnh tải) */
 .skeleton-loading { overflow: hidden; position: relative; }
 .skeleton-loading::after {
-  content: ''; position: absolute; top: 0; right: 0; bottom: 0; left: 0;
-  transform: translateX(-100%);
+  content: ''; position: absolute; top: 0; right: 0; bottom: 0; left: 0; transform: translateX(-100%);
   background-image: linear-gradient(90deg, rgba(255,255,255,0) 0, rgba(255,255,255,0.05) 20%, rgba(255,255,255,0) 40%);
   animation: shimmer 1.5s infinite linear; pointer-events: none; z-index: 5;
 }
@@ -142,10 +134,8 @@ body {
 .book-cover-container img { width: 100%; height: 100%; object-fit: cover; }
 
 .tag-H {
-  background: linear-gradient(135deg, #e11d48, #be123c); color: #ffffff;
-  font-size: 11px; font-weight: 800; padding: 4px 8px; border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(225, 29, 72, 0.6); text-transform: uppercase;
-  border: 1px solid rgba(255,255,255,0.2);
+  background: linear-gradient(135deg, #e11d48, #be123c); color: #ffffff; font-size: 11px; font-weight: 800; padding: 4px 8px; border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(225, 29, 72, 0.6); text-transform: uppercase; border: 1px solid rgba(255,255,255,0.2);
 }
 
 .card-progress-bar { position: absolute; bottom: 0; left: 0; right: 0; height: 4px; background: rgba(0,0,0,0.6); z-index: 10; }
@@ -173,8 +163,7 @@ body {
 
 /* === TRACK ITEM === */
 .track-item {
-  padding: 12px 16px; border-radius: 12px; cursor: pointer;
-  transition: all 0.2s; border: 1px solid transparent; background: rgba(255,255,255,0.02);
+  padding: 12px 16px; border-radius: 12px; cursor: pointer; transition: all 0.2s; border: 1px solid transparent; background: rgba(255,255,255,0.02);
 }
 .track-item:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.05); }
 .track-item.track-active { background: rgba(59, 130, 246, 0.15); border-color: rgba(59, 130, 246, 0.3); }
@@ -188,11 +177,16 @@ body {
 @keyframes eq-bounce { 0%, 100% { transform: scaleY(0.4); } 50% { transform: scaleY(1); } }
 .is-paused-track .playing-eq span { animation-play-state: paused; transform: scaleY(0.4); }
 
-/* === PLAYER THÔNG MINH === */
-#player-wrapper { bottom: 0; left: 0; right: 0; transform: translateY(0); }
+
+/* === PLAYER CẢI TIẾN & APP-LIKE === */
+#player-wrapper {
+  /* Nâng cấp Animation: Spring-like cubic-bezier */
+  transition: all 0.6s cubic-bezier(0.32, 0.72, 0, 1);
+}
 
 /* Desktop */
-@media (min-width: 769px) {
+@media (min-width: 768px) {
+  body { padding-bottom: 8rem; } /* Bỏ margin do ko có bottom nav */
   #player-wrapper {
     bottom: 24px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 1100px;
     background: rgba(24, 24, 27, 0.85); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
@@ -203,29 +197,50 @@ body {
 }
 
 /* Mobile */
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   #player-wrapper {
     background: rgba(15, 15, 18, 0.95); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-    border-top: 1px solid rgba(255,255,255,0.08);
   }
   
   #player-wrapper.mini-player-mode {
-    padding-bottom: var(--safe-bottom); height: calc(68px + var(--safe-bottom));
-    box-shadow: 0 -10px 30px rgba(0,0,0,0.6);
+    /* FLOATING MINI PLAYER: Nằm nổi bên trên Bottom Nav */
+    padding-bottom: 0;
+    height: 64px;
+    bottom: calc(90px + var(--safe-bottom)); /* Cách Bottom Nav 1 đoạn */
+    left: 12px;
+    right: 12px;
+    width: auto;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+    border: 1px solid rgba(255,255,255,0.08);
   }
+
   #player-wrapper.mini-player-mode #player-drag-handle,
   #player-wrapper.mini-player-mode .full-mobile-header,
   #player-wrapper.mini-player-mode .progress-wrapper,
   #player-wrapper.mini-player-mode .controls-wrapper,
   #player-wrapper.mini-player-mode .player-utils-section { display: none !important; }
-  #player-wrapper.mini-player-mode .player-inner { display: flex; flex-direction: row; align-items: center; justify-content: space-between; height: 68px; }
+  #player-wrapper.mini-player-mode .player-inner { display: flex; flex-direction: row; align-items: center; justify-content: space-between; height: 64px; }
   #player-wrapper.mini-player-mode .player-content-area { padding: 0 12px; height: 100%; align-items: center; }
-  #player-wrapper.mini-player-mode .cover-wrapper { width: 44px; height: 44px; border-radius: 8px; }
+  #player-wrapper.mini-player-mode .cover-wrapper { width: 40px; height: 40px; border-radius: 8px; }
 
   #player-wrapper.full-player-mode {
-    height: 100dvh; height: 100vh; bottom: 0; z-index: 100;
-    background: rgba(10, 10, 12, 0.85) !important; backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px); border: none;
+    height: 100dvh; height: 100vh; bottom: 0; left: 0; right: 0; z-index: 100;
+    border-radius: 0; border: none;
+    background: rgba(10, 10, 12, 0.85) !important; backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px);
   }
+  
+  /* CÁC THÀNH PHẦN HIỆN LÊN THEO CASCADING KHI FULL PLAYER */
+  #player-wrapper.full-player-mode .player-controls-section,
+  #player-wrapper.full-player-mode .player-utils-section,
+  #player-wrapper.full-player-mode .progress-wrapper {
+      animation: slideUpFade 0.6s 0.1s both cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  @keyframes slideUpFade {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+  }
+
   #player-wrapper.full-player-mode #player-bg-overlay { opacity: 1; pointer-events: auto; }
   #player-wrapper.full-player-mode #player-drag-handle,
   #player-wrapper.full-player-mode .full-mobile-header { display: flex !important; opacity: 1; pointer-events: auto; }
@@ -234,7 +249,9 @@ body {
   #player-wrapper.full-player-mode .player-info-section { flex-direction: column; width: 100%; text-align: left; cursor: default; }
   #player-wrapper.full-player-mode .cover-wrapper {
     width: 100%; aspect-ratio: 1/1; max-width: 340px; max-height: 340px; margin: 0 auto 24px auto;
-    border-radius: 20px; box-shadow: 0 30px 60px rgba(0,0,0,0.8); transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+    border-radius: 20px; box-shadow: 0 30px 60px rgba(0,0,0,0.8); 
+    /* Hiệu ứng scale mượt mà cho bìa truyện */
+    transition: transform 0.6s cubic-bezier(0.32, 0.72, 0, 1), box-shadow 0.6s ease;
   }
   #player-wrapper.full-player-mode.is-paused .cover-wrapper { transform: scale(0.82); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
   #player-wrapper.full-player-mode .text-info-wrapper { width: 100%; max-width: 340px; margin: 0 auto; padding-right: 0;}
@@ -249,13 +266,13 @@ body {
 .animate-fade-in { animation: fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-.toast-enter { animation: toastIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-.toast-exit { animation: toastOut 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+.toast-enter { animation: toastIn 0.4s cubic-bezier(0.32, 0.72, 0, 1) forwards; }
+.toast-exit { animation: toastOut 0.3s cubic-bezier(0.32, 0.72, 0, 1) forwards; }
 @keyframes toastIn { from { opacity: 0; transform: translateY(-20px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
 @keyframes toastOut { from { opacity: 1; transform: translateY(0) scale(1); } to { opacity: 0; transform: translateY(-20px) scale(0.9); } }
 
-@media (max-width: 768px) { #history-modal-content.active { transform: translateY(0); } }
-@media (min-width: 769px) { #history-modal-content.active { transform: scale(1); } }
+@media (max-width: 767px) { #history-modal-content.active { transform: translateY(0); } }
+@media (min-width: 768px) { #history-modal-content.active { transform: scale(1); } }
 
 .custom-scrollbar::-webkit-scrollbar { width: 6px; }
 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tungu-audio-v2026.03.19'; // Đã tăng version lên v2 để ép trình duyệt xóa cache cũ
+const CACHE_NAME = 'tungu-audio-v2026.03.19.2'; 
 const ASSETS_TO_CACHE =[
     './',
     './index.html',
@@ -10,12 +10,11 @@ const ASSETS_TO_CACHE =[
 
 // Cài đặt Service Worker và lưu các file tĩnh vào Cache
 self.addEventListener('install', event => {
-    // Ép Service Worker mới kích hoạt ngay lập tức, không cần chờ người dùng đóng tab
     self.skipWaiting();
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then(cache => {
-                console.log('Đã mở cache v2026.03.19');
+                console.log('Đã mở cache v2026.03.19.2');
                 return cache.addAll(ASSETS_TO_CACHE);
             })
     );

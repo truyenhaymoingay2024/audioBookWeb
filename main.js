@@ -43,7 +43,8 @@ const app = (() => {
         historyModalContent: document.getElementById('history-modal-content'),
         historyList: document.getElementById('history-list'),
         mobileSearchModal: document.getElementById('mobile-search-modal'),
-        mobileSearchResults: document.getElementById('mobile-search-results')
+        mobileSearchResults: document.getElementById('mobile-search-results'),
+        bottomNav: document.getElementById('bottom-nav') // Khai báo phần tử Bottom Nav
     };
 
     let state = {
@@ -68,7 +69,6 @@ const app = (() => {
         chunkSize: 24 
     };
 
-    // --- ĐỒNG BỘ ĐA TAB ---
     let audioChannel = null;
     if ('BroadcastChannel' in window) {
         audioChannel = new BroadcastChannel('tungu_audio_sync');
@@ -80,7 +80,6 @@ const app = (() => {
         };
     }
 
-    // --- BẢO VỆ BỘ NHỚ ---
     function safeSetStorage(key, value) {
         try {
             localStorage.setItem(key, value);
@@ -151,7 +150,6 @@ const app = (() => {
 
         els.player.wrapper.classList.add('is-paused');
         
-        // --- XỬ LÝ SỰ CỐ MẠNG & AUDIO ---
         els.audio.addEventListener('waiting', () => {
             els.player.playIcon.className = 'ph-bold ph-spinner animate-spin text-2xl md:text-xl ml-1 text-blue-400';
             els.player.playIconMini.className = 'ph-bold ph-spinner animate-spin text-base ml-0.5 text-blue-400';
@@ -183,7 +181,6 @@ const app = (() => {
             }
         });
 
-        // KÍCH HOẠT GESTURES (Cử chỉ vuốt)
         initSwipeGesture();
         initDetailSwipeBack(); 
         initRippleEffect();
@@ -198,6 +195,31 @@ const app = (() => {
         els.searchMobile.addEventListener('input', (e) => debounceSearch(e.target.value));
 
         _doSort('newest');
+        
+        // Thiết lập tab mặc định cho Bottom Nav
+        setActiveBottomNav('home');
+    }
+
+    // --- BOTTOM NAV CẬP NHẬT TRẠNG THÁI ACTIVE ---
+    function setActiveBottomNav(tab) {
+        document.querySelectorAll('.bottom-nav-item').forEach(el => {
+            el.classList.remove('text-blue-400', 'active');
+            if(el.id !== 'nav-history' && el.id !== 'nav-search' && el.href === undefined) {
+                 el.classList.add('text-gray-400');
+            }
+            const icon = el.querySelector('i');
+            if (icon.classList.contains('ph-fill')) {
+                icon.classList.replace('ph-fill', 'ph-bold');
+            }
+        });
+
+        const activeEl = document.getElementById(`nav-${tab}`);
+        if (activeEl) {
+            activeEl.classList.remove('text-gray-400');
+            activeEl.classList.add('text-blue-400', 'active');
+            const activeIcon = activeEl.querySelector('i');
+            activeIcon.classList.replace('ph-bold', 'ph-fill');
+        }
     }
 
     function updateAmbientGlow(imgSrc) {
@@ -400,10 +422,12 @@ const app = (() => {
 
     function toggleMobileSearch() {
         if (els.mobileSearchModal.classList.contains('hidden')) {
+            setActiveBottomNav('search');
             els.mobileSearchModal.classList.remove('hidden');
             setTimeout(() => { els.mobileSearchModal.classList.remove('opacity-0'); els.searchMobile.focus(); }, 10);
             document.body.style.overflow = 'hidden';
         } else {
+            setActiveBottomNav('home');
             els.mobileSearchModal.classList.add('opacity-0');
             setTimeout(() => { els.mobileSearchModal.classList.add('hidden'); }, 300);
             document.body.style.overflow = '';
@@ -456,6 +480,7 @@ const app = (() => {
     }
 
     function goHome(pushState = true) {
+        setActiveBottomNav('home');
         els.views.detail.classList.add('hidden');
         els.views.library.classList.remove('hidden');
         state.currentFolder = null;
@@ -536,6 +561,7 @@ const app = (() => {
         const modal = els.historyModal;
         const content = els.historyModalContent;
         if (modal.classList.contains('hidden')) {
+            setActiveBottomNav('history');
             renderHistoryList();
             modal.classList.remove('hidden');
             setTimeout(() => {
@@ -543,6 +569,7 @@ const app = (() => {
                 content.classList.add('active');
             }, 10);
         } else {
+            setActiveBottomNav('home');
             modal.classList.add('opacity-0');
             content.classList.remove('active');
             setTimeout(() => modal.classList.add('hidden'), 300);
@@ -587,24 +614,21 @@ const app = (() => {
         }
     }
 
-    // --- TÍNH NĂNG MỚI: TẢI FILE TỪNG CHƯƠNG ---
     async function downloadTrack(e, index) {
-        e.stopPropagation(); // Ngăn sự kiện click lan ra ngoài (không tự động Play khi bấm Download)
+        e.stopPropagation(); 
         
         const track = state.playlist[index];
         if (!track) return;
 
         const btn = e.currentTarget;
-        const originalHtml = btn.innerHTML; // Lưu lại icon Download cũ
+        const originalHtml = btn.innerHTML; 
         
-        // Đổi nút thành trạng thái xoay vòng Loading
         btn.innerHTML = `<i class="ph-bold ph-spinner animate-spin text-sm text-green-400"></i>`;
         btn.style.pointerEvents = 'none';
 
         showToast(`Đang chuẩn bị tải: ${track.title}...`);
 
         try {
-            // Tải file trực tiếp thông qua Fetch API (Blob) để ép tải xuống thay vì mở tab mới
             const response = await fetch(track.src);
             if (!response.ok) throw new Error('Lỗi mạng khi tải');
             
@@ -615,21 +639,18 @@ const app = (() => {
             a.style.display = 'none';
             a.href = url;
             
-            // Đặt tên file chuẩn: "Tên Truyện - Chương X.mp3"
             const ext = track.src.split('.').pop().split('?')[0] || 'mp3';
             a.download = `${state.currentFolder.title} - ${track.title}.${ext}`;
             
             document.body.appendChild(a);
             a.click();
             
-            // Dọn dẹp RAM sau khi tải xong
             window.URL.revokeObjectURL(url);
             a.remove();
             
             showToast('Tải xuống hoàn tất!');
         } catch (err) {
             console.error('Lỗi tải file ngầm:', err);
-            // Fallback: Nếu lỗi CORS hoặc lỗi mạng, tự động mở link trong Tab mới để tải
             const a = document.createElement('a');
             a.href = track.src;
             a.download = `${state.currentFolder.title} - ${track.title}`;
@@ -639,13 +660,11 @@ const app = (() => {
             a.remove();
             showToast('Mở liên kết tải xuống trực tiếp');
         } finally {
-            // Khôi phục nút Download về ban đầu
             btn.innerHTML = originalHtml;
             btn.style.pointerEvents = 'auto';
         }
     }
 
-    // ĐÃ CẬP NHẬT: Thêm nút Download vào giao diện Danh sách chương
     function renderTrackList() {
         els.trackList.innerHTML = state.playlist.map((track, idx) => `
             <div id="track-${idx}" onclick="app.playTrack(${idx})" class="track-item ripple-target flex items-center gap-3 group" tabindex="0" role="listitem" aria-label="Phát ${track.title}" onkeydown="if(event.key==='Enter'||event.key===' ') {event.preventDefault(); app.playTrack(${idx});}">
@@ -656,14 +675,12 @@ const app = (() => {
                 </div>
                 <div class="flex items-center gap-2 track-action-btn" aria-hidden="true">
                     
-                    <!-- Khung chứa Nút Play/Pause (Để highlightCurrentTrack dễ thay đổi mà không đụng tới nút Download) -->
                     <div class="play-btn-container flex items-center justify-center w-9 h-9">
                         <button class="w-9 h-9 rounded-full flex items-center justify-center bg-white/5 text-gray-300 group-hover:bg-blue-600 group-hover:text-white transition shadow-sm border border-white/10 group-hover:scale-105">
                             <i class="ph-fill ph-play text-sm ml-0.5"></i>
                         </button>
                     </div>
                     
-                    <!-- Nút Download -->
                     <button onclick="app.downloadTrack(event, ${idx})" aria-label="Tải xuống ${track.title}" class="interactive-btn w-9 h-9 rounded-full flex items-center justify-center bg-white/5 text-gray-300 hover:bg-green-600 hover:text-white transition shadow-sm border border-white/10 z-10" title="Tải xuống">
                         <i class="ph-bold ph-download-simple text-sm"></i>
                     </button>
@@ -672,11 +689,10 @@ const app = (() => {
         state.playlist.forEach((t, i) => metadataQueue.add(t, `dur-${i}`));
     }
 
-    // ĐÃ CẬP NHẬT: Tránh làm mất nút Download khi đang phát nhạc
     function highlightCurrentTrack(index) {
         document.querySelectorAll('.track-active').forEach(el => {
             el.classList.remove('track-active', 'is-paused-track');
-            const btnContainer = el.querySelector('.play-btn-container'); // Trỏ đúng tới container của nút play
+            const btnContainer = el.querySelector('.play-btn-container'); 
             if(btnContainer) { 
                 btnContainer.innerHTML = `<button class="w-9 h-9 rounded-full flex items-center justify-center bg-white/5 text-gray-300 group-hover:bg-blue-600 group-hover:text-white transition shadow-sm border border-white/10 group-hover:scale-105"><i class="ph-fill ph-play text-sm ml-0.5"></i></button>`;
             }
@@ -947,6 +963,7 @@ const app = (() => {
         }
     }
 
+    // --- ANIMATION KHI MỞ ĐÓNG PLAYER ---
     function openPlayerMobile(e) {
         if (e && e.target.closest('button, input, .dropdown-popup, .interactive-btn:not(.player-info-section)')) {
             return;
@@ -955,6 +972,11 @@ const app = (() => {
             els.player.wrapper.classList.remove('mini-player-mode');
             els.player.wrapper.classList.add('full-player-mode');
             document.body.style.overflow = 'hidden'; 
+            
+            // Ẩn Bottom Nav bằng cách đẩy xuống dưới
+            if (els.bottomNav) {
+                els.bottomNav.style.transform = 'translateY(120%)';
+            }
         }
     }
     
@@ -962,6 +984,11 @@ const app = (() => {
         els.player.wrapper.classList.add('mini-player-mode');
         els.player.wrapper.classList.remove('full-player-mode');
         document.body.style.overflow = '';
+
+        // Hiện lại Bottom Nav
+        if (els.bottomNav) {
+            els.bottomNav.style.transform = 'translateY(0)';
+        }
     }
 
     function initSwipeGesture() {
@@ -1012,7 +1039,7 @@ const app = (() => {
         handleSearch, setSort, toggleSortMenu, setFilter, toggleFilterMenu,
         toggleSpeedMenu, setSpeed, toggleTimerMenu, setTimer, toggleMobileSearch, closeMobileSearchOnOutsideClick,
         openPlayerMobile, closePlayerMobile, toggleHistoryModal, resumeFromHistory, toggleFavoriteCurrent,
-        downloadTrack // XUẤT HÀM DOWNLOAD RA TOÀN CỤC
+        downloadTrack, setActiveBottomNav // Export tính năng Set Tab Active
     };
 })();
 
