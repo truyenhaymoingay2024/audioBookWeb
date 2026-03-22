@@ -851,14 +851,14 @@ const LIBRARY = [
     {        
         id: 53,
         folderName: "ThanPhanPhuNhanChanDongToanThanhPho",
-        title: "Thân Phận Của Phu Nhân Làm Chấn Động Toàn Thành Phố [đang update 100/4590]",
+        title: "Thân Phận Của Phu Nhân Làm Chấn Động Toàn Thành Phố [đang update 200/4590]",
         author: "Đang cập nhật...",
         cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/ThanPhanPhuNhanChanDongToanThanhPho/cover.jpg",
         desc: 'Kiều Niệm được Kiều gia hào môn nuôi dưỡng 18 năm, không giờ lại là được nhặt về, cô bị em gái cướp đi bạn trai, bị đuổi ra khỏi nhà họ Kiều. Cô đeo cặp sách, tìm về nhà cha mẹ ruột được xưng là huyện nghèo khó của mình. Kết quả lại phát hiện... cha cô là giáo sư, ông nội là đại boss hào môn đỉnh cấp, anh trai là ngôi sao hàng đầu, mà chính cô cũng có rất nhiều thân phận. Kiều gia đuổi cô ra khỏi cửa trợn tròn mắt!!!!',
 	    isH: true,
         chapters: 4590,
         tracks: [
-            ...batch(1, 100, 10, 'm4a'),
+            ...batch(1, 200, 10, 'm4a'),
         ]
     },
     {        
