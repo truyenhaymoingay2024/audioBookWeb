@@ -348,5 +348,18 @@ const LIBRARY = [
             manual("Chương 61 - 67 (Hoàn chính văn)", "c61-67.m4a"),
             manual("Ngoại truyện (Hết)", "nt.m4a"),
         ]
+    },
+    {
+        id: 20,
+        folderName: "DungLiaCanh",
+        title: "Đừng Lìa Cành",
+        author: "Song Tiền Thụ",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/DungLiaCanh/cover.png",
+        desc: 'Hoá ra trong vô vàn khoảnh khắc chúng ta không để ý, tình yêu đã lặng lẽ tới từ lâu rồi',
+        isH: false,
+        chapters: 26,
+        tracks: [
+            ...batch(1, 26, 13, 'm4a'),
+        ]
     }
 ];
