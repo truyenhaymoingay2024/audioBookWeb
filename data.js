@@ -299,7 +299,7 @@ const LIBRARY = [
     {
         id: 17,
         folderName: "ChanhMatOng",
-        title: "Chanh Mật Ong [Đang update 41/dự kiến 60 chương]",
+        title: "Chanh Mật Ong [Đang update 45/dự kiến 60 chương]",
         author: "Trà Hoa Đậu Biếc",
         cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/ChanhMatOng/cover.png",
         desc: 'Thể loại: Học đường, lãng mạn, hài hước, truyện teen.\nSố chương (dự kiến): 60 chương (chưa tính ngoại truyện)\n\nLưu ý:\n- Chanh Mật Ong lấy bối cảnh trường học ở Hải Phòng.\n- Truyện được viết lại hoàn toàn. Thiết lập nhân vật và cốt truyện không thay đổi, tôi chỉ bổ sung hoặc khai thác thêm nhân vật, tình tiết để truyện hoàn thiện và logic hơn.\n- Có yếu tố LGBTQ+.\n- Bản trên web có chửi thề (nhưng sẽ censor và tiết chế hơn).\n- Tính tôi cợt nhả và đây là truyện hài nên Chanh Mật Ong không phù hợp cho người nghiêm túc.\n- Giới hạn độ tuổi: 15+.\n- Hãy bình luận nhiều vào nhé! Hãy bình luận nhiều vào nhé! Hãy bình luận nhiều vào nhé! (Chuyện quan trọng phải nói 3 lần, tôi siêu thích đọc bình luận).\n- Anh em có thắc mắc hay ý kiến đóng góp gì, hãy bình luận trực tiếp hoặc nhắn về Fanpage Trà Hoa Đậu Biếc.',
@@ -308,7 +308,7 @@ const LIBRARY = [
         tracks: [
             manual("Chương 0 - 10", "c0-10.m4a"),
             ...batch(11, 40, 10, 'm4a'),
-            manual("Chương 41", "c41.m4a"),
+            manual("Chương 41 - 45", "c41-45.m4a"),
         ]
     },
     {
