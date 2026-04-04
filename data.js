@@ -361,5 +361,19 @@ const LIBRARY = [
         tracks: [
             ...batch(1, 26, 13, 'm4a'),
         ]
-    }
+    },
+    {
+        id: 21,
+        folderName: "DauTayDuongPhen",
+        title: "Dâu Tây Đường Phèn",
+        author: "Má Bánh Bao",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/DauTayDuongPhen/cover.png",
+        desc: 'Thanh xuân của tôi có cậu. Thanh xuân của cậu cũng có tôi...\nMình từng rất ghét một người chỉ đơn giản vì cậu ấy học giỏi hơn mình. Nhưng dần dần mình mới phát hiện thích một người là muốn cùng người đó cố gắng để chạm đến những ước mơ tươi đẹp trong tương lai. Mình cùng cậu ấy trải qua thanh xuân ngọt ngào với những ngày thi cử đầy áp lực, những trận cãi nhau đến nỗi òa khóc, những tiếng cười rộn ràng trong chiều nắng mùa xuân, những buổi học văng vẳng tiếng giảng bài của thầy cô trong tiết hè oi bức, hay cái ôm trên chiếc xe đạp dưới trời thu xanh ngắt tầng mây và cả nụ hôn đầu dưới gió đông se se lạnh.\nKhả Hân và Nhật Hưng năm ấy đã vẽ lên mối tình trong trẻo nhất, ngọt ngào nhất dưới mái trường chuyên ấy ...\nP/s: truyện lần đầu mình viết, truyện lấy cảm hứng từ những trải nghiệm ở mái trường chuyên cấp ba của mình, có hơi teenfic, hơi xàm xàm nhưng hãy ủng hộ mình nha.',
+        isH: false,
+        chapters: 64,
+        tracks: [
+            ...batch(1, 60, 20, 'm4a'),
+            manual("Chương 61 - 63 + Ngoại truyện (Hết)", "c61-63+NT.m4a"),
+        ]
+    },
 ];
