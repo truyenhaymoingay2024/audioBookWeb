@@ -387,8 +387,8 @@ const LIBRARY = [
         chapters: 32,
         tracks: [
             manual("Chương 1 - 15", "c1-15.m4a"),
-            manual("Chương 16 - 32 (1)", "c16-32(1).m4a"),
-            manual("Chương 16 - 32 (2) - (Hết)", "c16-32(2).m4a")
+            manual("Chương 16 - 32 (1)", "c16-32 (1).m4a"),
+            manual("Chương 16 - 32 (2) - (Hết)", "c16-32 (2).m4a")
         ]
     },
     {
@@ -402,10 +402,10 @@ const LIBRARY = [
         chapters: 52,
         tracks: [
             ...batch(1, 30, 10, 'm4a'),
-            manual("Chương 31 - 40 (1)", "c31-40(1).m4a"),
-            manual("Chương 31 - 40 (2)", "c31-40(2).m4a"),
-            manual("Chương 41 - 50 (1)", "c41-50(1).m4a"),
-            manual("Chương 41 - 50 (2)", "c41-50(2).m4a"),
+            manual("Chương 31 - 40 (1)", "c31-40 (1).m4a"),
+            manual("Chương 31 - 40 (2)", "c31-40 (2).m4a"),
+            manual("Chương 41 - 50 (1)", "c41-50 (1).m4a"),
+            manual("Chương 41 - 50 (2)", "c41-50 (2).m4a"),
             manual("Ngoại truyện (Hết)", "nt.m4a"),
         ]
     },
