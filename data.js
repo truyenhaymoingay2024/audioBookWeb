@@ -376,4 +376,37 @@ const LIBRARY = [
             manual("Chương 61 - 63 + Ngoại truyện (Hết)", "c61-63+NT.m4a"),
         ]
     },
+    {
+        id: 22,
+        folderName: "CachPhaHuyHocSinhHeChuyen",
+        title: "Cách Phá Huỷ Học Sinh Hệ Chuyên",
+        author: "Trang Quỳnh",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/CachPhaHuyHocSinhHeChuyen/cover.png",
+        desc: 'Vì một "sai lầm nghiêm trọng", Phạm Trúc Song buộc phải chuyển trường.\nKhông ngờ rằng tại ngôi trường mới, Phạm Trúc Song gặp lại kỳ phùng địch thủ năm nào - Nguyễn Hoàng Khải An.\nPhạm Trúc Song xem Nguyễn Hoàng Khải An là đối thủ không đội trời chung, nhưng Phạm Trúc Song lầm tưởng rồi.\nSự thực là đối thủ đội chung một đời.',
+        isH: false,
+        chapters: 32,
+        tracks: [
+            manual("Chương 1 - 15", "c1-15.m4a"),
+            manual("Chương 16 - 32 (1)", "c16-32(1).m4a"),
+            manual("Chương 16 - 32 (2) - (Hết)", "c16-32(2).m4a")
+        ]
+    },
+    {
+        id: 23,
+        folderName: "HanhLangHaiLop",
+        title: "Hành Lang Hai Lớp",
+        author: "Hoa Cỏ",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/HanhLangHaiLop/cover.png",
+        desc: 'Ai cũng biết A1 và A2 choảng nhau như chó với mèo, tính toán với nhau từng xen-ti-mét đoạn hành lang với chiếc ghế đá ở giữa ngay từ ngày đầu tiên vào cấp ba. Ngày nắng hay mưa đều ngang ngược gây nhau.\nNhưng chuyện ngang ngược hơn mà đám trẻ không nghĩ tới là cán bộ lớp hai bên yêu đương, là cái kiểu “tình trong như đã mặt ngoài cũng chẳng thèm e”, thản nhiên nhuộm không khí thành màu hồng bling bling mỗi lần đi cùng nhau.\nTừ chiếc ghế đá gây nên thù nhỏ, dẫn tới thù lớn rồi đến n chuyện phát sinh dở khóc dở cười giữa những cô cậu mới lớn. Những tâm tình khó hiểu khó chiều khiến dãy hành lang ngắn ngủn một ngày cũng không được yên tĩnh.\nViệt Chinh ngây ngô với cái nhìn thế giới này toàn nhuộm màu rực rỡ tựa hàng trăm con hạc giấy Đỗ Thành Trí tự tay gấp tặng mình, hứa hẹn đây là vật định tình chứng minh một mối tình nghiêm túc. Lẫn lộn trong những mảng màu tươi sáng ấy Việt Chinh bắt gặp vệt xám xịt bên trong những người bạn của mình, cái Tâm đỏ hoe hỏi Việt Chinh:\n“Bạn có nghe thấy tiếng hoa nở không? Khi lòng chúng ta thật sự yên bình ấy.”\nViệt Chinh không hiểu tiếng hoa nở là ý gì.\nHành lang hai lớp, vài ba chuyện tình cảm buồn cười dở hơi của bọn trẻ và hành trình tìm kiếm âm thanh hoa nở của những tâm hồn không an yên.',
+        isH: false,
+        chapters: 52,
+        tracks: [
+            ...batch(1, 30, 10, 'm4a'),
+            manual("Chương 31 - 40 (1)", "c31-40(1).m4a"),
+            manual("Chương 31 - 40 (2)", "c31-40(2).m4a"),
+            manual("Chương 41 - 50 (1)", "c41-50(1).m4a"),
+            manual("Chương 41 - 50 (2)", "c41-50(2).m4a"),
+            manual("Ngoại truyện (Hết)", "nt.m4a"),
+        ]
+    },
 ];
