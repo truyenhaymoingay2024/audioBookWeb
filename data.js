@@ -409,4 +409,19 @@ const LIBRARY = [
             manual("Ngoại truyện (Hết)", "nt.m4a"),
         ]
     },
+    {
+        id: 24,
+        folderName: "101CachVietThuTinhTangLopTruong",
+        title: "101 Cách Viết Thư Tình Tán(g) Lớp Trưởng",
+        author: "Đại Bông",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/101CachVietThuTinhTangLopTruong/cover.png",
+        desc: 'Làm sao để viết một bức thư tình thật thuyết phục?\nDiệp chợt nhớ ra khi đi thi Văn nó hay dùng cách viết một ý nhiều lần để được nhiều điểm hơn. Giờ chưa biết viết gì thì cứ ghi một ý vài lần để bày tỏ thành ý chắc cũng được.\n"Hoàng Nhật Đăng, mình thích cậu mình thích cậu mình thích cậu mình thích cậu mình thích cậu mình thích cậu mình thích cậu mình thích cậu mình thích cậu mình thích cậu mình thích cậu mình thích cậu mình thích cậu."\nThấy bức thư xong, Đăng đóng sách cái "bép" rồi đập bàn đứng dậy hỏi cả lớp:\n"Đứa nào nguyền rủa tao đấy?"',
+        isH: false,
+        chapters: 50,
+        tracks: [
+            manual("Chương 1 - 10", "c1-10.m4a"),
+            ...batch(11, 50, 5, 'm4a'),
+            manual("Ngoại truyện (Hết)", "nt.m4a"),
+        ]
+    },
 ];
