@@ -463,7 +463,7 @@ const LIBRARY = [
         chapters: 70,
         tracks: [
             ...batch(1, 65, 5, 'm4a'),
-            manual("Chương 66 - 69 + Ngoại truyện (Hết)", "c61-69+NT.m4a"),
+            manual("Chương 66 - 69 + Ngoại truyện (Hết)", "c66-69+NT.m4a"),
         ]
     },
 ];
