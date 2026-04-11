@@ -424,4 +424,32 @@ const LIBRARY = [
             manual("Ngoại truyện (Hết)", "nt.m4a"),
         ]
     },
+    {
+        id: 25,
+        folderName: "LinhChiNguYen",
+        title: "Linh Chi Ngủ Yên",
+        author: "Đại Bông",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/LinhChiNguYen/cover.png",
+        desc: 'Một cô gái mồ côi sống lặng lẽ cô độc, ngày ngày liều mạng kiếm tiền để rồi phát hiện mình bị bệnh nan y sắp chết. Ngay khi quyết định sẽ vung tiền để trải nghiệm những điều mình chưa kịp làm khi còn sống, cô vô tình cứu được một anh chàng đẹp trai bị truy giết ngoài đường.\nSau đó cô chợt nhớ ra trong danh sách đầu mục những việc muốn thử trước khi chết có bao gồm ABCXYZBSVSHRJWIOSKFKEOOE với trai đẹp...',
+        isH: false,
+        chapters: 56,
+        tracks: [
+            ...batch(1, 50, 5, 'm4a'),
+            manual("Chương 51 - 56 (Hết)", "c51-56.m4a"),
+        ]
+    },
+    {
+        id: 26,
+        folderName: "XanhXanhGocTroi",
+        title: "Xanh Xanh Góc Trời",
+        author: "Lê Minh",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/XanhXanhGocTroi/cover.png",
+        desc: 'Giữa cuộc đời chảy trôi theo từng bước chân, giữa tháng năm thấm thoát chẳng thể nào quay lại, vẫn còn một mảnh trời xanh nơi ngôi trường ngày ấy đã chứng kiến bao khoảnh khắc vụng dại của những cô cậu học trò.\nXoay quanh câu chuyện về Lam, Minh, Chi, Khánh, “Xanh xanh góc trời” kể về thời cấp ba với muôn vàn những trải nghiệm đầu đời của từng nhân vật. Đứng trước các lựa chọn và ngã rẽ, mỗi người lại mang trong lòng những nỗi niềm khác nhau.\nTất cả tạo nên một quãng thời gian mà ở đó, dẫu có là hân hoan hay vụn vỡ, chia biệt hay vẹn nguyên, thì tháng năm nhìn lại, tất thảy rồi cũng chỉ còn trong hình hài của những hoài niệm bâng khuâng.',
+        isH: false,
+        chapters: 29,
+        tracks: [
+            ...batch(1, 20, 10, 'm4a'),
+            manual("Chương 21 - 29 (Hết)", "c21-29.m4a"),
+        ]
+    },
 ];
