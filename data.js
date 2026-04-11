@@ -452,4 +452,18 @@ const LIBRARY = [
             manual("Chương 21 - 29 (Hết)", "c21-29.m4a"),
         ]
     },
+    {
+        id: 27,
+        folderName: "QuaDoiDiuDang",
+        title: "Quá Đỗi Dịu Dàng",
+        author: "Điềm Thụy",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/QuaDoiDiuDang/cover.png",
+        desc: 'Minh Nhật là một đứa kiêu ngạo, nhưng vì quá thích cô ấy. Cậu đã...\nTìm mọi cách bắt chuyện.\nGiả làm Grab đón đưa.\nHướng dẫn cô ấy học Toán.\nTrộm nhìn cô ấy rồi dùng 7749 lý do biện minh.\nNhưng cô ấy không hiểu lắm, cô ấy nghĩ cậu và cô ấy thật sự là bạn.',
+        isH: false,
+        chapters: 70,
+        tracks: [
+            ...batch(1, 65, 5, 'm4a'),
+            manual("Chương 66 - 69 + Ngoại truyện (Hết)", "c61-69+NT.m4a"),
+        ]
+    },
 ];
