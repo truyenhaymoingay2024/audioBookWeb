@@ -466,4 +466,19 @@ const LIBRARY = [
             manual("Chương 66 - 69 + Ngoại truyện (Hết)", "c66-69+NT.m4a"),
         ]
     },
+    {
+        id: 28,
+        folderName: "NoThichMay",
+        title: "Nó Thích Mày",
+        author: "Sapis",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/NoThichMay/cover.png",
+        desc: '"Nó thích mày\n...còn tao thì không"\nThanh xuân của chúng ta có lẽ nhiều người đã gặp phải những mối tình éo le giữa crush và bạn thân. Đứng giữa cán cân, bắt buộc phải chọn hoặc tình yêu hoặc tình bạn, liệu có dễ dàng?',
+        isH: false,
+        chapters: 109,
+        tracks: [
+            ...batch(1, 90, 10, 'm4a'),
+            manual("Chương 91 - 94 + Ngoại truyện (Hoàn quyển 1)", "c91-94+nt.m4a"),
+            manual("Quyển 2 - Chương 1 - 10 + Ngoại truyện (Hết)", "P2_c1-10+nt.m4a"),
+        ]
+    },
 ];
