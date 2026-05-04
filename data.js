@@ -481,4 +481,18 @@ const LIBRARY = [
             manual("Quyển 2 - Chương 1 - 10 + Ngoại truyện (Hết)", "P2_c1-10+nt.m4a"),
         ]
     },
+    {
+        id: 29,
+        folderName: "DaiThieuGiaEmLayCau",
+        author: "Lan Rùa",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/DaiThieuGiaEmLayCau/cover.png",
+        desc: 'Nó - Trương Ngọc Uyển Nhi đã trở thành người hầu cho gia đình nhà họ Hoàng từ năm bốn tuổi rưỡi, có lẽ cô đã phải cố gắng rất nhiều để làm hài lòng nhà chủ.\nChàng thiếu gia hay thích kiếm chuyện chẳng bao giờ gọi cô bằng tên thật, hắn chỉ thích gọi cô là Sen, bày đủ trò tinh nghịch phá đám, liệu bởi thế mà hắn dần có tình cảm với nó?',
+        isH: false,
+        chapters: 54,
+        tracks: [
+            ...batch(1, 20, 10, 'm4a'),
+            ...batch(21, 50, 5, 'm4a'),
+            manual("Chương 51 - 53 + Ngoại truyện (Hết)", "c51-53+nt.m4a"),
+        ]
+    },
 ];
