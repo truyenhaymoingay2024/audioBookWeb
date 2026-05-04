@@ -484,6 +484,7 @@ const LIBRARY = [
     {
         id: 29,
         folderName: "DaiThieuGiaEmLayCau",
+        title: "Đại Thiếu Gia, Em Lạy Cậu",
         author: "Lan Rùa",
         cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/DaiThieuGiaEmLayCau/cover.png",
         desc: 'Nó - Trương Ngọc Uyển Nhi đã trở thành người hầu cho gia đình nhà họ Hoàng từ năm bốn tuổi rưỡi, có lẽ cô đã phải cố gắng rất nhiều để làm hài lòng nhà chủ.\nChàng thiếu gia hay thích kiếm chuyện chẳng bao giờ gọi cô bằng tên thật, hắn chỉ thích gọi cô là Sen, bày đủ trò tinh nghịch phá đám, liệu bởi thế mà hắn dần có tình cảm với nó?',
