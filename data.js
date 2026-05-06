@@ -496,4 +496,18 @@ const LIBRARY = [
             manual("Chương 51 - 53 + Ngoại truyện (Hết)", "c51-53+nt.m4a"),
         ]
     },
+    {
+        id: 30,
+        folderName: "MuaHoaNamAyLaiViToiMaNo",
+        title: "Mùa Hoa Năm Ấy, Lại Vì Tôi Mà Nở",
+        author: "Karissa",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/MuaHoaNamAyLaiViToiMaNo/cover.png",
+        desc: 'Bao nhiêu may mắn có được, em đều dồn hết vào anh, vào mối tình đầu của thời thơ ngây dại khờ.\nEm đã từng nghĩ rằng, liệu như thé có phải quá liều lĩnh.\nNhưng cảm ơn Thế Hưng, đã thắp sáng chuỗi ngày tăm tối này, dù ngọn nến sẽ chẳng thể cháy mãi...',
+        isH: false,
+        chapters: 78,
+        tracks: [
+            ...batch(1, 70, 10, 'm4a'),
+            manual("Chương 71 - 76 + Ngoại truyện (Hết)", "c71-76+nt.m4a"),
+        ]
+    },
 ];

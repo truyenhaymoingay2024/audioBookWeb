@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tungu-audio-v2026.05.04'; 
+const CACHE_NAME = 'tungu-audio-v2026.05.06'; 
 const ASSETS_TO_CACHE =[
     './',
     './index.html',
@@ -14,7 +14,7 @@ self.addEventListener('install', event => {
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then(cache => {
-                console.log('Đã mở cache v2026.05.04');
+                console.log('Đã mở cache v2026.05.06');
                 return cache.addAll(ASSETS_TO_CACHE);
             })
     );
