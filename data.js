@@ -510,4 +510,18 @@ const LIBRARY = [
             manual("Chương 71 - 76 + Ngoại truyện (Hết)", "c71-76+nt.m4a"),
         ]
     },
+    {
+        id: 31,
+        folderName: "NhatKyCrushBanCungBan",
+        title: "Nhật Ký Crush Bạn Cùng Bàn",
+        author: "Mía",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/NhatKyCrushBanCungBan/cover.png",
+        desc: 'Năm 19 tuổi, tôi đã gặp được cậu ấy...\nNăm 19 tuổi, tôi được sắp xếp ngồi cùng bàn với cậu ấy...\nVà cũng năm đó, khoảnh khắc gặp được cậu ấy tôi đã biết mình lại rơi bào cảnh thất tình rồi.\nNăm đó, thanh xuân của tôi có thêm hai chữ Dư Hoài...mặc dù tôi không phải Cảnh Cảnh của cậu ấy.',
+        isH: false,
+        chapters: 132,
+        tracks: [
+            manual("Chương 1 - 50", "c1-50.m4a"),
+            manual("Chương 51 - 132 (Hết)", "c51-132.m4a"),
+        ]
+    },
 ];
