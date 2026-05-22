@@ -524,4 +524,19 @@ const LIBRARY = [
             manual("Chương 51 - 132 (Hết)", "c51-132.m4a"),
         ]
     },
+    {
+        id: 32,
+        folderName: "TayThuTieuCongChua",
+        title: "Tây Thu Tiểu Công Chúa",
+        author: "Lan Rùa",
+        cover: "https://github.com/truyenhaymoingay2024/sourceTruyen/raw/main/TayThuTieuCongChua/cover.png",
+        desc: 'Để tôi kể bạn nghe, câu chuyện về cô bé Tây Thu già trước tuổi, con gái nhà bác bán đậu phụ cuối chợ. Cô bé lên cấp ba thì được chuyển vào ngôi trường mới, học cùng với con trai nhà bác bán kim cương đá quý.\nĐây là một bộ truyện TEEN đích thực, chỉ thích hợp với teen thôi vì nó là một câu chuyện học đường, không quá cao trào, kịch tính, chỉ là vài chuyện linh tinh của một cô bé con, trường lớp bạn bè xung quanh cô.\nMình viết bộ này vì mấy bộ kia làm mình stress và ám ảnh kinh khủng nên phải viết cái gì nhẹ nhàng tươi mới cho tâm trạng phấn chấn lên một chút. Là một câu chuyện ONGOING và viết theo cảm xúc và cho nên không có thời gian ra chap cụ thể, có thể ba ngày, một tuần, cũng có lúc bế tắc thì cả tháng. Các bạn cân nhắc trước khi nhảy hố.',
+        isH: false,
+        chapters: 50,
+        tracks: [
+            ...batch(1, 40, 10, 'm4a'),
+            manual("Chương 41 - 50 (1)", "c41-50 (1).m4a"),
+            manual("Chương 41 - 50 (Hết)", "c41-50 (2).m4a"),
+        ]
+    },
 ];
